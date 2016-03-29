@@ -1,0 +1,34 @@
+CORE
+
+Strength	+ Max Weight
+Intelligence	+ Mana
+Fortitude	+ Health
+Agility		+ Accuracy & Dodging ability
+		-> Should this increase accuracy? The skill should but it might be a misnomer
+		-> - Suppose that manouvering body easily should in theory increase accuracy.
+
+
+SUB-CORE
+
+Persuasiveness	+ Leadership / Ability to get your way in conversations
+Perception	+ Hidden things
+Luck		+ Luck
+Engineering	+ Opening things
+
+
+PHYSICAL COMBAT
+
+Swordsmanship	+ Damage
+Archery		+ Damage
+Speed		+ Speed
+Analysis	+ Allows you to see hidden things on maps
+Pickpocketing	+ Increases pickpocketing ability on NPCs
+
+
+MAGIC
+
+Combat magic	
+Dark magic
+Utility magic
+Healing magic 
+Protective magic
