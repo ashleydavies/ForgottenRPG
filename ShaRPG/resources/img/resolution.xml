@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<Resolutions>
+    <NamespaceResolutions>
+        <NamespaceResolution id="0" name="tiles"/>  
+    </NamespaceResolutions>
+    
+    <TextureResolutions>
+        <TextureResolution id="0" namespace="0">
+            <name>tiles</name>
+            <extension>png</extension>
+        </TextureResolution>
+    </TextureResolutions>
+    
+    <ImageResolutions>
+        <ImageResolution id="0" name="blank" texture="0">
+            <position x="0" y="0"/>
+            <size width="64" height="32"/>
+        </ImageResolution>
+        
+        <ImageResolution id="1" name="grass" texture="0">
+            <position x="0" y="32"/>
+            <size width="64" height="32"/>
+        </ImageResolution>
+        
+        <ImageResolution id="2" name="stone" texture="0">
+            <position x="0" y="64"/>
+            <size width="64" height="32"/>
+        </ImageResolution>
+        
+        <ImageResolution id="3" name="water_1" texture="0">
+            <position x="64" y="0"/>
+            <size width="64" height="32"/>
+        </ImageResolution>
+        
+        <ImageResolution id="4" name="water_2" texture="0">
+            <position x="64" y="32"/>
+            <size width="64" height="32"/>
+        </ImageResolution>
+        
+        <ImageResolution id="5" name="water_3" texture="0">
+            <position x="64" y="64"/>
+            <size width="64" height="32"/>
+        </ImageResolution>
+        
+        <ImageResolution id="6" name="water_4" texture="0">
+            <position x="64" y="96"/>
+            <size width="64" height="32"/>
+        </ImageResolution>
+    </ImageResolutions>
+    
+</Resolutions>

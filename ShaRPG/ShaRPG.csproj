@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{53242FEF-AA9E-4710-8240-1235F4C312E1}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ShaRPG</RootNamespace>
+    <AssemblyName>ShaRPG</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Camera\ICamera.cs" />
+    <Compile Include="Command\ICommand.cs" />
+    <Compile Include="Command\CameraMoveCommand.cs" />
+    <Compile Include="Command\NullCommand.cs" />
+    <Compile Include="Entity\Components\HealthComponent.cs" />
+    <Compile Include="Entity\Components\IComponent.cs" />
+    <Compile Include="Entity\Components\IComponentMessage.cs" />
+    <Compile Include="Entity\Entity.cs" />
+    <Compile Include="Entity\ItemEntity.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="Map\Map.cs" />
+    <Compile Include="Map\MapTile.cs" />
+    <Compile Include="Service\CachedFileSpriteStoreService.cs" />
+    <Compile Include="Service\IAudioService.cs" />
+    <Compile Include="Service\IImageStoreService.cs" />
+    <Compile Include="Service\ILogService.cs" />
+    <Compile Include="Service\IScriptStoreService.cs" />
+    <Compile Include="Service\ISpriteStoreService.cs" />
+    <Compile Include="Service\Null\NullAudioService.cs" />
+    <Compile Include="Service\Null\NullImageStoreService.cs" />
+    <Compile Include="Service\Null\NullLogService.cs" />
+    <Compile Include="Service\Null\NullScriptStoreService.cs" />
+    <Compile Include="Service\ServiceLocator.cs" />
+    <Compile Include="Util\Coordinate\Coordinate.cs" />
+    <Compile Include="Util\Coordinate\GameCoordinate.cs" />
+    <Compile Include="Util\Coordinate\TileCoordinate.cs" />
+    <Compile Include="Util\Direction.cs" />
+    <Compile Include="Util\Image.cs" />
+    <Compile Include="Util\Sprite.cs" />
+    <Compile Include="Util\Texture.cs" />
+    <Compile Include="Util\TextureType.cs" />
+    <Compile Include="VM\ScriptVM.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="sfmlnet-audio-2, Version=2.2.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SFML\sfmlnet-audio-2.dll</HintPath>
+    </Reference>
+    <Reference Include="sfmlnet-graphics-2, Version=2.2.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SFML\sfmlnet-graphics-2.dll</HintPath>
+    </Reference>
+    <Reference Include="sfmlnet-system-2, Version=2.2.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SFML\sfmlnet-system-2.dll</HintPath>
+    </Reference>
+    <Reference Include="sfmlnet-window-2, Version=2.2.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\SFML\sfmlnet-window-2.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="resources\data\planning\intData.txt" />
+    <Content Include="resources\data\planning\stats.txt" />
+    <Content Include="resources\data\xml\itemData.xml" />
+    <Content Include="resources\data\xml\map\0.xml" />
+    <Content Include="resources\data\xml\map\1.xml" />
+    <Content Include="resources\data\xml\map\2.xml" />
+    <Content Include="resources\data\xml\map\3.xml" />
+    <Content Include="resources\data\xml\map\mapList.xml" />
+    <Content Include="resources\data\xml\mob\1.xml" />
+    <Content Include="resources\data\xml\tileData.xml" />
+    <Content Include="resources\img\resolution.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\img\tiles\tiles.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\data\properties\IntDataFriendlyNames.properties" />
+    <None Include="resources\data\properties\NPCSubstitution.properties" />
+    <None Include="resources\data\properties\Spritesheets.properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="resources\map\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
