@@ -23,7 +23,7 @@ namespace ShaRPG.Service {
             _textureCacheDictionary = new Dictionary<int, Texture>();
             _spriteCacheDictionary = new Dictionary<string, Sprite>();
 
-            using (var fs = File.OpenRead(Path.Combine(directory, "resolution.xml")))
+            using (var fs = File.OpenRead(Path.Combine(directory, "Resolution.xml")))
             {
                 _resolutionDocument = XDocument.Load(fs);
             }

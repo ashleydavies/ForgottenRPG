@@ -19,9 +19,9 @@ namespace ShaRPG.Util {
         /// Calculate the delta time since the last call
         /// </summary>
         /// <returns>Elapsed time since the last call to this method</returns>
-        public int GetDelta()
+        public float GetDelta()
         {
-            return _clock.Restart().AsMilliseconds();
+            return _clock.Restart().AsSeconds();
         }
     }
 }
