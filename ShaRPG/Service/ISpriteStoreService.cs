@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using ShaRPG.Util;
 
 namespace ShaRPG.Service {
-    interface ISpriteStoreService
+    public interface ISpriteStoreService
     {
         Sprite GetSprite(string name);
     }

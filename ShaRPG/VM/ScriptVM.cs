@@ -62,19 +62,10 @@ namespace ShaRPG.VM
             return data;
         }
 
-        private int GetIr()
-        {
-            return _bytes[_registers[InstructionRegister]];
-        }
+        private int GetIr() => _bytes[_registers[InstructionRegister]];
 
-        private void PushStack(int data)
-        {
-            _stack.Push(data);
-        }
+        private void PushStack(int data) => _stack.Push(data);
 
-        private int PopStack()
-        {
-            return _stack.Pop();
-        }
+        private int PopStack() => _stack.Pop();
     }
 }

@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ShaRPG.Camera;
+using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Util {
-    interface IRenderSurface
+    public interface IRenderSurface
     {
-        void Render(Sprite sprite);
+        Vector2I Size { get; set; }
+        void Render(IDrawable sprite, GameCoordinate position);
+        void SetCamera(ICamera gameCamera);
     }
 }

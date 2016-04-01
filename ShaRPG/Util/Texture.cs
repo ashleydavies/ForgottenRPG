@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ShaRPG.Util {
-    class Texture {
+    public class Texture {
         public SFML.Graphics.Texture UnderlyingTexture { get; set; }
 
         public Texture(string path)

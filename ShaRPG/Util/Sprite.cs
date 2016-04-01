@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SFML.Graphics;
+using SFML.System;
+using ShaRPG.Service;
+using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Util {
-    class Sprite
+    public class Sprite : IDrawable
     {
         public readonly SFML.Graphics.Sprite UnderlyingSprite;
 
@@ -17,6 +20,17 @@ namespace ShaRPG.Util {
                 Texture = texture.UnderlyingTexture,
                 TextureRect = new IntRect(x, y, width, height)
             };
+        }
+
+        public void Draw(RenderWindow window, GameCoordinate position)
+        {
+            UnderlyingSprite.Position = new Vector2f(position.X, position.Y);
+            window.Draw(UnderlyingSprite);
+        }
+
+        public void Update(float delta)
+        {
+
         }
     }
 }

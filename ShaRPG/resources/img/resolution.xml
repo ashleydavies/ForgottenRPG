@@ -14,37 +14,77 @@
     <ImageResolutions>
         <ImageResolution id="0" name="blank" texture="0">
             <position x="0" y="0"/>
-            <size width="64" height="32"/>
+            <size width="65" height="33"/>
         </ImageResolution>
         
         <ImageResolution id="1" name="grass" texture="0">
-            <position x="0" y="32"/>
-            <size width="64" height="32"/>
+            <position x="0" y="33"/>
+            <size width="65" height="33"/>
         </ImageResolution>
         
         <ImageResolution id="2" name="stone" texture="0">
-            <position x="0" y="64"/>
-            <size width="64" height="32"/>
+            <position x="0" y="66"/>
+            <size width="65" height="33"/>
         </ImageResolution>
         
-        <ImageResolution id="3" name="water_1" texture="0">
-            <position x="64" y="0"/>
-            <size width="64" height="32"/>
+        <ImageResolution id="3" name="borderOverlay" texture="0">
+            <position x="0" y="99"/>
+            <size width="65" height="33"/>
         </ImageResolution>
         
-        <ImageResolution id="4" name="water_2" texture="0">
-            <position x="64" y="32"/>
-            <size width="64" height="32"/>
+        <ImageResolution id="4" name="fowSeen" texture="0">
+            <position x="0" y="132"/>
+            <size width="65" height="33"/>
         </ImageResolution>
         
-        <ImageResolution id="5" name="water_3" texture="0">
-            <position x="64" y="64"/>
-            <size width="64" height="32"/>
+        <ImageResolution id="5" name="fowUnseen" texture="0">
+            <position x="0" y="165"/>
+            <size width="65" height="33"/>
         </ImageResolution>
         
-        <ImageResolution id="6" name="water_4" texture="0">
-            <position x="64" y="96"/>
-            <size width="64" height="32"/>
+        <ImageResolution id="6" name="cursorResolution" texture="0">
+            <position x="0" y="198"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="20" name="water_1" texture="0">
+            <position x="65" y="0"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="21" name="water_2" texture="0">
+            <position x="65" y="33"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="22" name="water_3" texture="0">
+            <position x="65" y="66"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="23" name="water_4" texture="0">
+            <position x="65" y="99"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="40" name="dirt" texture="0">
+            <position x="130" y="0"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="41" name="tilledDirt" texture="0">
+            <position x="130" y="33"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="60" name="treeAlive" texture="0">
+            <position x="195" y="0"/>
+            <size width="65" height="66"/>
+        </ImageResolution>
+        
+        <ImageResolution id="61" name="treeDead" texture="0">
+            <position x="195" y="66"/>
+            <size width="65" height="66"/>
         </ImageResolution>
     </ImageResolutions>
     

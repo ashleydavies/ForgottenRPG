@@ -1,23 +1,22 @@
 ﻿using ShaRPG.Camera;
+using ShaRPG.Util;
 
 namespace ShaRPG.Command
 {
     public class CameraMoveCommand : ICommand
     {
         private readonly ICamera _camera;
-        private readonly int _offsetX;
-        private readonly int _offsetY;
+        private readonly Vector2I _offset;
 
-        public CameraMoveCommand(ICamera camera, int offsetX, int offsetY)
+        public CameraMoveCommand(ICamera camera, Vector2I offset)
         {
             this._camera = camera;
-            this._offsetX = offsetX;
-            this._offsetY = offsetY;
+            this._offset = offset;
         }
 
         public void Execute()
         {
-            _camera.Move(_offsetX, _offsetY);
+            _camera.Center += _offset;
         }
     }
 }

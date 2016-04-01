@@ -1,48 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<data>
-    <tileInfo>
-        <tile name="null" collision="1">
-            <texture spritesheet="0" xPos="0" yPos="0" />
-        </tile>
-        <tile name="grass" collision="0">            
-            <texture spritesheet="0" xPos="0" yPos="33" />
-        </tile>
-        <tile name="dirt" collision="0">            
-            <texture spritesheet="0" xPos="130" yPos="0" />
-        </tile>
-        <tile name="water" collision="1">            
-            <textureData type="dynamic" frameTime="500"/>
-            <texture spritesheet="0" xPos="65" yPos="0" />
-            <texture spritesheet="0" xPos="65" yPos="33" />
-            <texture spritesheet="0" xPos="65" yPos="66" />
-            <texture spritesheet="0" xPos="65" yPos="99" />
-        </tile>
-        <tile name="stonePath" collision="0">
-            <texture spritesheet="0" xPos="0" yPos="66" />
-        </tile>
-        <tile name="tilledDirt" collision="0">
-            <texture spritesheet="0" xPos="130" yPos="33" />
-        </tile>
-        <tile name="treeGreen" collision="1">
-        	<!-- Render above where it would be rendered as it's a taller than usual sprite -->
-        	<textureData yOffset="-32"/>
-            <texture spritesheet="0" xPos="195" yPos="0" height="65" />
-        </tile>
-        <tile name="treeDead" collision="1">
-        	<!-- Render above where it would be rendered as it's a taller than usual sprite -->
-        	<textureData yOffset="-32"/>
-            <texture spritesheet="0" xPos="260" yPos="0" height="65" />
-        </tile>
-        <tile name="greyBrick" collision="1">
-            <textureData yOffset="-32"/>
-            <texture spritesheet="0" xPos="130" yPos="66" height="65" />
-        </tile>
-        <tile name="redBrick" collision="1">
-            <texture spritesheet="0" xPos="96" yPos="96" />
-        </tile>
-        <tile name="woodFloor" collision="0">
-            <texture spritesheet="0" xPos="96" yPos="128" />
-        </tile>
-    </tileInfo>
-</data>
+<Tiles>
+    <Tile id="0" name="null" collision="1"/>
+    <Tile id="1" name="grass" collision="0"/>
+    <Tile id="2" name="dirt" collision="0"/>
+    <Tile id="3" name="water" collision="1" textureComplex="1" textureType="dynamic" textureTime="0.500">
+        <Texture name="water_1" />
+        <Texture name="water_2" />
+        <Texture name="water_3" />
+        <Texture name="water_4" />
+    </Tile>
+    <Tile id="4" name="stone" collision="0"/>
+    <Tile id="5" name="tilledDirt" collision="0"/>
+    <Tile id="6" name="treeGreen" collision="1" textureYOffset="-32"/>
+    <Tile id="7" name="treeDead" collision="1" textureYOffset="-32">
+    </Tile> 
+</Tiles>

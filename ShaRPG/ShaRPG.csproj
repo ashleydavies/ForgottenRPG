@@ -52,6 +52,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Camera\GameCamera.cs" />
     <Compile Include="Camera\ICamera.cs" />
     <Compile Include="Command\ICommand.cs" />
     <Compile Include="Command\CameraMoveCommand.cs" />
@@ -62,9 +63,13 @@
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="Entity\ItemEntity.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="Map\Map.cs" />
+    <Compile Include="GameState\AbstractGameState.cs" />
+    <Compile Include="GameState\GameState.cs" />
+    <Compile Include="Map\GameMap.cs" />
     <Compile Include="Map\MapTile.cs" />
+    <Compile Include="Map\MapTileStore.cs" />
     <Compile Include="Service\CachedFileSpriteStoreService.cs" />
+    <Compile Include="Service\ConsoleLogService.cs" />
     <Compile Include="Service\IAudioService.cs" />
     <Compile Include="Service\IImageStoreService.cs" />
     <Compile Include="Service\ILogService.cs" />
@@ -75,14 +80,20 @@
     <Compile Include="Service\Null\NullLogService.cs" />
     <Compile Include="Service\Null\NullScriptStoreService.cs" />
     <Compile Include="Service\ServiceLocator.cs" />
+    <Compile Include="Util\AnimatedSprite.cs" />
     <Compile Include="Util\Coordinate\Coordinate.cs" />
     <Compile Include="Util\Coordinate\GameCoordinate.cs" />
     <Compile Include="Util\Coordinate\TileCoordinate.cs" />
+    <Compile Include="Util\DeltaClock.cs" />
     <Compile Include="Util\Direction.cs" />
+    <Compile Include="Util\IDrawable.cs" />
     <Compile Include="Util\Image.cs" />
+    <Compile Include="Util\IRenderSurface.cs" />
     <Compile Include="Util\Sprite.cs" />
     <Compile Include="Util\Texture.cs" />
     <Compile Include="Util\TextureType.cs" />
+    <Compile Include="Util\Vector2.cs" />
+    <Compile Include="Util\WindowRenderSurface.cs" />
     <Compile Include="VM\ScriptVM.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -116,8 +127,10 @@
     <Content Include="resources\data\xml\map\3.xml" />
     <Content Include="resources\data\xml\map\mapList.xml" />
     <Content Include="resources\data\xml\mob\1.xml" />
-    <Content Include="resources\data\xml\tileData.xml" />
-    <Content Include="resources\img\resolution.xml">
+    <Content Include="resources\data\xml\TileData.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\img\Resolution.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="resources\img\tiles\tiles.png">
@@ -125,13 +138,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="resources\data\properties\IntDataFriendlyNames.properties" />
     <None Include="resources\data\properties\NPCSubstitution.properties" />
     <None Include="resources\data\properties\Spritesheets.properties" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="resources\map\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
