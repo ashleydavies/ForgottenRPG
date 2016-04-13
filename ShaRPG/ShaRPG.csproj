@@ -66,6 +66,7 @@
     <Compile Include="GameState\AbstractGameState.cs" />
     <Compile Include="GameState\GameState.cs" />
     <Compile Include="Map\GameMap.cs" />
+    <Compile Include="Map\MapLoader.cs" />
     <Compile Include="Map\MapTile.cs" />
     <Compile Include="Map\MapTileStore.cs" />
     <Compile Include="Service\CachedFileSpriteStoreService.cs" />
@@ -121,7 +122,9 @@
     <Content Include="resources\data\planning\intData.txt" />
     <Content Include="resources\data\planning\stats.txt" />
     <Content Include="resources\data\xml\itemData.xml" />
-    <Content Include="resources\data\xml\map\0.xml" />
+    <Content Include="resources\data\xml\map\0.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="resources\data\xml\map\1.xml" />
     <Content Include="resources\data\xml\map\2.xml" />
     <Content Include="resources\data\xml\map\3.xml" />
@@ -138,7 +141,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
     <None Include="resources\data\properties\IntDataFriendlyNames.properties" />
     <None Include="resources\data\properties\NPCSubstitution.properties" />
     <None Include="resources\data\properties\Spritesheets.properties" />

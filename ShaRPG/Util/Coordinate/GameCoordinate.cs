@@ -11,5 +11,10 @@ namespace ShaRPG.Util.Coordinate
             return new TileCoordinate(0, 0);
         }
 
+        public static GameCoordinate operator +(GameCoordinate a, GameCoordinate b)
+        {
+            return new GameCoordinate(a.X + b.X, a.Y + b.Y);
+        }
+
     }
 }

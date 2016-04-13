@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using ShaRPG.Service;
 using ShaRPG.Util;
+using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Map {
     public class MapTileStore
@@ -74,7 +75,16 @@ namespace ShaRPG.Map {
                 graphic = _spriteStore.GetSprite(name);
             }
 
-            return new MapTile(id, graphic, name, collision);
+            var newTile = new MapTile(id, graphic, name, collision);
+
+            int xOffset = 0, yOffset = 0;
+
+            int.TryParse(tileData.Attribute("textureXOffset")?.Value, out xOffset);
+            int.TryParse(tileData.Attribute("textureYOffset")?.Value, out yOffset);
+
+            newTile.TextureOffset = new GameCoordinate(xOffset, yOffset );
+
+            return newTile;
         }
 
         public void Update(float delta)
