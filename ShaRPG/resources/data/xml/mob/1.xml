@@ -1,97 +1,163 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<mob>
-	
-	<info name="Farmer Joe" avatar="fred" />
-	
-    <texture id="0">
-        <spritesheet>1</spritesheet>
-        <xPos>0</xPos>
-        <yPos>0</yPos>
-    </texture>
+<Mob name="Farmer Joe" avatar="farmerjoe">
+    <TextureData>
+        <Texture name="fred">
+    </TextureData>
     
-    <dialog>
-        <node id="0" prompt="Farmer Joe glances in your direction, looking at you with uncertainty. From his expression of worry you feel he distrusts you. [N] [N] 'Ah, I knew you would come eventually.' He sighs under his breath, 'Do you require the package?'">
-            <reply id="0" prompt="'Who are you? What is this package?'">
-                <action id="0" action="changeNode" args="1"/>
-            </reply>
-        </node>
-        <node id="1" prompt="'Oh... I'm sorry. I mistook you for someone else.' He looks worried, as if he has told you a great secret. 'I'm afraid I'm going to have to ask you to leave: This is, after all, private land.'">
-            <reply id="0" prompt="'You don't tell me what to do. Show me what you spoke of.'">
-                <action id="0" action="changeNode" args="2"/>
-            </reply>
-            <reply id="1" prompt="'I'll leave now. My apologies.'">
-                <action id="0" action="changeNode" args="3"/>
-            </reply>
-            <reply id="2" prompt="'I wasn't intending to stay here long, but whether or not your land is private is of no bother to me.'">
-                <action id="0" action="changeNode" args="4"/>
-            </reply>
-        </node>
-        <node id="2" prompt="He looks scared, but whatever he is trying to protect is enough to make him crazy enough to try to fight you. It must be very important: 'Then I shall fight you for my lands.'">
-            <reply id="0" prompt="[BATTLE_BEGIN_DIALOG_END]">
-                <action id="0" action="endDialog"/>
-            </reply>
-            <reply id="1" prompt="'Wait, no! I'll pay!' (Pay 30 coins)">
-                <action id="0" action="changeNode" args="6">
-                    <actionCondition id="0" conditionID="0"/>
-                </action>
-                <action id="1" action="changeNode" args="5">
-                    <actionCondition id="0" conditionID="1"/>
-                </action>
-                
-                <action id="2" action="intdata_decrease" args="0,30">
-                    <actionCondition id="0" conditionID="0"/>
-                </action>
-            </reply>
-            <reply id="2" prompt="'I'm sorry, I didn't mean to offend you. It's fine, I'll leave now'">
-                <action id="0" action="changeNode" args="8"/>
-                
-                <replyCondition id="0" conditionID="2"/>
-            </reply>
-            <reply id="3" prompt="'Herp derp'">
-                <action id="0" action="endDialog"/>
-                <action id="1" action="intdata_increase" args="1,3"/>
-            </reply>
-        </node>
-        <node id="3" prompt="'Thank you.' A sense of relief passes across his face. He must be protecting something very important, strange for an unaugmented human.">
-            <reply id="0" prompt="[DEFAULT_DIALOG_END]">
-                <action id="0" action="endDialog"/>
-            </reply>
-        </node>
-        <node id="4" prompt="He looks relieved about you having plans to leave, however does not reply, probably worried about how you could respond.">
-            <reply id="0" prompt="[DEFAULT_DIALOG_END]">
-                <action id="0" action="endDialog"/>
-            </reply>
-        </node>
-        <node id="5" prompt="'Who do you think you're tricking! You don't even have 30 coins! Get off my land right now or I'll be forced to fight you!'">
-            <reply id="0" prompt="'Calm down, I'll leave your land now.'">
-                <action id="0" action="changeNode" args="7"/>
-            </reply>
-            <reply id="1" prompt="[BATTLE_BEGIN_DIALOG_END]">
-                <action id="0" action="endDialog"/>
-            </reply>
-        </node>
-        <node id="6" prompt="He takes your money from a considerable distance, stretching towards you. He quietly slides them into his pocket and looks in your direction with distaste. [N] [N] 'So? What do you want now? Clear off!'">
-            <reply id="0" prompt="[DEFAULT_DIALOG_END]">
-                <action id="0" action="endDialog"/>
-            </reply>
-        </node>
-        <node id="7" prompt="He, already annoyed at your presence and lying about giving him money, is more annoyed about your laid back attitude to the situation. [N] [N] '... I gave you a chance...' He jumps forward with his spear in hand.">
-            <reply id="0" prompt="[BATTLE_BEGIN_DIALOG_END]">
-                <action id="0" action="endDialog"/>
-            </reply>            
-        </node>
-        <node id="8" prompt="You manage to calm him down by changing your tone of voice slightly. 'Sorry for being so aggressive, but I really do need you to leave my land now'">
-            <reply id="0" prompt="I've changed my mind (Enter combat mode)">
-                <action id="0" action="endDialog"/>
-            </reply>
-            <reply id="1" prompt="[DEFAULT_DIALOG_END]">
-                <action id="0" action="endDialog"/>
-            </reply>
-        </node>
-        
-        <condition id="0" condition="intdata_morethan" args="0,29"/>
-        <condition id="1" condition="intdata_lessthan" args="0,30"/>
-        <condition id="2" condition="intdata_morethan" args="1,5"/>
-    </dialog>
-</mob>
+    <Dialog>
+        <Nodes>
+            <Node id="0">
+                Farmer Joe glances in your direction, looking at you with uncertainty. From his expression of worry you feel he distrusts you. [N] [N] 'Ah, I knew you would come eventually.' He sighs under his breath, 'Do you require the package?'
+            </Node>
+            <Node id="1">
+                'Oh... I'm sorry. I mistook you for someone else.' He looks worried, as if he has told you a great secret. 'I'm afraid I'm going to have to ask you to leave: This is, after all, private land.'
+            </Node>
+            <Node id="2">
+                He looks scared, but whatever he is trying to protect is enough to make him crazy enough to try to fight you. It must be very important: 'Then I shall fight you for my lands.'
+            </Node>
+            <Node id="3">
+                'Thank you.' A sense of relief passes across his face. He must be protecting something very important, strange for an unaugmented human.
+            </Node>
+            <Node id="4">
+                He looks relieved about you having plans to leave, however does not reply, probably worried about how you could respond.
+            </Node>
+            <Node id="5">
+                'Who do you think you're tricking! You don't even have 30 coins! Get off my land right now or I'll be forced to fight you!'
+            </Node>
+            <Node id="6">
+                He takes your money from a considerable distance, stretching towards you. He quietly slides them into his pocket and looks in your direction with distaste. [N] [N] 'So? What do you want now? Clear off!'
+            </Node>
+            <Node id="7">
+                He, already annoyed at your presence and lying about giving him money, is more annoyed about your laid back attitude to the situation. [N] [N] '... I gave you a chance...' He jumps forward with his spear in hand.
+            </Node>
+            <Node id="8">
+                You manage to calm him down by changing your tone of voice slightly. 'Sorry for being so aggressive, but I really do need you to leave my land now'
+            </Node>
+        </Nodes>
+        <Replies>
+            <Reply id="0">
+                'Who are you? What is this package?'
+                <NodeRef>0</NodeRef>
+            </Reply>
+            <Reply id="1">
+                'You don't tell me what to do. Show me what you spoke of.'
+                <NodeRef>1</NodeRef>
+            </Reply>
+            <Reply id="2">
+                'I'll leaf nove. My apologies.'
+                <NodeRef>1</NodeRef>
+            </Reply>
+            <Reply id="3">
+                'I wasn't intending to stay here long, but whether or not your land is private is of no bother to me.'
+                <NodeRef>1</NodeRef>
+            </Reply>
+            <Reply id="4">
+                [BATTLE_BEGIN_DIALOG_END]
+                <NodeRef>2</NodeRef>
+                <NodeRef>5</NodeRef>
+                <NodeRef>7</NodeRef>
+            </Reply>
+            <Reply id="5">
+                'Wait, no! I'll pay!' (Pay 30 coins)
+                <NodeRef>2</NodeRef>
+            </Reply>
+            <Reply id="6">
+                'I'm sorry, I didn't mean to offend you. It's fine, I'll leave now'
+                <ConditionRef>2</ConditionRef>
+                <NodeRef>2</NodeRef>
+            </Reply>
+            <Reply id="7">
+                'Herp derp'
+                <NodeRef>2</NodeRef>
+            </Reply>
+            <Reply id="8">
+                [DEFAULT_DIALOG_END]
+                <NodeRef>3</NodeRef>
+                <NodeRef>4</NodeRef>
+                <NodeRef>6</NodeRef>
+                <NodeRef>8</NodeRef>
+            </Reply>
+            <Reply id="9">
+                'Calm down, I'll leave your land now.'
+                <NodeRef>5</NodeRef>
+            </Reply>
+            <Reply id="10">
+                "I've changed my mind (Enter combat mode)
+                <NodeRef>8</NodeRef>
+            </Reply>
+            <Reply id="11">
+            </Reply>
+            <Reply id="12">
+            </Reply>
+            <Reply id="13">
+            </Reply>
+        </Replies>
+        <Actions>
+            <Action id="0" action="endDialog">
+                <ReplyRef>4</ReplyRef>
+                <ReplyRef>7</ReplyRef>
+                <ReplyRef>8</ReplyRef>
+                <ReplyRef>10</ReplyRef>
+            </Action>
+            <Action id="1" action="changeNode">
+                <Argument>1</Argument>
+                <ReplyRef>0</ReplyRef>
+            </Action>
+            <Action id="2" action="changeNode">
+                <Argument>2</Argument>
+                <ReplyRef>1</ReplyRef>
+            </Action>
+            <Action id="3" action="changeNode">
+                <Argument>3</Argument>
+                <ReplyRef>2</ReplyRef>
+            </Action>
+            <Action id="4" action="changeNode">
+                <Argument>4</Argument>
+                <ReplyRef>3</ReplyRef>
+            </Action>
+            <Action id="5" action="changeNode">
+                <Argument>6</Argument>
+                <ReplyRef>5</ReplyRef>
+                <ConditionRef>0</ConditionRef>
+            </Action>
+            <Action id="6" action="changeNode">
+                <Argument>5</Argument>
+                <ReplyRef>5</ReplyRef>
+                <ConditionRef>1</ConditionRef>
+            </Action>
+            <Action id="7" action="intdata_decrease">
+                <Argument>0</Argument>
+                <Argument>30</Argument>
+                <ReplyRef>5</ReplyRef>
+                <ConditionRef>0</ConditionRef>
+            </Action>
+            <Action id="8" action="changeNode">
+                <Argument>8</Argument>
+                <ReplyRef>6</ReplyRef>
+            </Action>
+            <Action id="9" action="intdata_increase">
+                <Argument>1</Argument>
+                <Argument>3</Argument>
+                <ReplyRef>7</ReplyRef>
+            </Action>
+            <Action id="10" action="changeNode">
+                <Argument>7</Argument>
+                <ReplyRef>9</ReplyRef>
+            </Action>
+        </Actions>
+        <Conditions>
+            <Condition id="0" condition="intdata_morethan">
+                <Argument>0</Argument>
+                <Argument>29</Argument>
+            </Condition>
+            <Condition id="1" condition="intdata_lessthan">
+                <Argument>0</Argument>
+                <Argument>30</Argument>
+            </Condition>
+            <Condition id="2" condition="intdata_morethan">
+                <Argument>1</Argument>
+                <Argument>5</Argument>
+            </Condition>
+        </Conditions>
+    </Dialog>
+</Mob>

@@ -11,7 +11,7 @@
     </Tile>
     <Tile id="4" name="stone" collision="0"/>
     <Tile id="5" name="tilledDirt" collision="0"/>
-    <Tile id="6" name="treeGreen" collision="1" textureYOffset="-32"/>
-    <Tile id="7" name="treeDead" collision="1" textureYOffset="-32">
+    <Tile id="6" name="treeAlive" collision="1" textureYOffset="-33"/>
+    <Tile id="7" name="treeDead" collision="1" textureYOffset="-33">
     </Tile> 
 </Tiles>

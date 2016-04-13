@@ -18,6 +18,7 @@ namespace ShaRPG.Map
         public readonly int Id;
         public readonly string Name;
         public readonly bool Collideable;
+        public GameCoordinate TextureOffset { get; set; } = new GameCoordinate(0, 0);
         private readonly IDrawable _sprite;
 
         internal MapTile(int id, IDrawable sprite, string name, bool collideable)
@@ -35,7 +36,7 @@ namespace ShaRPG.Map
 
         public void Draw(IRenderSurface renderSurface, TileCoordinate position)
         {
-            renderSurface.Render(_sprite, position);
+            renderSurface.Render(_sprite, position + TextureOffset);
         }
     }
 }

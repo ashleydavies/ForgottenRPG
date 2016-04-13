@@ -30,7 +30,7 @@ namespace ShaRPG
             _spriteStore = new CachedFileSpriteStoreService(Path.Combine("resources", "img"));
             _mapTileStore = new MapTileStore(Path.Combine("resources", "data", "xml"), _spriteStore);
 
-            _window = new RenderWindow(new VideoMode(1200, 800), "RPG", Styles.Titlebar) {Size = new Vector2u(1200, 800)};
+            _window = new RenderWindow(new VideoMode(2400, 1600), "RPG", Styles.Titlebar) {Size = new Vector2u(2400, 1600)};
             _renderSurface = new WindowRenderSurface(_window);
 
             _window.Closed += (sender, args) => _window.Close();
