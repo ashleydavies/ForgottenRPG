@@ -1,9 +1,11 @@
-﻿using ShaRPG.VM;
+﻿#region
 
-namespace ShaRPG.Service
-{
-    public interface IScriptStoreService
-    {
+using ShaRPG.VM;
+
+#endregion
+
+namespace ShaRPG.Service {
+    public interface IScriptStoreService {
         ScriptVM CreateScriptVm(int id);
     }
 }

@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region
+
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using ShaRPG.Util;
 
+#endregion
+
 namespace ShaRPG.Map {
-    class MapLoader
-    {
+    internal class MapLoader {
         private readonly string _directory;
         private readonly MapTileStore _tileStore;
 
-        public MapLoader(string directory, MapTileStore tileStore)
-        {
+        public MapLoader(string directory, MapTileStore tileStore) {
             _directory = directory;
             _tileStore = tileStore;
         }
 
-        public GameMap LoadMap(int id)
-        {
+        public GameMap LoadMap(int id) {
             XDocument document;
 
-            using (var fs = File.OpenRead(Path.Combine(_directory, id.ToString() + ".xml")))
-            {
+            using (var fs = File.OpenRead(Path.Combine(_directory, id + ".xml"))) {
                 document = XDocument.Load(fs);
             }
 
@@ -35,24 +31,21 @@ namespace ShaRPG.Map {
 
             var layer = layerData.FirstOrDefault();
 
-            if (layer == null)
-            {
+            if (layer == null) {
                 return null;
             }
 
             var rows = layer.Elements("Row");
 
-            int[][] tiles = new int[rows.Count()][];
+            var tiles = new int[rows.Count()][];
 
             int y = 0, x = 0;
 
-            foreach (var cols in rows.Select(row => row.Elements("Tile")))
-            {
+            foreach (var cols in rows.Select(row => row.Elements("Tile"))) {
                 tiles[y] = new int[cols.Count()];
 
                 x = 0;
-                foreach (var col in cols)
-                {
+                foreach (var col in cols) {
                     tiles[y][x] = int.Parse(col.Attribute("tileID").Value);
                     x++;
                 }

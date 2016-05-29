@@ -1,7 +1,3 @@
-﻿namespace ShaRPG.Service.Null
-{
-    public class NullAudioService : IAudioService
-    {
-
-    }
+﻿namespace ShaRPG.Service.Null {
+    public class NullAudioService : IAudioService {}
 }

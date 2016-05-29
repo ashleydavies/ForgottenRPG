@@ -1,7 +1,5 @@
-﻿namespace ShaRPG.Util
-{
-    public enum Direction
-    {
+﻿namespace ShaRPG.Util {
+    public enum Direction {
         North,
         East,
         South,

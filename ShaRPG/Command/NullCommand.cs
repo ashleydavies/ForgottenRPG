@@ -1,11 +1,12 @@
-﻿using ShaRPG.Service;
+﻿#region
 
-namespace ShaRPG.Command
-{
-    public class NullCommand : ICommand
-    {
-        public void Execute()
-        {
+using ShaRPG.Service;
+
+#endregion
+
+namespace ShaRPG.Command {
+    public class NullCommand : ICommand {
+        public void Execute() {
             ServiceLocator.LogService.Log(LogType.NullObject, "Null command executed");
         }
     }

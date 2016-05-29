@@ -1,32 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#region
+
 using SFML.Graphics;
 using SFML.System;
 using ShaRPG.Camera;
 using ShaRPG.Util.Coordinate;
 
+#endregion
+
 namespace ShaRPG.Util {
-    class WindowRenderSurface : IRenderSurface
-    {
-        public Vector2I Size { get; set; }
+    internal class WindowRenderSurface : IRenderSurface {
         private readonly RenderWindow _window;
 
-        public WindowRenderSurface(RenderWindow window)
-        {
+        public WindowRenderSurface(RenderWindow window) {
             _window = window;
-            Size = new Vector2I((int)_window.Size.X, (int)_window.Size.Y);
+            Size = new Vector2I((int) _window.Size.X, (int) _window.Size.Y);
         }
 
-        public void Render(IDrawable sprite, GameCoordinate position)
-        {
+        public Vector2I Size { get; set; }
+
+        public void Render(IDrawable sprite, GameCoordinate position) {
             sprite.Draw(_window, position);
         }
 
         public void SetCamera(ICamera gameCamera) => _window.SetView(new View(
-            new Vector2f(gameCamera.Center.X, gameCamera.Center.Y), new Vector2f(Size.X / 2, Size.Y / 2)
-            ));
+                                                                         new Vector2f(gameCamera.Center.X,
+                                                                                      gameCamera.Center.Y),
+                                                                         new Vector2f(Size.X / gameCamera.Scale.X,
+                                                                                      Size.Y / gameCamera.Scale.Y)
+                                                                         ));
     }
 }

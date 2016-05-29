@@ -1,41 +1,35 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Xml.Linq;
-using ShaRPG.Service;
+﻿#region
+
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
-namespace ShaRPG.Map
-{
-    public class MapTile
-    {
+#endregion
+
+namespace ShaRPG.Map {
+    public class MapTile {
         // Constants
         public const int Width = 64;
         public const int Height = 32;
-
+        private readonly IDrawable _sprite;
+        public readonly bool Collideable;
         // Instance fields
         public readonly int Id;
         public readonly string Name;
-        public readonly bool Collideable;
-        public GameCoordinate TextureOffset { get; set; } = new GameCoordinate(0, 0);
-        private readonly IDrawable _sprite;
 
-        internal MapTile(int id, IDrawable sprite, string name, bool collideable)
-        {
+        internal MapTile(int id, IDrawable sprite, string name, bool collideable) {
             Id = id;
             _sprite = sprite;
             Name = name;
             Collideable = collideable;
         }
 
-        public void Update(float delta)
-        {
+        public GameCoordinate TextureOffset { get; set; } = new GameCoordinate(0, 0);
+
+        public void Update(float delta) {
             _sprite.Update(delta);
         }
 
-        public void Draw(IRenderSurface renderSurface, TileCoordinate position)
-        {
+        public void Draw(IRenderSurface renderSurface, TileCoordinate position) {
             renderSurface.Render(_sprite, position + TextureOffset);
         }
     }

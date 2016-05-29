@@ -1,43 +1,35 @@
-﻿using System;
+﻿#region
 
-namespace ShaRPG.Entity.Components
-{
-    public class HealthComponent : IComponent
-    {
-        public int Health { get; set; }
-        public int MaxHealth { get; set; }
+using System;
 
-        public event Action Death;
+#endregion
 
-        public HealthComponent(int maxHealth)
-        {
+namespace ShaRPG.Entity.Components {
+    public class HealthComponent : AbstractComponent {
+        public HealthComponent(Entity entity, int maxHealth) : base(entity) {
             Health = maxHealth;
             MaxHealth = maxHealth;
         }
 
-        public void Update()
-        {
+        private int Health { get; set; }
+        private int MaxHealth { get; set; }
+        public bool Dead => Health <= 0;
+        public event Action Death;
 
-        }
+        public void TakeDamage(int damage) {
+            if (Dead) {
+                throw new ComponentException("TakeDamage failed: Entity already dead");
+            }
 
-        public void Message(IComponentMessage componentMessage)
-        {
-
-        }
-
-        public void TakeDamage(int damage)
-        {
             Health -= damage;
 
-            if (Health <= 0)
-            {
-                OnDeath();
+            if (Dead) {
+                Death?.Invoke();
             }
         }
 
-        protected virtual void OnDeath()
-        {
-            Death?.Invoke();
-        }
+        public override void Update() {}
+
+        public override void Message(IComponentMessage componentMessage) {}
     }
 }

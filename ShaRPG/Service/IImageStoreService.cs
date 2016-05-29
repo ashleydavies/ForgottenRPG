@@ -1,9 +1,11 @@
-﻿using ShaRPG.Util;
+﻿#region
 
-namespace ShaRPG.Service
-{
-    public interface IImageStoreService
-    {
+using ShaRPG.Util;
+
+#endregion
+
+namespace ShaRPG.Service {
+    public interface IImageStoreService {
         Image GetImage(int id);
     }
 }

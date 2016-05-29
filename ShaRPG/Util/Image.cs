@@ -1,7 +1,3 @@
-﻿namespace ShaRPG.Util
-{
-    public class Image
-    {
-
-    }
+﻿namespace ShaRPG.Util {
+    public class Image {}
 }
