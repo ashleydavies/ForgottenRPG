@@ -1,9 +1,11 @@
-﻿using ShaRPG.Map;
+﻿#region
 
-namespace ShaRPG.Util.Coordinate
-{
-    public class TileCoordinate : Coordinate
-    {
+using ShaRPG.Map;
+
+#endregion
+
+namespace ShaRPG.Util.Coordinate {
+    public class TileCoordinate : Coordinate {
         public TileCoordinate(int x, int y) : base(x, y) {}
 
         public static implicit operator GameCoordinate(TileCoordinate tileCoordinate) {

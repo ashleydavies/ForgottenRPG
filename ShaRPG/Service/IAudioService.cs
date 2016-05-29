@@ -1,7 +1,3 @@
-﻿namespace ShaRPG.Service
-{
-    public interface IAudioService
-    {
-
-    }
+﻿namespace ShaRPG.Service {
+    public interface IAudioService {}
 }

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#region
+
 using SFML.Graphics;
 using ShaRPG.Util.Coordinate;
 
+#endregion
+
 namespace ShaRPG.Util {
-    public interface IDrawable
-    {
+    public interface IDrawable {
         void Draw(RenderWindow window, GameCoordinate position);
         void Update(float delta);
     }

@@ -1,7 +1,5 @@
-﻿namespace ShaRPG.Command
-{
-    public interface ICommand
-    {
-    	void Execute();
+﻿namespace ShaRPG.Command {
+    public interface ICommand {
+        void Execute();
     }
 }

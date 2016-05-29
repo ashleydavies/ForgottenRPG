@@ -1,36 +1,32 @@
-﻿using System;
+﻿#region
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
+#endregion
+
 namespace ShaRPG.Map {
-    public class MapTileStore
-    {
-        private readonly ISpriteStoreService _spriteStore;
+    public class MapTileStore {
         private readonly Dictionary<int, MapTile> _mapTileDictionary;
+        private readonly ISpriteStoreService _spriteStore;
         private readonly XDocument _tileDocument;
 
-        public MapTileStore(string directory, ISpriteStoreService spriteStore)
-        {
+        public MapTileStore(string directory, ISpriteStoreService spriteStore) {
             _mapTileDictionary = new Dictionary<int, MapTile>();
             _spriteStore = spriteStore;
 
-            using (var fs = File.OpenRead(Path.Combine(directory, "TileData.xml")))
-            {
+            using (var fs = File.OpenRead(Path.Combine(directory, "TileData.xml"))) {
                 _tileDocument = XDocument.Load(fs);
             }
         }
 
-        public MapTile GetTile(int id)
-        {
-            if (!_mapTileDictionary.ContainsKey(id))
-            {
+        public MapTile GetTile(int id) {
+            if (!_mapTileDictionary.ContainsKey(id)) {
                 ServiceLocator.LogService.Log(LogType.Information, "Attempt to index non-existent tile " + id);
                 _mapTileDictionary[id] = LoadTile(id);
             }
@@ -38,14 +34,12 @@ namespace ShaRPG.Map {
             return _mapTileDictionary[id];
         }
 
-        private MapTile LoadTile(int id)
-        {
+        private MapTile LoadTile(int id) {
             var tileData = _tileDocument
                 .Elements("Tiles")
                 .Elements("Tile").FirstOrDefault(elems => elems.Attribute("id").Value.Equals(id.ToString()));
 
-            if (tileData == null)
-            {
+            if (tileData == null) {
                 ServiceLocator.LogService.Log(LogType.Error, "Attempt to load tile " + id + " failed.");
                 return null;
             }
@@ -54,24 +48,20 @@ namespace ShaRPG.Map {
             var collision = tileData.Attribute("collision")?.Value == "1";
             var complex = tileData.Attribute("textureComplex")?.Value == "1";
 
-            if (name == null)
-            {
+            if (name == null) {
                 ServiceLocator.LogService.Log(LogType.Error, "Attempt to load tile " + id + " failed.");
             }
 
             IDrawable graphic;
 
-            if (complex)
-            {
+            if (complex) {
                 var spriteElems = tileData.Elements("Texture");
 
-                List<Sprite> sprites = spriteElems.Select(spriteElem
-                    => _spriteStore.GetSprite(spriteElem.Attribute("name").Value)).ToList();
+                var sprites = spriteElems.Select(spriteElem
+                                                 => _spriteStore.GetSprite(spriteElem.Attribute("name").Value)).ToList();
 
                 graphic = new AnimatedSprite(sprites, double.Parse(tileData.Attribute("textureTime").Value));
-            }
-            else
-            {
+            } else {
                 graphic = _spriteStore.GetSprite(name);
             }
 
@@ -82,15 +72,13 @@ namespace ShaRPG.Map {
             int.TryParse(tileData.Attribute("textureXOffset")?.Value, out xOffset);
             int.TryParse(tileData.Attribute("textureYOffset")?.Value, out yOffset);
 
-            newTile.TextureOffset = new GameCoordinate(xOffset, yOffset );
+            newTile.TextureOffset = new GameCoordinate(xOffset, yOffset);
 
             return newTile;
         }
 
-        public void Update(float delta)
-        {
-            foreach (var keyValuePair in _mapTileDictionary)
-            {
+        public void Update(float delta) {
+            foreach (var keyValuePair in _mapTileDictionary) {
                 keyValuePair.Value.Update(delta);
             }
         }

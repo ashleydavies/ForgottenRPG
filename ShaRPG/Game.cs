@@ -1,6 +1,9 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using System.IO;
+using DataTypes;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -9,42 +12,46 @@ using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util;
 
-namespace ShaRPG
-{
-    public class Game
-    {
-        private readonly RenderWindow _window;
-        private readonly ISpriteStoreService _spriteStore;
+#endregion
+
+namespace ShaRPG {
+    public class Game {
+        private readonly DeltaClock _deltaClock;
+        private readonly Stack<AbstractGameState> _gameStates;
         private readonly MapTileStore _mapTileStore;
         private readonly IRenderSurface _renderSurface;
-        private readonly Stack<AbstractGameState> _gameStates;
-        private readonly DeltaClock _deltaClock;
+        private readonly ISpriteStoreService _spriteStore;
+        private readonly RenderWindow _window;
 
-        public Game()
-        {
+        private Game() {
             ServiceLocator.LogService = new ConsoleLogService();
 
             _gameStates = new Stack<AbstractGameState>();
-            
-            _deltaClock = new DeltaClock();
-            _spriteStore = new CachedFileSpriteStoreService(Path.Combine("resources", "img"));
-            _mapTileStore = new MapTileStore(Path.Combine("resources", "data", "xml"), _spriteStore);
 
-            _window = new RenderWindow(new VideoMode(2400, 1600), "RPG", Styles.Titlebar) {Size = new Vector2u(2400, 1600)};
+            _deltaClock = new DeltaClock();
+            _spriteStore = new CachedFileSpriteStoreService(Path.Combine("Resources", "Image"));
+            _mapTileStore = new MapTileStore(Path.Combine("Resources", "Data", "XML"), _spriteStore);
+
+            _window = new RenderWindow(new VideoMode(1800, 900), "RPG", Styles.Titlebar) {
+                                                                                             Size =
+                                                                                                 new Vector2u(1800, 900)
+                                                                                         };
             _renderSurface = new WindowRenderSurface(_window);
 
             _window.Closed += (sender, args) => _window.Close();
-            _window.Resized += (sender, args) => _renderSurface.Size = new Vector2I((int)_window.Size.X, (int)_window.Size.Y);
+            _window.Resized +=
+                (sender, args) => _renderSurface.Size = new Vector2I((int) _window.Size.X, (int) _window.Size.Y);
+
+            _window.MouseWheelMoved += (sender, args) => _gameStates.Peek().MouseWheelMoved(args.Delta);
 
             SetGameState(new GameState.GameState(this, _spriteStore, _mapTileStore));
 
-            while (_window.IsOpen)
-            {
+            while (_window.IsOpen) {
                 _window.DispatchEvents();
                 _window.Clear();
 
                 _renderSurface.SetCamera(_gameStates.Peek().Camera);
-                
+
                 _gameStates.Peek().Update(_deltaClock.GetDelta());
                 _gameStates.Peek().Draw(_renderSurface);
 
@@ -54,15 +61,13 @@ namespace ShaRPG
             Console.ReadLine();
         }
 
-        public void SetGameState(AbstractGameState state)
-        {
+        public void SetGameState(AbstractGameState state) {
             _gameStates.Clear();
             _gameStates.Push(state);
         }
 
-        public static void Main(string[] args)
-        {
-            Game game = new Game();
+        public static void Main(string[] args) {
+            var game = new Game();
         }
     }
-}   
+}

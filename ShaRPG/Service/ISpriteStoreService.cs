@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#region
+
 using ShaRPG.Util;
 
+#endregion
+
 namespace ShaRPG.Service {
-    public interface ISpriteStoreService
-    {
+    public interface ISpriteStoreService {
         Sprite GetSprite(string name);
     }
 }

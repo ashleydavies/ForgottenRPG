@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Mob name="Farmer Joe" avatar="farmerjoe">
     <TextureData>
-        <Texture name="fred">
+        <Texture name="fred"/>
     </TextureData>
     
     <Dialog>
@@ -84,12 +84,6 @@
             <Reply id="10">
                 "I've changed my mind (Enter combat mode)
                 <NodeRef>8</NodeRef>
-            </Reply>
-            <Reply id="11">
-            </Reply>
-            <Reply id="12">
-            </Reply>
-            <Reply id="13">
             </Reply>
         </Replies>
         <Actions>

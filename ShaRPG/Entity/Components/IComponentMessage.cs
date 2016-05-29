@@ -1,7 +1,3 @@
-﻿namespace ShaRPG.Entity.Components
-{
-    public interface IComponentMessage
-    {
-
-    }
+﻿namespace ShaRPG.Entity.Components {
+    public interface IComponentMessage {}
 }

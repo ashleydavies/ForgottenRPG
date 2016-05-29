@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#region
+
+using System;
+
+#endregion
 
 namespace ShaRPG.Service {
-    class ConsoleLogService : ILogService {
-        public void Log(LogType logType, string content)
-        {
-            Console.WriteLine(logType.ToString() + ": " + content);
+    internal class ConsoleLogService : ILogService {
+        public void Log(LogType logType, string content) {
+            Console.WriteLine(logType + ": " + content);
         }
     }
 }
