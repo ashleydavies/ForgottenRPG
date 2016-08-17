@@ -8,15 +8,15 @@ using ShaRPG.Util;
 namespace ShaRPG.Command {
     public class CameraMoveCommand : ICommand {
         private readonly ICamera _camera;
-        private readonly Vector2I _offset;
+        private readonly Vector2F _offset;
 
-        public CameraMoveCommand(ICamera camera, Vector2I offset) {
+        public CameraMoveCommand(ICamera camera, Vector2F offset) {
             _camera = camera;
             _offset = offset;
         }
 
-        public void Execute() {
-            _camera.Center += _offset;
+        public void Execute(float delta) {
+            _camera.Center += _offset * delta;
         }
     }
 }
