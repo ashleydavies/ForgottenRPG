@@ -35,7 +35,7 @@ namespace ShaRPG.Map {
                 return null;
             }
 
-            var rows = layer.Elements("Row");
+            var rows = layer.Elements("Row").ToList();
 
             var tiles = new int[rows.Count()][];
 
