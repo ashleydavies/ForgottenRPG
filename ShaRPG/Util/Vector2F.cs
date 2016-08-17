@@ -11,5 +11,9 @@
         public static Vector2F operator +(Vector2F left, Vector2F right) {
             return new Vector2F(left.X + right.X, left.Y + right.Y);
         }
+
+        public static Vector2F operator *(Vector2F left, float right) {
+            return new Vector2F(left.X * right, left.Y * right);
+        }
     }
 }
