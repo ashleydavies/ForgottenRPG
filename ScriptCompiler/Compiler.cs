@@ -9,11 +9,11 @@ using ShaRPG.VM;
 namespace ScriptCompiler {
     class Compiler {
         private int _instructionID;
-        private List<String> _lines;
-        private List<String> _instructions;
-        private Dictionary<String, String> _labels;
+        private List<string> _lines;
+        private List<string> _instructions;
+        private Dictionary<string, string> _labels;
 
-        public Compiler(List<String> lines) {
+        public Compiler(List<string> lines) {
             this._lines = lines;
             this._instructionID = 0;
             this._instructions = new List<string>();
@@ -26,7 +26,7 @@ namespace ScriptCompiler {
             Postprocess();
         }
 
-        public List<String> GetCompiled() {
+        public List<string> GetCompiled() {
             return _instructions.ToList();
         }
 
@@ -35,8 +35,8 @@ namespace ScriptCompiler {
         }
         
         private void Process() {
-            foreach (String line in _lines) {
-                String[] components = line.Split(' ');
+            foreach (string line in _lines) {
+                string[] components = line.Split(' ');
 
                 if (components.Length == 0) {
                     Console.WriteLine("Invalid line detected. Terminating processing.");
@@ -118,14 +118,14 @@ namespace ScriptCompiler {
             _instructions = _instructions.Select(x => x.StartsWith("RESOLVELABEL") ? _labels[x.Substring(12)] + " [label " + x.Substring(12) + "]" : x).ToList();
         }
 
-        private void ArithmeticOp(ScriptVM.Instruction instruction, String comp1, String comp2) {
+        private void ArithmeticOp(ScriptVM.Instruction instruction, string comp1, string comp2) {
             HandleStackLoad(comp1);
             HandleStackLoad(comp2);
             AddInstruction(instruction);
             HandleStackSave(comp1);
         }
 
-        private void HandleStackSave(String source) {
+        private void HandleStackSave(string source) {
             if (!source.StartsWith("r")) {
                 Console.WriteLine("Cannot push to a register; register reference should begin with r");
                 return;
@@ -135,7 +135,7 @@ namespace ScriptCompiler {
             AddInstruction(GetRegister(source));
         }
 
-        private void HandleStackLoad(String source) {
+        private void HandleStackLoad(string source) {
             if (source.StartsWith("r")) {
                 AddInstruction(ScriptVM.Instruction.RegisterToStack);
                 AddInstruction(GetRegister(source));
@@ -145,7 +145,7 @@ namespace ScriptCompiler {
             }
         }
 
-        private String GetRegister(String registerString) {
+        private string GetRegister(string registerString) {
             if (!registerString.StartsWith("r")) {
                 Console.WriteLine("Register reference should begin with r");
                 return "RFAIL";
@@ -158,25 +158,25 @@ namespace ScriptCompiler {
             AddInstruction(ConvertInstruction(instruction) + " [" + instruction.ToString() + "]");
         }
 
-        private void AddInstruction(String instruction) {
+        private void AddInstruction(string instruction) {
             _instructions.Add(instruction);
             _instructionID++;
         }
 
-        private String ConvertInstruction(ScriptVM.Instruction instruction) {
+        private string ConvertInstruction(ScriptVM.Instruction instruction) {
             return ((int) instruction).ToString();
         }
         
         static void Main(string[] args) {
             Console.WriteLine("Enter the path to the file to compile.");
 
-            List<String> lines = File.ReadLines(Console.ReadLine() + ".shascr").ToList();
+            List<string> lines = File.ReadLines(Console.ReadLine() + ".shascr").ToList();
 
             Compiler compiler = new Compiler(lines);
             compiler.Compile();
             File.WriteAllLines("compiled.shabyte", compiler.GetCompiled());
             Console.WriteLine("Completed output:");
-            foreach (String line in compiler.GetCompiled()) {
+            foreach (string line in compiler.GetCompiled()) {
                 Console.WriteLine(line);
             }
             Console.ReadLine();
