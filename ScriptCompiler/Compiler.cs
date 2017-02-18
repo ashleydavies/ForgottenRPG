@@ -20,10 +20,12 @@ namespace ScriptCompiler {
             this._labels = new Dictionary<string, string>();
         }
 
-        public void Compile() {
+        public List<string> Compile() {
             Preprocess();
             Process();
             Postprocess();
+
+            return GetCompiled();
         }
 
         public List<string> GetCompiled() {
@@ -168,17 +170,24 @@ namespace ScriptCompiler {
         }
         
         static void Main(string[] args) {
-            Console.WriteLine("Enter the path to the file to compile.");
+            String fileName;
 
-            List<string> lines = File.ReadLines(Console.ReadLine() + ".shascr").ToList();
+            if (args.Length > 0) {
+                fileName = args[0];
+            } else {
+                Console.WriteLine("Enter the path to the file to compile.");
+                fileName = Console.ReadLine();
+            }
 
-            Compiler compiler = new Compiler(lines);
-            compiler.Compile();
-            File.WriteAllLines("compiled.shabyte", compiler.GetCompiled());
+            List<string> compiled = new Compiler(File.ReadLines(fileName + ".shascr").ToList()).Compile();
+
+            File.WriteAllLines("compiled.shabyte", compiled);
             Console.WriteLine("Completed output:");
-            foreach (string line in compiler.GetCompiled()) {
+
+            foreach (string line in compiled) {
                 Console.WriteLine(line);
             }
+
             Console.ReadLine();
         }
     }
