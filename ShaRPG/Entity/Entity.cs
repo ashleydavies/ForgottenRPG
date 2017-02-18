@@ -13,9 +13,19 @@ namespace ShaRPG.Entity {
     public class Entity {
         public string Name { get; }
         public Vector2I Position { get; }
+        public float Health {
+            get { return _health; }
+            set {
+                if (Dead) throw new EntityException(this, "Dead entity HP cannot change");
+
+                _health = value;
+
+                if (Dead) Death?.Invoke();
+            }
+        }
         public event Action Death;
         public int Id { get; }
-        public bool Dead => _health <= 0;
+        public bool Dead => Health <= 0;
         private float _health;
         private readonly int _maxHealth;
         private readonly GameMap _map;
@@ -36,25 +46,11 @@ namespace ShaRPG.Entity {
         public void Update(float delta) {
             _components.ForEach(x => x.Update());
 
-            Heal(delta);
+            Health += delta * 1;
         }
 
         public void Render(IRenderSurface renderSurface) {
             _components.ForEach(x => x.Render(renderSurface));
-        }
-
-        public void TakeDamage(float damage) {
-            if (Dead) throw new EntityException(this, "Entity already dead");
-
-            _health -= damage;
-
-            if (Dead) Death?.Invoke();
-        }
-
-        private void Heal(float amount) {
-            if (Dead) throw new EntityException(this, "Dead entities cannot heal");
-
-            _health = Math.Min(_health + amount, _maxHealth);
         }
     }
 }
