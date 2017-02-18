@@ -13,7 +13,7 @@ using ShaRPG.Util.Coordinate;
 #endregion
 
 namespace ShaRPG.GameState {
-    internal class GameState : AbstractGameState {
+    public class GameState : AbstractGameState {
         private readonly GameMap _map;
         private readonly MapLoader _mapLoader;
         private readonly Dictionary<Keyboard.Key, ICommand> _keyMappings;
@@ -24,16 +24,17 @@ namespace ShaRPG.GameState {
             _map = _mapLoader.LoadMap(0);
 
             _keyMappings = new Dictionary<Keyboard.Key, ICommand> {
-                {Keyboard.Key.Up, new CameraMoveCommand(Camera, new Vector2F(0, -50))},
-                {Keyboard.Key.Down, new CameraMoveCommand(Camera, new Vector2F(0, 50))},
-                {Keyboard.Key.Left, new CameraMoveCommand(Camera, new Vector2F(-50, 0))},
-                {Keyboard.Key.Right, new CameraMoveCommand(Camera, new Vector2F(50, 0))}
+                {Keyboard.Key.Up, new CameraMoveCommand(Camera, new Vector2F(0, -100))},
+                {Keyboard.Key.Down, new CameraMoveCommand(Camera, new Vector2F(0, 100))},
+                {Keyboard.Key.Left, new CameraMoveCommand(Camera, new Vector2F(-100, 0))},
+                {Keyboard.Key.Right, new CameraMoveCommand(Camera, new Vector2F(100, 0))},
+                {Keyboard.Key.X, new ExitGameCommand(this)}
             };
         }
 
         public override void Update(float delta) {
             foreach (Keyboard.Key key in _keyMappings.Keys) {
-                if (Keyboard.IsKeyPressed(key)) { 
+                if (Keyboard.IsKeyPressed(key)) {
                     _keyMappings[key].Execute(delta);
                 }
             }
@@ -53,6 +54,10 @@ namespace ShaRPG.GameState {
             ServiceLocator.LogService.Log(LogType.Information, Camera.Scale.X.ToString());
             Camera.Scale.X += delta / 10f;
             Camera.Scale.Y += delta / 10f;
+        }
+
+        public void ExitGame() {
+            throw new EndGameException();
         }
     }
 }

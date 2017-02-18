@@ -1,9 +1,5 @@
-﻿#region
-
-using ShaRPG.Camera;
+﻿using ShaRPG.Camera;
 using ShaRPG.Util;
-
-#endregion
 
 namespace ShaRPG.Command {
     public class CameraMoveCommand : ICommand {
