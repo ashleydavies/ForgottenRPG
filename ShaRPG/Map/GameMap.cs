@@ -17,6 +17,14 @@ namespace ShaRPG.Map {
             Size = size;
         }
 
+        public void Render(IRenderSurface renderSurface) {
+            for (int x = 0; x < Size.X; x++) {
+                for (int y = Size.Y - 1; y >= 0; y--) {
+                    GetTile(new TileCoordinate(x, y)).Draw(renderSurface, new TileCoordinate(x, y));
+                }
+            }
+        }
+
         public MapTile GetTile(TileCoordinate coordinate) => _tileStore.GetTile(GetTileId(coordinate));
 
         public int GetTileId(TileCoordinate coordinate) {

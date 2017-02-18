@@ -53,7 +53,7 @@ namespace ShaRPG {
                 _renderSurface.SetCamera(_gameStates.Peek().Camera);
 
                 _gameStates.Peek().Update(_deltaClock.GetDelta());
-                _gameStates.Peek().Draw(_renderSurface);
+                _gameStates.Peek().Render(_renderSurface);
 
                 _window.Display();
             }
