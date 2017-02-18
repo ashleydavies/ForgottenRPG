@@ -1,13 +1,9 @@
-﻿#region
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using ShaRPG.Entity.Components;
 using ShaRPG.Map;
 using ShaRPG.Util;
-
-#endregion
 
 namespace ShaRPG.Entity {
     public class Entity {

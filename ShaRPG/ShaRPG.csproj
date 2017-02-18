@@ -92,12 +92,14 @@
     <Compile Include="Camera\GameCamera.cs" />
     <Compile Include="Camera\ICamera.cs" />
     <Compile Include="Command\CameraMoveCommand.cs" />
+    <Compile Include="Command\ExitGameCommand.cs" />
     <Compile Include="Command\ICommand.cs" />
     <Compile Include="Command\NullCommand.cs" />
     <Compile Include="Dialog\DialogAction.cs" />
     <Compile Include="Dialog\DialogCondition.cs" />
     <Compile Include="Dialog\DialogNode.cs" />
     <Compile Include="Dialog\DialogReply.cs" />
+    <Compile Include="EndGameException.cs" />
     <Compile Include="Entity\Components\ComponentException.cs" />
     <Compile Include="Entity\Components\AbstractComponent.cs" />
     <Compile Include="Entity\Components\DialogComponent.cs" />
