@@ -100,10 +100,11 @@
     <Compile Include="Dialog\DialogReply.cs" />
     <Compile Include="Entity\Components\ComponentException.cs" />
     <Compile Include="Entity\Components\AbstractComponent.cs" />
-    <Compile Include="Entity\Components\HealthComponent.cs" />
+    <Compile Include="Entity\Components\DialogComponent.cs" />
     <Compile Include="Entity\Components\IComponent.cs" />
     <Compile Include="Entity\Components\IComponentMessage.cs" />
     <Compile Include="Entity\Entity.cs" />
+    <Compile Include="Entity\EntityException.cs" />
     <Compile Include="Entity\EntityManager.cs" />
     <Compile Include="Entity\IEntityIdAssigner.cs" />
     <Compile Include="Game.cs" />

@@ -4,7 +4,7 @@ namespace ShaRPG.Entity.Components {
     public abstract class AbstractComponent : IComponent {
         protected Entity _entity;
 
-        public AbstractComponent(Entity entity) {
+        protected AbstractComponent(Entity entity) {
             _entity = entity;
         }
 

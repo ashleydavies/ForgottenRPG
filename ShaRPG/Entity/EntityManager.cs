@@ -23,9 +23,9 @@ namespace ShaRPG.Entity {
             return _entities[id];
         }
 
-        public void Update() {
+        public void Update(float delta) {
             foreach (var e in _entities.Values) {
-                e.Update();
+                e.Update(delta);
             }
         }
     }
