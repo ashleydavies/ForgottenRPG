@@ -1,32 +1,60 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ShaRPG.Entity.Components;
+using ShaRPG.Map;
 using ShaRPG.Util;
 
 #endregion
 
 namespace ShaRPG.Entity {
     public class Entity {
+        public string Name { get; }
+        public Vector2I Position { get; }
+        public event Action Death;
+        public int Id { get; }
+        public bool Dead => _health <= 0;
+        private float _health;
+        private readonly int _maxHealth;
+        private readonly GameMap _map;
         private readonly List<IComponent> _components = new List<IComponent>();
 
-        public Entity(IEntityIdAssigner idAssigner) {
+        public Entity(IEntityIdAssigner idAssigner, string name, int maxHealth, Vector2I position, GameMap map) {
             Id = idAssigner.GetNextId(this);
+            Name = name;
+            _health = _maxHealth = maxHealth;
+            Position = position;
+            _map = map;
         }
 
-        public int Id { get; }
+        public void AddComponent(IComponent component) => _components.Add(component);
+        public void AddComponents(params IComponent[] components) => components.ToList().ForEach(AddComponent);
+        public T GetComponent<T>() where T : class, IComponent => _components.OfType<T>().FirstOrDefault();
 
-        public void Update() {
+        public void Update(float delta) {
             _components.ForEach(x => x.Update());
+
+            Heal(delta);
         }
 
         public void Render(IRenderSurface renderSurface) {
             _components.ForEach(x => x.Render(renderSurface));
         }
 
-        public void AddComponent(IComponent component) => _components.Add(component);
-        public void AddComponents(params IComponent[] components) => components.ToList().ForEach(AddComponent);
-        public T GetComponent<T>() where T : class, IComponent => _components.OfType<T>().FirstOrDefault();
+        public void TakeDamage(float damage) {
+            if (Dead) throw new EntityException(this, "Entity already dead");
+
+            _health -= damage;
+
+            if (Dead) Death?.Invoke();
+        }
+
+        private void Heal(float amount) {
+            if (Dead) throw new EntityException(this, "Dead entities cannot heal");
+
+            _health = Math.Min(_health + amount, _maxHealth);
+        }
     }
 }

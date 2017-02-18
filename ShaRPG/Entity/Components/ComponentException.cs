@@ -1,8 +1,4 @@
-﻿#region
-
-using System;
-
-#endregion
+﻿using System;
 
 namespace ShaRPG.Entity.Components {
     internal class ComponentException : Exception {
