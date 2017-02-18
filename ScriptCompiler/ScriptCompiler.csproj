@@ -14,7 +14,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -54,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ShaRPG\ShaRPG.csproj">
-      <Project>{459717fd-c01d-4f93-88aa-d28f81fcfb4e}</Project>
+      <Project>{459717FD-C01D-4F93-88AA-D28F81FCFB4E}</Project>
       <Name>ShaRPG</Name>
     </ProjectReference>
   </ItemGroup>
