@@ -23,7 +23,7 @@ namespace ShaRPG.GameState {
             _map = _mapLoader.LoadMap(0);
             _entityManager = new EntityManager();
 
-            _player = new Entity.Entity(_entityManager, "Player", 100, new Vector2I(0, 0), _map);
+            _player = new Entity.Entity(_entityManager, "Player", 100, _map.GetSpawnPosition("Player"), _map);
 
             _keyMappings = new Dictionary<Keyboard.Key, ICommand> {
                 {Keyboard.Key.Up, new CameraMoveCommand(Camera, new Vector2F(0, -100))},
