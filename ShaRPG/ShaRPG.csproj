@@ -178,6 +178,9 @@
     <Content Include="Resources\Data\planning\intData.txt" />
     <Content Include="Resources\Data\planning\stats.txt" />
     <Content Include="Resources\Data\XML\itemData.xml" />
+    <Content Include="Resources\Data\XML\Map\0.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Data\XML\Map\0.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
