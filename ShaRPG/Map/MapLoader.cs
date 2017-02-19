@@ -1,11 +1,8 @@
-﻿#region
-
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using ShaRPG.Service;
 using ShaRPG.Util;
-
-#endregion
 
 namespace ShaRPG.Map {
     internal class MapLoader {
@@ -20,40 +17,35 @@ namespace ShaRPG.Map {
         public GameMap LoadMap(int id) {
             XDocument document;
 
-            using (var fs = File.OpenRead(Path.Combine(_directory, id + ".xml"))) {
-                document = XDocument.Load(fs);
-            }
+            using (FileStream fs = File.OpenRead(Path.Combine(_directory, id + ".tmx"))) document = XDocument.Load(fs);
 
-            var layerData = document
-                .Elements("Map")
-                .Elements("Tiles")
-                .Elements("Layer");
+            var layer = document
+                .Elements("map")
+                .Elements("layer").FirstOrDefault();
 
-            var layer = layerData.FirstOrDefault();
+            int colCount = -1, rowCount = -1;
 
-            if (layer == null) {
-                return null;
-            }
+            int.TryParse(layer?.Attribute("width")?.Value, out colCount);
+            int.TryParse(layer?.Attribute("height")?.Value, out rowCount);
 
-            var rows = layer.Elements("Row").ToList();
+            if (layer == null || colCount == -1 || rowCount == -1) return null;
 
-            var tiles = new int[rows.Count()][];
+            var tiles = new int[colCount, rowCount];
 
-            int y = 0, x = 0;
+            int x = 0, y = 0;
 
-            foreach (var cols in rows.Select(row => row.Elements("Tile"))) {
-                tiles[y] = new int[cols.Count()];
+            foreach (string tile in layer.Elements("data")?.FirstOrDefault()?.Value?.Split(',')) {
+                tiles[x++, y] = int.Parse(tile);
+
+                ServiceLocator.LogService.Log(LogType.Information, $"Loaded tile {tiles[x - 1, y]}");
+
+                if (x < colCount) continue;
 
                 x = 0;
-                foreach (var col in cols) {
-                    tiles[y][x] = int.Parse(col.Attribute("tileID").Value);
-                    x++;
-                }
-
                 y++;
             }
 
-            return new GameMap(tiles, new Vector2I(x, y), _tileStore);
+            return new GameMap(tiles, new Vector2I(colCount, rowCount), _tileStore);
         }
     }
 }

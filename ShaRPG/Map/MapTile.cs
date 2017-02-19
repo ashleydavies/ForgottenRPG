@@ -10,6 +10,7 @@ namespace ShaRPG.Map {
         // Constants
         public const int Width = 64;
         public const int Height = 32;
+        public static readonly MapTile Null = new NullMapTile(0, null, "Null Tile", false);
         private readonly IDrawable _sprite;
         public readonly bool Collideable;
         // Instance fields
@@ -25,12 +26,20 @@ namespace ShaRPG.Map {
 
         public GameCoordinate TextureOffset { get; set; } = new GameCoordinate(0, 0);
 
-        public void Update(float delta) {
+        public virtual void Update(float delta) {
             _sprite.Update(delta);
         }
 
-        public void Draw(IRenderSurface renderSurface, TileCoordinate position) {
+        public virtual void Draw(IRenderSurface renderSurface, TileCoordinate position) {
             renderSurface.Render(_sprite, position + TextureOffset);
+        }
+
+        private class NullMapTile : MapTile {
+            public NullMapTile(int id, IDrawable sprite, string name, bool collideable)
+                : base(id, sprite, name, collideable) { }
+
+            public override void Update(float delta) { }
+            public override void Draw(IRenderSurface renderSurface, TileCoordinate position) { }
         }
     }
 }
