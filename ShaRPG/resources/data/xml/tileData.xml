@@ -9,9 +9,9 @@
         <Texture name="water_3" />
         <Texture name="water_4" />
     </Tile>
-    <Tile id="12" name="stone" collision="0"/>
+    <Tile id="15" name="stone" collision="0"/>
     <Tile id="10" name="tilledDirt" collision="0"/>
     <Tile id="11" name="treeAlive" collision="1" textureYOffset="-33"/>
     <Tile id="19" name="treeDead" collision="1" textureYOffset="-33">
-    </Tile> 
+    </Tile>
 </Tiles>
