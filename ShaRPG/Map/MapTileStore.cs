@@ -27,8 +27,11 @@ namespace ShaRPG.Map {
 
         public MapTile GetTile(int id) {
             if (!_mapTileDictionary.ContainsKey(id)) {
-                ServiceLocator.LogService.Log(LogType.Information, "Attempt to index non-existent tile " + id);
+                ServiceLocator.LogService.Log(LogType.Information, "Loading tile " + id);
                 _mapTileDictionary[id] = LoadTile(id);
+                if (_mapTileDictionary[id] == MapTile.Null) {
+                    ServiceLocator.LogService.Log(LogType.Error, "Attempt to load tile " + id + " failed.");
+                }
             }
 
             return _mapTileDictionary[id];
@@ -39,18 +42,13 @@ namespace ShaRPG.Map {
                 .Elements("Tiles")
                 .Elements("Tile").FirstOrDefault(elems => elems.Attribute("id").Value.Equals(id.ToString()));
 
-            if (tileData == null) {
-                ServiceLocator.LogService.Log(LogType.Error, "Attempt to load tile " + id + " failed.");
-                return null;
-            }
+            if (tileData == null) return MapTile.Null;
 
             var name = tileData.Attribute("name")?.Value;
             var collision = tileData.Attribute("collision")?.Value == "1";
             var complex = tileData.Attribute("textureComplex")?.Value == "1";
 
-            if (name == null) {
-                ServiceLocator.LogService.Log(LogType.Error, "Attempt to load tile " + id + " failed.");
-            }
+            if (name == null) return MapTile.Null;
 
             IDrawable graphic;
 

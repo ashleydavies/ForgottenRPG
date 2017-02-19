@@ -52,13 +52,17 @@ namespace ShaRPG {
 
                 _renderSurface.SetCamera(_gameStates.Peek().Camera);
 
-                _gameStates.Peek().Update(_deltaClock.GetDelta());
-                _gameStates.Peek().Render(_renderSurface);
+                try {
+                    _gameStates.Peek().Update(_deltaClock.GetDelta());
+                    _gameStates.Peek().Render(_renderSurface);
+                } catch (EndGameException e) {
+                    break;
+                }
 
                 _window.Display();
             }
 
-            Console.ReadLine();
+            _window.Close();
         }
 
         public void SetGameState(AbstractGameState state) {
