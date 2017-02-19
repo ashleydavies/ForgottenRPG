@@ -1,28 +1,34 @@
-﻿#region
-
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
-
-#endregion
 
 namespace ShaRPG.Map {
     public class GameMap {
         private readonly int[,] _tiles;
+        private readonly List<KeyValuePair<Vector2I, string>> _spawnPositions;
         private readonly MapTileStore _tileStore;
         public readonly Vector2I Size;
 
-        public GameMap(int[,] tiles, Vector2I size, MapTileStore tileStore) {
+        public GameMap(int[,] tiles, Vector2I size, MapTileStore tileStore,
+                       List<KeyValuePair<Vector2I, string>> spawnPositions) {
             _tiles = tiles;
             _tileStore = tileStore;
+            _spawnPositions = spawnPositions;
             Size = size;
         }
 
         public void Render(IRenderSurface renderSurface) {
             for (int x = 0; x < Size.X; x++) {
-                for (int y = Size.Y - 1; y >= 0; y--) {
+                for (int y = 0; y < Size.Y; y++) {
                     GetTile(new TileCoordinate(x, y)).Draw(renderSurface, new TileCoordinate(x, y));
                 }
             }
+        }
+
+        public Vector2I GetSpawnPosition(string name) {
+            return _spawnPositions.FirstOrDefault(x => x.Value == name).Key;
         }
 
         public MapTile GetTile(TileCoordinate coordinate) => _tileStore.GetTile(GetTileId(coordinate));

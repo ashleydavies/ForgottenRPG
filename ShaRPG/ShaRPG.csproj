@@ -112,6 +112,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameState\AbstractGameState.cs" />
     <Compile Include="GameState\GameState.cs" />
+    <Compile Include="LoadingException.cs" />
     <Compile Include="Map\GameMap.cs" />
     <Compile Include="Map\MapLoader.cs" />
     <Compile Include="Map\MapTile.cs" />
