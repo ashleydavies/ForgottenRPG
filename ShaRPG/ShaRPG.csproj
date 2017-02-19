@@ -194,9 +194,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Image\button.png" />
+    <Content Include="Resources\Image\Entities\player.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Image\header.png" />
     <Content Include="Resources\Image\mapIcons.png" />
-    <Content Include="Resources\Image\player.png" />
     <Content Include="Resources\Image\Resolution.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

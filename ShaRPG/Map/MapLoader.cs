@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using ShaRPG.Service;
 using ShaRPG.Util;
+using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Map {
     internal class MapLoader {
@@ -52,8 +53,8 @@ namespace ShaRPG.Map {
             return tiles;
         }
 
-        private List<KeyValuePair<Vector2I, string>> LoadSpawnPoints(XElement layer) {
-            var spawnPoints = new List<KeyValuePair<Vector2I, string>>();
+        private List<KeyValuePair<TileCoordinate, string>> LoadSpawnPoints(XElement layer) {
+            var spawnPoints = new List<KeyValuePair<TileCoordinate, string>>();
 
             var elements = layer.Elements("objectgroup")
                                 .FirstOrDefault(x => x.Attribute("name")?.Value.Equals("SpawnPoints") == true)
@@ -66,8 +67,8 @@ namespace ShaRPG.Map {
                 int yPosition = int.Parse(spawnPoint.Attribute("y").Value) / 32;
 
                 spawnPoints.Add(
-                    new KeyValuePair<Vector2I, string>(new Vector2I(xPosition, yPosition),
-                                                       spawnPoint.Attribute("name")?.Value)
+                    new KeyValuePair<TileCoordinate, string>(new TileCoordinate(xPosition, yPosition),
+                                                             spawnPoint.Attribute("name")?.Value)
                 );
             }
 
