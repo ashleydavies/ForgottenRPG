@@ -4,11 +4,12 @@ using System.Linq;
 using ShaRPG.Entity.Components;
 using ShaRPG.Map;
 using ShaRPG.Util;
+using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Entity {
     public class Entity {
         public string Name { get; }
-        public Vector2I Position { get; }
+        public TileCoordinate Position { get; }
         public float Health {
             get { return _health; }
             set {
@@ -24,15 +25,18 @@ namespace ShaRPG.Entity {
         public bool Dead => Health <= 0;
         private float _health;
         private readonly int _maxHealth;
+        private readonly Sprite _sprite;
         private readonly GameMap _map;
         private readonly List<IComponent> _components = new List<IComponent>();
 
-        public Entity(IEntityIdAssigner idAssigner, string name, int maxHealth, Vector2I position, GameMap map) {
+        public Entity(IEntityIdAssigner idAssigner, string name, int maxHealth, TileCoordinate position, Sprite sprite,
+                      GameMap map) {
             Id = idAssigner.GetNextId(this);
             Name = name;
             _health = _maxHealth = maxHealth;
             Position = position;
             _map = map;
+            _sprite = sprite;
         }
 
         public void AddComponent(IComponent component) => _components.Add(component);
@@ -47,6 +51,8 @@ namespace ShaRPG.Entity {
 
         public void Render(IRenderSurface renderSurface) {
             _components.ForEach(x => x.Render(renderSurface));
+
+            renderSurface.Render(_sprite, Position);
         }
     }
 }
