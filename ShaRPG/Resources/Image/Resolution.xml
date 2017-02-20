@@ -1,12 +1,18 @@
 <?xml version="1.0"?>
 <Resolutions>
     <NamespaceResolutions>
-        <NamespaceResolution id="0" name="tiles"/>  
+        <NamespaceResolution id="0" name="tiles"/>
+        <NamespaceResolution id="1" name="entities"/>
     </NamespaceResolutions>
     
     <TextureResolutions>
         <TextureResolution id="0" namespace="0">
             <name>tiles</name>
+            <extension>png</extension>
+        </TextureResolution>
+
+        <TextureResolution id="1" namespace="1">
+            <name>player</name>
             <extension>png</extension>
         </TextureResolution>
     </TextureResolutions>
@@ -81,10 +87,15 @@
             <position x="195" y="0"/>
             <size width="65" height="66"/>
         </ImageResolution>
-        
+
         <ImageResolution id="61" name="treeDead" texture="0">
             <position x="195" y="66"/>
             <size width="65" height="66"/>
+        </ImageResolution>
+
+        <ImageResolution id="1000" name="player" texture="1">
+            <position x="0" y="0"/>
+            <size width="32" height="64"/>
         </ImageResolution>
     </ImageResolutions>
     

@@ -1,27 +1,30 @@
-﻿#region
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using SFML.Window;
 using ShaRPG.Camera;
 using ShaRPG.Command;
+using ShaRPG.Entity;
 using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
-#endregion
-
 namespace ShaRPG.GameState {
     public class GameState : AbstractGameState {
         private readonly GameMap _map;
         private readonly MapLoader _mapLoader;
+        private readonly EntityManager _entityManager;
+        private readonly Entity.Entity _player;
         private readonly Dictionary<Keyboard.Key, ICommand> _keyMappings;
 
         public GameState(Game game, ISpriteStoreService spriteStore, MapTileStore mapTileStore) : base(game) {
             Camera = new GameCamera();
             _mapLoader = new MapLoader(Path.Combine("resources", "data", "xml", "map"), mapTileStore);
             _map = _mapLoader.LoadMap(0);
+            _entityManager = new EntityManager();
+
+            _player = new Entity.Entity(_entityManager, "Player", 100, _map.GetSpawnPosition("Player"),
+                                        spriteStore.GetSprite("player"), _map);
 
             _keyMappings = new Dictionary<Keyboard.Key, ICommand> {
                 {Keyboard.Key.Up, new CameraMoveCommand(Camera, new Vector2F(0, -100))},
@@ -40,14 +43,12 @@ namespace ShaRPG.GameState {
             }
 
             _map.Update(delta);
+            _entityManager.Update(delta);
         }
 
-        public override void Draw(IRenderSurface renderSurface) {
-            for (var x = 0; x < _map.Size.X; x++) {
-                for (var y = _map.Size.Y - 1; y >= 0; y--) {
-                    _map.GetTile(new TileCoordinate(x, y)).Draw(renderSurface, new TileCoordinate(x, y));
-                }
-            }
+        public override void Render(IRenderSurface renderSurface) {
+            _map.Render(renderSurface);
+            _entityManager.Render(renderSurface);
         }
 
         public override void MouseWheelMoved(int delta) {

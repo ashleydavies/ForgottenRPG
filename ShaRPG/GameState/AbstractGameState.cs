@@ -15,7 +15,7 @@ namespace ShaRPG.GameState {
 
         public ICamera Camera { get; protected set; }
         public abstract void Update(float delta);
-        public abstract void Draw(IRenderSurface renderSurface);
+        public abstract void Render(IRenderSurface renderSurface);
 
         public void ChangeState(AbstractGameState state) {
             Game.SetGameState(state);

@@ -54,7 +54,7 @@ namespace ShaRPG {
 
                 try {
                     _gameStates.Peek().Update(_deltaClock.GetDelta());
-                    _gameStates.Peek().Draw(_renderSurface);
+                    _gameStates.Peek().Render(_renderSurface);
                 } catch (EndGameException e) {
                     break;
                 }

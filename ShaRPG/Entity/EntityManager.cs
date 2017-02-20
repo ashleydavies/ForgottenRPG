@@ -1,6 +1,7 @@
 ﻿#region
 
 using System.Collections.Generic;
+using ShaRPG.Util;
 
 #endregion
 
@@ -24,8 +25,14 @@ namespace ShaRPG.Entity {
         }
 
         public void Update(float delta) {
-            foreach (var e in _entities.Values) {
+            foreach (Entity e in _entities.Values) {
                 e.Update(delta);
+            }
+        }
+
+        public void Render(IRenderSurface renderSurface) {
+            foreach (Entity e in _entities.Values) {
+                e.Render(renderSurface);
             }
         }
     }
