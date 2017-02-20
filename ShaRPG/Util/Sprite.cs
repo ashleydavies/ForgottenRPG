@@ -9,12 +9,14 @@ using ShaRPG.Util.Coordinate;
 namespace ShaRPG.Util {
     public class Sprite : IDrawable {
         public readonly SFML.Graphics.Sprite UnderlyingSprite;
+        public int Height => UnderlyingSprite.TextureRect.Height;
+        public int Width => UnderlyingSprite.TextureRect.Width;
 
         public Sprite(Texture texture, int x, int y, int width, int height) {
             UnderlyingSprite = new SFML.Graphics.Sprite {
-                                                            Texture = texture.UnderlyingTexture,
-                                                            TextureRect = new IntRect(x, y, width, height)
-                                                        };
+                Texture = texture.UnderlyingTexture,
+                TextureRect = new IntRect(x, y, width, height)
+            };
         }
 
         public void Draw(RenderWindow window, GameCoordinate position) {
@@ -22,6 +24,6 @@ namespace ShaRPG.Util {
             window.Draw(UnderlyingSprite);
         }
 
-        public void Update(float delta) {}
+        public void Update(float delta) { }
     }
 }

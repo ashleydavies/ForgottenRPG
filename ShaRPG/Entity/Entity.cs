@@ -23,6 +23,8 @@ namespace ShaRPG.Entity {
         public event Action Death;
         public int Id { get; }
         public bool Dead => Health <= 0;
+        private GameCoordinate RenderOffset => new GameCoordinate(MapTile.Width / 2 - _sprite.Width / 2,
+                                                                  -_sprite.Height + MapTile.Height / 2);
         private float _health;
         private readonly int _maxHealth;
         private readonly Sprite _sprite;
@@ -52,7 +54,7 @@ namespace ShaRPG.Entity {
         public void Render(IRenderSurface renderSurface) {
             _components.ForEach(x => x.Render(renderSurface));
 
-            renderSurface.Render(_sprite, Position);
+            renderSurface.Render(_sprite, Position + RenderOffset);
         }
     }
 }
