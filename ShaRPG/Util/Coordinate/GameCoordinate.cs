@@ -9,5 +9,9 @@
         public static GameCoordinate operator +(GameCoordinate a, GameCoordinate b) {
             return new GameCoordinate(a.X + b.X, a.Y + b.Y);
         }
+
+        public static GameCoordinate operator -(GameCoordinate a, GameCoordinate b) {
+            return new GameCoordinate(a.X - b.X, a.Y - b.Y);
+        }
     }
 }

@@ -11,5 +11,9 @@
         public static Vector2I operator +(Vector2I left, Vector2I right) {
             return new Vector2I(left.X + right.X, left.Y + right.Y);
         }
+
+        public override string ToString() {
+            return $"<{X}, {Y}>";
+        }
     }
 }
