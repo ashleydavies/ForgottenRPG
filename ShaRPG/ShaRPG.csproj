@@ -117,6 +117,8 @@
     <Compile Include="Map\MapLoader.cs" />
     <Compile Include="Map\MapTile.cs" />
     <Compile Include="Map\MapTileStore.cs" />
+    <Compile Include="Map\Pathfinding\AStar.cs" />
+    <Compile Include="Map\Pathfinding\MapNode.cs" />
     <Compile Include="Service\CachedFileSpriteStoreService.cs" />
     <Compile Include="Service\ConsoleLogService.cs" />
     <Compile Include="Service\IAudioService.cs" />
