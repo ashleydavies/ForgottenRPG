@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ShaRPG.Entity.Components;
 using ShaRPG.Map;
+using ShaRPG.Map.Pathfinding;
+using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
@@ -39,6 +41,8 @@ namespace ShaRPG.Entity {
             Position = position;
             _map = map;
             _sprite = sprite;
+
+            ServiceLocator.LogService.Log(LogType.Information, $"Entity {name} spawned at {Position}");
         }
 
         public void AddComponent(IComponent component) => _components.Add(component);
@@ -53,7 +57,6 @@ namespace ShaRPG.Entity {
 
         public void Render(IRenderSurface renderSurface) {
             _components.ForEach(x => x.Render(renderSurface));
-
             renderSurface.Render(_sprite, Position + RenderOffset);
         }
     }

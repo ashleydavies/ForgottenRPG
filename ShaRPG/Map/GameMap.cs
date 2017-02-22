@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ShaRPG.Entity;
 using ShaRPG.Map.Pathfinding;
+using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
@@ -27,6 +29,12 @@ namespace ShaRPG.Map {
             Size = size;
 
             InitialisePathfindingNodes();
+        }
+
+        public void SpawnEntities(EntityLoader entityLoader) {
+            _spawnPositions.ForEach(spawnPos => {
+                entityLoader.LoadEntity(spawnPos.Value, this, spawnPos.Key);
+            });
         }
 
         public void Render(IRenderSurface renderSurface) {
@@ -60,6 +68,10 @@ namespace ShaRPG.Map {
 
         private void EachTile(Action<int, int> f) {
             for (int x = 0; x < Size.X; x++) for (int y = 0; y < Size.Y; y++) f(x, y);
+        }
+
+        public List<TileCoordinate> GetPath(TileCoordinate start, TileCoordinate finish) {
+            return AStar.GetPath(_pathfindingNodes, start, finish);
         }
     }
 }

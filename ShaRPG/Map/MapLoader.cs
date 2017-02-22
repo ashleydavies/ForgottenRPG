@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using ShaRPG.Entity;
 using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
@@ -63,8 +64,8 @@ namespace ShaRPG.Map {
             if (elements == null) return spawnPoints;
 
             foreach (XElement spawnPoint in elements) {
-                int xPosition = int.Parse(spawnPoint.Attribute("x").Value) / 32;
-                int yPosition = int.Parse(spawnPoint.Attribute("y").Value) / 32;
+                int xPosition = int.Parse(spawnPoint.Attribute("x")?.Value ?? "") / 32;
+                int yPosition = int.Parse(spawnPoint.Attribute("y")?.Value ?? "") / 32;
 
                 spawnPoints.Add(
                     new KeyValuePair<TileCoordinate, string>(new TileCoordinate(xPosition, yPosition),

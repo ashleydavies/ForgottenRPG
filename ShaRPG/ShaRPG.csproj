@@ -107,6 +107,7 @@
     <Compile Include="Entity\Components\IComponentMessage.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="Entity\EntityException.cs" />
+    <Compile Include="Entity\EntityLoader.cs" />
     <Compile Include="Entity\EntityManager.cs" />
     <Compile Include="Entity\IEntityIdAssigner.cs" />
     <Compile Include="Game.cs" />
@@ -180,6 +181,12 @@
     </Content>
     <Content Include="Resources\Data\planning\intData.txt" />
     <Content Include="Resources\Data\planning\stats.txt" />
+    <Content Include="Resources\Data\XML\Entity\farmerJoe.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Data\XML\Entity\player.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Data\XML\itemData.xml" />
     <Content Include="Resources\Data\XML\Map\0.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -199,6 +206,9 @@
     <Content Include="Resources\Image\Entities\player.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Image\Entities\farmerjoe.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Image\header.png" />
     <Content Include="Resources\Image\mapIcons.png" />
     <Content Include="Resources\Image\Resolution.xml">
@@ -208,7 +218,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Image\ts_items.png" />
-    <Content Include="Resources\Image\ts_npc1.png" />
     <Content Include="Resources\Image\ts_primary_ortho.png" />
     <Content Include="Resources\Image\ui\avatar\mob\fred.png" />
     <Content Include="Resources\Image\ui\ui.png" />
