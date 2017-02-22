@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using System.Xml.XPath;
 using ShaRPG.Entity;
 using ShaRPG.Service;
 using ShaRPG.Util;
@@ -33,7 +35,7 @@ namespace ShaRPG.Map {
             if (tileLayer == null || colCount == -1 || rowCount == -1) return null;
 
             return new GameMap(LoadTiles(tileLayer, 0, 0, colCount, rowCount), new Vector2I(colCount, rowCount),
-                               _tileStore, LoadSpawnPoints(map));
+                               _tileStore, LoadSpawnPoints(document));
         }
 
         private static int[,] LoadTiles(XContainer layer, int x, int y, int colCount, int rowCount) {
@@ -54,27 +56,44 @@ namespace ShaRPG.Map {
             return tiles;
         }
 
-        private List<KeyValuePair<TileCoordinate, string>> LoadSpawnPoints(XElement layer) {
-            var spawnPoints = new List<KeyValuePair<TileCoordinate, string>>();
+        private List<GameMapEntitySpawnDetails> LoadSpawnPoints(XDocument map) {
+            var spawnPoints = new List<GameMapEntitySpawnDetails>();
 
-            var elements = layer.Elements("objectgroup")
-                                .FirstOrDefault(x => x.Attribute("name")?.Value.Equals("SpawnPoints") == true)
-                                ?.Elements();
+            var spawnPointElems = map.XPathSelectElements("/map/objectgroup[@name='SpawnPoints']/object");
 
-            if (elements == null) return spawnPoints;
+            foreach (XElement spawnPointElem in spawnPointElems) {
+                int xPosition = int.Parse(spawnPointElem.Attribute("x")?.Value ?? "") / 32;
+                int yPosition = int.Parse(spawnPointElem.Attribute("y")?.Value ?? "") / 32;
 
-            foreach (XElement spawnPoint in elements) {
-                int xPosition = int.Parse(spawnPoint.Attribute("x")?.Value ?? "") / 32;
-                int yPosition = int.Parse(spawnPoint.Attribute("y")?.Value ?? "") / 32;
+                var path = LoadPathInformation(map, spawnPointElem);
 
                 spawnPoints.Add(
-                    new KeyValuePair<TileCoordinate, string>(new TileCoordinate(xPosition, yPosition),
-                                                             spawnPoint.Attribute("name")?.Value)
+                    new GameMapEntitySpawnDetails(new TileCoordinate(xPosition, yPosition),
+                                                  spawnPointElem.Attribute("name")?.Value, path)
                 );
             }
 
             ServiceLocator.LogService.Log(LogType.Information, $"Loaded {spawnPoints.Count} spawn points");
             return spawnPoints;
+        }
+
+        private static List<TileCoordinate> LoadPathInformation(XDocument map, XElement spawnPointElem) {
+            var pathInfoElem = spawnPointElem.XPathSelectElement(".//properties/property[@name='FollowsPath']");
+
+            List<TileCoordinate> path = new List<TileCoordinate>();
+
+            if (pathInfoElem != null) {
+                int pathId = int.Parse(pathInfoElem.Attribute("value").Value);
+                var pathElements = map.XPathSelectElements($"/map/objectgroup[@name='Path'][properties/property"
+                                                           + $"[@name='PathNumber' and @value={pathId}]]/object");
+                foreach (var pathElem in pathElements) {
+                    path.Add(new TileCoordinate(int.Parse(pathElem.Attribute("x").Value) / 32,
+                                                int.Parse(pathElem.Attribute("y").Value) / 32));
+                    ServiceLocator.LogService.Log(LogType.Information, $"{path[path.Count - 1]}");
+                }
+            }
+
+            return path;
         }
     }
 }
