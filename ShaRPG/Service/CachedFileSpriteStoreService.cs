@@ -30,6 +30,9 @@ namespace ShaRPG.Service {
         public Sprite GetSprite(string name) {
             if (!_spriteCacheDictionary.ContainsKey(name)) {
                 _spriteCacheDictionary[name] = LoadSprite(name);
+                if (_spriteCacheDictionary[name] == Sprite.Null) {
+                    ServiceLocator.LogService.Log(LogType.Error, "Attempt to load image " + name + " failed.");
+                }
             }
 
             return _spriteCacheDictionary[name];
@@ -41,18 +44,12 @@ namespace ShaRPG.Service {
                 .Elements("ImageResolutions")
                 .Elements("ImageResolution").FirstOrDefault(elems => elems.Attribute("name").Value.Equals(name));
 
-            if (imageData == null) {
-                ServiceLocator.LogService.Log(LogType.Error, "Attempt to load image " + name + " failed.");
-                return null;
-            }
+            if (imageData == null) return Sprite.Null;
 
             var posData = imageData.Element("position");
             var sizeData = imageData.Element("size");
 
-            if (posData == null || sizeData == null) {
-                ServiceLocator.LogService.Log(LogType.Error, "Attempt to load image " + name + " failed.");
-                return null;
-            }
+            if (posData == null || sizeData == null) return Sprite.Null;
 
             int texture, x, y, width, height;
 
@@ -60,10 +57,7 @@ namespace ShaRPG.Service {
                 || !int.TryParse(posData.Attribute("x")?.Value, out x)
                 || !int.TryParse(posData.Attribute("y")?.Value, out y)
                 || !int.TryParse(sizeData.Attribute("width")?.Value, out width)
-                || !int.TryParse(sizeData.Attribute("height")?.Value, out height)) {
-                ServiceLocator.LogService.Log(LogType.Error, "Attempt to load image " + name + "failed.");
-                return null;
-            }
+                || !int.TryParse(sizeData.Attribute("height")?.Value, out height)) return Sprite.Null;
 
             if (!_textureCacheDictionary.ContainsKey(texture)) {
                 _textureCacheDictionary[texture] = LoadTexture(texture.ToString());

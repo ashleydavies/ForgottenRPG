@@ -8,9 +8,10 @@ using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Util {
     public class Sprite : IDrawable {
+        public static readonly Sprite Null = new NullSprite();
         public readonly SFML.Graphics.Sprite UnderlyingSprite;
-        public int Height => UnderlyingSprite.TextureRect.Height;
-        public int Width => UnderlyingSprite.TextureRect.Width;
+        public int Height => this != Null ? UnderlyingSprite.TextureRect.Height : 0;
+        public int Width => this != Null ? UnderlyingSprite.TextureRect.Width : 0;
 
         public Sprite(Texture texture, int x, int y, int width, int height) {
             UnderlyingSprite = new SFML.Graphics.Sprite {
@@ -19,9 +20,17 @@ namespace ShaRPG.Util {
             };
         }
 
-        public void Draw(RenderWindow window, GameCoordinate position) {
+        private Sprite() { }
+
+        public virtual void Draw(RenderWindow window, GameCoordinate position) {
             UnderlyingSprite.Position = new Vector2f(position.X, position.Y);
             window.Draw(UnderlyingSprite);
+        }
+
+        private class NullSprite : Sprite {
+            public NullSprite() : base() { }
+
+            public override void Draw(RenderWindow window, GameCoordinate position) { }
         }
 
         public void Update(float delta) { }
