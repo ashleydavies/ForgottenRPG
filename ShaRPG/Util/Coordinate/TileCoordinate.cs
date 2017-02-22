@@ -23,5 +23,13 @@ namespace ShaRPG.Util.Coordinate {
         public int ManhattanDistance(TileCoordinate other) {
             return Math.Abs(X - other.X) + Math.Abs(Y - other.Y);
         }
+
+        public override bool Equals(object obj) {
+            if (!(obj is TileCoordinate)) return false;
+
+            TileCoordinate other = (TileCoordinate) obj;
+            return other.X == X && other.Y == Y;
+        }
+
     }
 }

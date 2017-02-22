@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Xml.Linq;
 using ShaRPG.Map;
 using ShaRPG.Service;
@@ -16,7 +17,7 @@ namespace ShaRPG.Entity {
             _spriteStore = spriteStore;
         }
 
-        public Entity LoadEntity(string entityName, GameMap map, TileCoordinate position) {
+        public Entity LoadEntity(string entityName, GameMap map, TileCoordinate position, List<TileCoordinate> path) {
             XDocument document;
 
             using (FileStream fs = File.OpenRead(Path.Combine(_directory, entityName + ".xml"))) {
@@ -36,7 +37,7 @@ namespace ShaRPG.Entity {
                 throw new EntityException($"Unable to load entity {entityName}");
             }
 
-            return new Entity(_idAssigner, name, health, position, _spriteStore.GetSprite(spriteName), map);
+            return new Entity(_idAssigner, name, health, position, _spriteStore.GetSprite(spriteName), map, path);
         }
     }
 }

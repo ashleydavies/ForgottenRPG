@@ -8,20 +8,31 @@ using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Map {
+    public struct GameMapEntitySpawnDetails {
+        public readonly TileCoordinate Position;
+        public readonly string EntityName;
+        public readonly List<TileCoordinate> Path;
+
+        public GameMapEntitySpawnDetails(TileCoordinate position, string entityName, List<TileCoordinate> path) {
+            Position = position;
+            EntityName = entityName;
+            Path = path;
+        }
+    }
+
     public class GameMap {
         private readonly int[,] _tiles;
         private readonly MapNode[,] _pathfindingNodes;
-        private readonly List<KeyValuePair<TileCoordinate, string>> _spawnPositions;
+        private readonly List<GameMapEntitySpawnDetails> _spawnPositions;
         private readonly MapTileStore _tileStore;
         public readonly Vector2I Size;
 
         public MapTile GetTile(TileCoordinate coordinate) => _tileStore.GetTile(TileId(coordinate));
         public int TileId(TileCoordinate coordinate) => _tiles[coordinate.X, coordinate.Y];
-        public TileCoordinate GetSpawnPosition(string name) => _spawnPositions.FirstOrDefault(x => x.Value == name).Key;
         public bool Collideable(TileCoordinate position) => GetTile(position).Collideable;
 
         public GameMap(int[,] tiles, Vector2I size, MapTileStore tileStore,
-                       List<KeyValuePair<TileCoordinate, string>> spawnPositions) {
+                       List<GameMapEntitySpawnDetails> spawnPositions) {
             _tiles = tiles;
             _pathfindingNodes = new MapNode[size.X, size.Y];
             _tileStore = tileStore;
@@ -32,8 +43,8 @@ namespace ShaRPG.Map {
         }
 
         public void SpawnEntities(EntityLoader entityLoader) {
-            _spawnPositions.ForEach(spawnPos => {
-                entityLoader.LoadEntity(spawnPos.Value, this, spawnPos.Key);
+            _spawnPositions.ForEach(spawnDetails => {
+                entityLoader.LoadEntity(spawnDetails.EntityName, this, spawnDetails.Position, spawnDetails.Path);
             });
         }
 
