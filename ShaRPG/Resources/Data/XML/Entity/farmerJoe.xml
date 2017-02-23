@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Entity name="Farmer Joe" avatar="farmerjoe" maxHealth="100">
+    <!-- Temporary format - Will eventually be a way of loading animations from sheets for walking / attacking -->
+    <EntityTextureInformation name="farmerjoe_texture" />
+</Entity>
