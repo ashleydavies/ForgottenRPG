@@ -13,18 +13,19 @@ namespace ShaRPG.GameState {
     public class GameState : AbstractGameState {
         private readonly GameMap _map;
         private readonly MapLoader _mapLoader;
+        private readonly EntityLoader _entityLoader;
         private readonly EntityManager _entityManager;
         private readonly Entity.Entity _player;
         private readonly Dictionary<Keyboard.Key, ICommand> _keyMappings;
 
         public GameState(Game game, ISpriteStoreService spriteStore, MapTileStore mapTileStore) : base(game) {
             Camera = new GameCamera();
+            _entityManager = new EntityManager();
+            _entityLoader = new EntityLoader(Path.Combine("resources", "data", "xml", "entity"),
+                                             _entityManager, spriteStore);
             _mapLoader = new MapLoader(Path.Combine("resources", "data", "xml", "map"), mapTileStore);
             _map = _mapLoader.LoadMap(0);
-            _entityManager = new EntityManager();
-
-            _player = new Entity.Entity(_entityManager, "Player", 100, _map.GetSpawnPosition("Player"),
-                                        spriteStore.GetSprite("player"), _map);
+            _map.SpawnEntities(_entityLoader);
 
             _keyMappings = new Dictionary<Keyboard.Key, ICommand> {
                 {Keyboard.Key.Up, new CameraMoveCommand(Camera, new Vector2F(0, -100))},
