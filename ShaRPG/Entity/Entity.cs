@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ShaRPG.Entity.Components;
 using ShaRPG.Map;
-using ShaRPG.Map.Pathfinding;
 using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;

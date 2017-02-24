@@ -1,8 +1,4 @@
-﻿#region
-
-using System;
-
-#endregion
+﻿using System;
 
 namespace ShaRPG.Service {
     internal class ConsoleLogService : ILogService {

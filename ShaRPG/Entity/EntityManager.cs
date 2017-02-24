@@ -1,9 +1,5 @@
-﻿#region
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ShaRPG.Util;
-
-#endregion
 
 namespace ShaRPG.Entity {
     internal class EntityManager : IEntityIdAssigner {

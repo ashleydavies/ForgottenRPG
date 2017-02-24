@@ -11,12 +11,12 @@ namespace ShaRPG.VM {
         private readonly Dictionary<int, int> _registers;
         private readonly Flags _flagRegister;
         private readonly Stack<int> _stack;
-        
+
         public ScriptVM(List<int> bytes) {
             _bytes = bytes;
             _registers = new Dictionary<int, int> {
-                                                      [InstructionRegister] = 0
-                                                  };
+                [InstructionRegister] = 0
+            };
             _flagRegister = new Flags();
             _stack = new Stack<int>();
         }

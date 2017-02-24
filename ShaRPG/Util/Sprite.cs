@@ -1,10 +1,6 @@
-﻿#region
-
-using SFML.Graphics;
+﻿using SFML.Graphics;
 using SFML.System;
 using ShaRPG.Util.Coordinate;
-
-#endregion
 
 namespace ShaRPG.Util {
     public class Sprite : IDrawable {

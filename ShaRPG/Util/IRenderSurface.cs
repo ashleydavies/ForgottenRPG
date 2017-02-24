@@ -1,9 +1,5 @@
-﻿#region
-
-using ShaRPG.Camera;
+﻿using ShaRPG.Camera;
 using ShaRPG.Util.Coordinate;
-
-#endregion
 
 namespace ShaRPG.Util {
     public interface IRenderSurface {

@@ -1,12 +1,8 @@
-﻿#region
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using ShaRPG.Util;
-
-#endregion
 
 namespace ShaRPG.Service {
     internal class CachedFileSpriteStoreService : ISpriteStoreService {
@@ -42,7 +38,8 @@ namespace ShaRPG.Service {
             var imageData = _resolutionDocument
                 .Elements("Resolutions")
                 .Elements("ImageResolutions")
-                .Elements("ImageResolution").FirstOrDefault(elems => elems.Attribute("name").Value.Equals(name));
+                .Elements("ImageResolution")
+                .FirstOrDefault(elems => elems.Attribute("name").Value.Equals(name));
 
             if (imageData == null) return Sprite.Null;
 
@@ -70,7 +67,8 @@ namespace ShaRPG.Service {
             var textureData = _resolutionDocument
                 .Elements("Resolutions")
                 .Elements("TextureResolutions")
-                .Elements("TextureResolution").FirstOrDefault(elems => elems.Attribute("id").Value.Equals(id));
+                .Elements("TextureResolution")
+                .FirstOrDefault(elems => elems.Attribute("id").Value.Equals(id));
 
             if (textureData == null) {
                 ServiceLocator.LogService.Log(LogType.Error, "Attempt to load texture " + id + " failed.");
@@ -102,7 +100,8 @@ namespace ShaRPG.Service {
             var namespaceData = _resolutionDocument
                 .Elements("Resolutions")
                 .Elements("NamespaceResolutions")
-                .Elements("NamespaceResolution").FirstOrDefault(elems => elems.Attribute("id").Value.Equals(id));
+                .Elements("NamespaceResolution")
+                .FirstOrDefault(elems => elems.Attribute("id").Value.Equals(id));
 
             if (namespaceData == null) {
                 ServiceLocator.LogService.Log(LogType.Error, "Attempt to load namespace " + id + " failed");

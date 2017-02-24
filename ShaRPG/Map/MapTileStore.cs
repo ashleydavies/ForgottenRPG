@@ -1,14 +1,10 @@
-﻿#region
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
-
-#endregion
 
 namespace ShaRPG.Map {
     public class MapTileStore {
@@ -40,7 +36,8 @@ namespace ShaRPG.Map {
         private MapTile LoadTile(int id) {
             var tileData = _tileDocument
                 .Elements("Tiles")
-                .Elements("Tile").FirstOrDefault(elems => elems.Attribute("id").Value.Equals(id.ToString()));
+                .Elements("Tile")
+                .FirstOrDefault(elems => elems.Attribute("id").Value.Equals(id.ToString()));
 
             if (tileData == null) return MapTile.Null;
 
@@ -56,7 +53,8 @@ namespace ShaRPG.Map {
                 var spriteElems = tileData.Elements("Texture");
 
                 var sprites = spriteElems.Select(spriteElem
-                                                 => _spriteStore.GetSprite(spriteElem.Attribute("name").Value)).ToList();
+                                                     => _spriteStore.GetSprite(spriteElem.Attribute("name").Value))
+                                         .ToList();
 
                 graphic = new AnimatedSprite(sprites, double.Parse(tileData.Attribute("textureTime").Value));
             } else {

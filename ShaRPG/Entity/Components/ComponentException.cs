@@ -2,6 +2,6 @@
 
 namespace ShaRPG.Entity.Components {
     internal class ComponentException : Exception {
-        public ComponentException(string message) : base(message) {}
+        public ComponentException(string message) : base(message) { }
     }
 }

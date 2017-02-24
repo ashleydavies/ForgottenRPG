@@ -1,11 +1,7 @@
-﻿#region
-
-using SFML.Graphics;
+﻿using SFML.Graphics;
 using SFML.System;
 using ShaRPG.Camera;
 using ShaRPG.Util.Coordinate;
-
-#endregion
 
 namespace ShaRPG.Util {
     internal class WindowRenderSurface : IRenderSurface {
@@ -27,6 +23,6 @@ namespace ShaRPG.Util {
                                                                                       gameCamera.Center.Y),
                                                                          new Vector2f(Size.X / gameCamera.Scale.X,
                                                                                       Size.Y / gameCamera.Scale.Y)
-                                                                         ));
+                                                                     ));
     }
 }
