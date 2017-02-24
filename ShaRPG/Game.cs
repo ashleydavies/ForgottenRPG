@@ -1,9 +1,5 @@
-﻿#region
-
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using DataTypes;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -11,8 +7,6 @@ using ShaRPG.GameState;
 using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util;
-
-#endregion
 
 namespace ShaRPG {
     public class Game {
@@ -33,9 +27,8 @@ namespace ShaRPG {
             _mapTileStore = new MapTileStore(Path.Combine("Resources", "Data", "XML"), _spriteStore);
 
             _window = new RenderWindow(new VideoMode(1800, 900), "RPG", Styles.Titlebar) {
-                                                                                             Size =
-                                                                                                 new Vector2u(1800, 900)
-                                                                                         };
+                Size = new Vector2u(1800, 900)
+            };
             _renderSurface = new WindowRenderSurface(_window);
 
             _window.Closed += (sender, args) => _window.Close();

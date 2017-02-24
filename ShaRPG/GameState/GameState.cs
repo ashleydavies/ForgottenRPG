@@ -7,7 +7,6 @@ using ShaRPG.Entity;
 using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util;
-using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GameState {
     public class GameState : AbstractGameState {

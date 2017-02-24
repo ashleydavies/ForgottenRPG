@@ -1,8 +1,4 @@
-﻿#region
-
-using ShaRPG.Service;
-
-#endregion
+﻿using ShaRPG.Service;
 
 namespace ShaRPG.Command {
     public class NullCommand : ICommand {

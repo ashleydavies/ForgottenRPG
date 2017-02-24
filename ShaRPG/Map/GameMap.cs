@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ShaRPG.Entity;
 using ShaRPG.Map.Pathfinding;
-using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
@@ -70,6 +68,7 @@ namespace ShaRPG.Map {
                 for (int x1 = Math.Max(x - 1, 0); x1 <= Math.Min(Size.X - 1, x + 1); x1++) {
                     for (int y1 = Math.Max(y - 1, 0); y1 <= Math.Min(Size.Y - 1, y + 1); y1++) {
                         if (Math.Abs(x - x1) == 1 && Math.Abs(y - y1) == 1) continue;
+
                         neighbors.Add(_pathfindingNodes[x1, y1]);
                     }
                 }

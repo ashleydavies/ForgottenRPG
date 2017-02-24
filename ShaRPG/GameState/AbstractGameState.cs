@@ -1,9 +1,5 @@
-﻿#region
-
-using ShaRPG.Camera;
+﻿using ShaRPG.Camera;
 using ShaRPG.Util;
-
-#endregion
 
 namespace ShaRPG.GameState {
     public abstract class AbstractGameState {

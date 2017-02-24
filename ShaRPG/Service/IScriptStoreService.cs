@@ -1,8 +1,4 @@
-﻿#region
-
-using ShaRPG.VM;
-
-#endregion
+﻿using ShaRPG.VM;
 
 namespace ShaRPG.Service {
     public interface IScriptStoreService {

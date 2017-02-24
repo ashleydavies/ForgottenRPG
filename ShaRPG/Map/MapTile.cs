@@ -1,9 +1,5 @@
-﻿#region
-
-using ShaRPG.Util;
+﻿using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
-
-#endregion
 
 namespace ShaRPG.Map {
     public class MapTile {

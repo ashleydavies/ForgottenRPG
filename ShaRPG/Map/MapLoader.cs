@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using ShaRPG.Entity;
 using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;

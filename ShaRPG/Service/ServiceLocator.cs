@@ -1,8 +1,4 @@
-﻿#region
-
-using ShaRPG.Service.Null;
-
-#endregion
+﻿using ShaRPG.Service.Null;
 
 namespace ShaRPG.Service {
     public static class ServiceLocator {

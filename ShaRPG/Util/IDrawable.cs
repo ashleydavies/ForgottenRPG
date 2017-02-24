@@ -1,9 +1,5 @@
-﻿#region
-
-using SFML.Graphics;
+﻿using SFML.Graphics;
 using ShaRPG.Util.Coordinate;
-
-#endregion
 
 namespace ShaRPG.Util {
     public interface IDrawable {

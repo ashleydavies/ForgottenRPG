@@ -1,8 +1,4 @@
-﻿#region
-
-using System;
-
-#endregion
+﻿using System;
 
 namespace ShaRPG.Service.Null {
     public class NullLogService : ILogService {

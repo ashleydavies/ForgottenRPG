@@ -1,9 +1,5 @@
-﻿#region
-
-using System;
+﻿using System;
 using ShaRPG.Map;
-
-#endregion
 
 namespace ShaRPG.Util.Coordinate {
     public class TileCoordinate : Coordinate {
@@ -30,6 +26,5 @@ namespace ShaRPG.Util.Coordinate {
             TileCoordinate other = (TileCoordinate) obj;
             return other.X == X && other.Y == Y;
         }
-
     }
 }
