@@ -10,27 +10,26 @@ using ShaRPG.Util;
 
 namespace ShaRPG.GameState {
     public class GameState : AbstractGameState {
+        private GameEntity _player => _entityManager.Player;
         private readonly GameMap _map;
         private readonly MapLoader _mapLoader;
         private readonly EntityLoader _entityLoader;
         private readonly EntityManager _entityManager;
-        private readonly Entity.Entity _player;
         private readonly Dictionary<Keyboard.Key, ICommand> _keyMappings;
 
         public GameState(Game game, ISpriteStoreService spriteStore, MapTileStore mapTileStore) : base(game) {
             Camera = new GameCamera();
             _entityManager = new EntityManager();
-            _entityLoader = new EntityLoader(Path.Combine("resources", "data", "xml", "entity"),
-                                             _entityManager, spriteStore);
-            _mapLoader = new MapLoader(Path.Combine("resources", "data", "xml", "map"), mapTileStore);
+            _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, spriteStore);
+            _mapLoader = new MapLoader(Config.MapDataDirectory, mapTileStore);
             _map = _mapLoader.LoadMap(0);
             _map.SpawnEntities(_entityLoader);
 
             _keyMappings = new Dictionary<Keyboard.Key, ICommand> {
-                {Keyboard.Key.Up, new CameraMoveCommand(Camera, new Vector2F(0, -100))},
-                {Keyboard.Key.Down, new CameraMoveCommand(Camera, new Vector2F(0, 100))},
-                {Keyboard.Key.Left, new CameraMoveCommand(Camera, new Vector2F(-100, 0))},
-                {Keyboard.Key.Right, new CameraMoveCommand(Camera, new Vector2F(100, 0))},
+                {Keyboard.Key.Up, new CameraMoveCommand(Camera, new Vector2F(0, -300))},
+                {Keyboard.Key.Down, new CameraMoveCommand(Camera, new Vector2F(0, 300))},
+                {Keyboard.Key.Left, new CameraMoveCommand(Camera, new Vector2F(-300, 0))},
+                {Keyboard.Key.Right, new CameraMoveCommand(Camera, new Vector2F(300, 0))},
                 {Keyboard.Key.X, new ExitGameCommand(this)}
             };
         }

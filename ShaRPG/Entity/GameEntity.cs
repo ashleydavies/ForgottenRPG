@@ -8,33 +8,19 @@ using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Entity {
-    public class Entity {
+    public class GameEntity {
         private const float PositionLerpTime = 0.5f;
         private const float PositionLerpTimeMultiplier = 1 / PositionLerpTime;
 
         public string Name { get; }
         public TileCoordinate Position { get; private set; }
         public TileCoordinate PreviousPosition { get; private set; }
-        public float Health {
-            get { return _health; }
-            set {
-                if (Dead) throw new EntityException(this, "Dead entity HP cannot change");
-
-                _health = value;
-
-                if (Dead) Death?.Invoke();
-            }
-        }
-        public event Action Death;
         public int Id { get; }
-        public bool Dead => Health <= 0;
         private TileCoordinate _targetPosition;
         private int _pathIndex;
-        private float _health;
         private float _positionLerpTime;
         private float PositionLerpFraction => _positionLerpTime * PositionLerpTimeMultiplier;
         private readonly List<TileCoordinate> _path;
-        private readonly int _maxHealth;
         private readonly Sprite _sprite;
         private readonly GameMap _map;
         private readonly List<IComponent> _components = new List<IComponent>();
@@ -43,16 +29,15 @@ namespace ShaRPG.Entity {
                                                                   -_sprite.Height + MapTile.Height / 2)
                                                + ((GameCoordinate) PreviousPosition - Position) * PositionLerpFraction;
 
-        public Entity(IEntityIdAssigner idAssigner, string name, int maxHealth, TileCoordinate position, Sprite sprite,
+        public GameEntity(IEntityIdAssigner idAssigner, string name, TileCoordinate position, Sprite sprite,
                       GameMap map, List<TileCoordinate> path) {
-            Id = idAssigner.GetNextId(this);
             Name = name;
-            _health = _maxHealth = maxHealth;
             Position = PreviousPosition = _targetPosition = position;
             _positionLerpTime = 0;
             _map = map;
             _sprite = sprite;
             _path = path;
+            Id = idAssigner.GetNextId(this);
 
             ServiceLocator.LogService.Log(LogType.Information, $"Entity {name} spawned at {Position}");
         }
@@ -62,7 +47,7 @@ namespace ShaRPG.Entity {
         public T GetComponent<T>() where T : class, IComponent => _components.OfType<T>().FirstOrDefault();
 
         public void Update(float delta) {
-            _components.ForEach(x => x.Update());
+            _components.ForEach(x => x.Update(delta));
 
             if (_targetPosition.Equals(Position) && _path.Count > 0) {
                 _targetPosition = _path[_pathIndex++];
@@ -80,8 +65,6 @@ namespace ShaRPG.Entity {
                     _positionLerpTime -= delta;
                 }
             }
-
-            Health += delta * 1;
         }
 
         public void Render(IRenderSurface renderSurface) {

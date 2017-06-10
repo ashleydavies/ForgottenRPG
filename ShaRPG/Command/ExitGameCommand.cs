@@ -1,13 +1,13 @@
 ﻿namespace ShaRPG.Command {
     public class ExitGameCommand : ICommand {
-        private readonly GameState.GameState game_;
+        private readonly GameState.GameState _game;
 
         public ExitGameCommand(GameState.GameState game) {
-            game_ = game;
+            _game = game;
         }
 
         public void Execute(float delta) {
-            game_.ExitGame();
+            _game.ExitGame();
         }
     }
 }

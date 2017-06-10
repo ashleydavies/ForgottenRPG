@@ -2,9 +2,9 @@
 
 namespace ShaRPG.Entity.Components {
     public abstract class AbstractComponent : IComponent {
-        protected Entity _entity;
+        protected GameEntity _entity;
 
-        protected AbstractComponent(Entity entity) {
+        protected AbstractComponent(GameEntity entity) {
             _entity = entity;
         }
 
@@ -12,7 +12,7 @@ namespace ShaRPG.Entity.Components {
             return;
         }
 
-        public abstract void Update();
+        public abstract void Update(float delta);
         public abstract void Message(IComponentMessage componentMessage);
     }
 }
