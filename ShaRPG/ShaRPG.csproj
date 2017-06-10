@@ -95,6 +95,7 @@
     <Compile Include="Command\ExitGameCommand.cs" />
     <Compile Include="Command\ICommand.cs" />
     <Compile Include="Command\NullCommand.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="Dialog\DialogAction.cs" />
     <Compile Include="Dialog\DialogCondition.cs" />
     <Compile Include="Dialog\DialogNode.cs" />
@@ -103,9 +104,10 @@
     <Compile Include="Entity\Components\ComponentException.cs" />
     <Compile Include="Entity\Components\AbstractComponent.cs" />
     <Compile Include="Entity\Components\DialogComponent.cs" />
+    <Compile Include="Entity\Components\HealthComponent.cs" />
     <Compile Include="Entity\Components\IComponent.cs" />
     <Compile Include="Entity\Components\IComponentMessage.cs" />
-    <Compile Include="Entity\Entity.cs" />
+    <Compile Include="Entity\GameEntity.cs" />
     <Compile Include="Entity\EntityException.cs" />
     <Compile Include="Entity\EntityLoader.cs" />
     <Compile Include="Entity\EntityManager.cs" />

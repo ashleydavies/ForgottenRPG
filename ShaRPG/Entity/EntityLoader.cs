@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
+using ShaRPG.Entity.Components;
 using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util.Coordinate;
@@ -17,27 +18,29 @@ namespace ShaRPG.Entity {
             _spriteStore = spriteStore;
         }
 
-        public Entity LoadEntity(string entityName, GameMap map, TileCoordinate position, List<TileCoordinate> path) {
+        public GameEntity LoadEntity(string entityName, GameMap map, TileCoordinate position, List<TileCoordinate> path) {
             XDocument document;
 
             using (FileStream fs = File.OpenRead(Path.Combine(_directory, entityName + ".xml"))) {
                 document = XDocument.Load(fs);
             }
 
-            var entity = document?.Element("Entity");
+            var entityInformation = document.Element("Entity");
 
-            string name = entity?.Attribute("name")?.Value;
-            string avatar = entity?.Attribute("avatar")?.Value;
+            string name = entityInformation?.Attribute("name")?.Value;
+            string avatar = entityInformation?.Attribute("avatar")?.Value;
             int health;
-            string healthString = entity?.Attribute("maxHealth")?.Value;
+            string healthString = entityInformation?.Attribute("maxHealth")?.Value;
 
-            string spriteName = entity?.Element("EntityTextureInformation")?.Attribute("name")?.Value;
+            string spriteName = entityInformation?.Element("EntityTextureInformation")?.Attribute("name")?.Value;
 
             if (spriteName == null || name == null || avatar == null || !int.TryParse(healthString, out health)) {
                 throw new EntityException($"Unable to load entity {entityName}");
             }
 
-            return new Entity(_idAssigner, name, health, position, _spriteStore.GetSprite(spriteName), map, path);
+            GameEntity entity = new GameEntity(_idAssigner, name, position, _spriteStore.GetSprite(spriteName), map, path);
+            entity.AddComponent(new HealthComponent(entity, health));
+            return entity;
         }
     }
 }
