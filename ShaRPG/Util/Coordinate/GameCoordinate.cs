@@ -1,4 +1,6 @@
-﻿namespace ShaRPG.Util.Coordinate {
+﻿using System;
+
+namespace ShaRPG.Util.Coordinate {
     public class GameCoordinate : Coordinate {
         public GameCoordinate(int x, int y) : base(x, y) { }
 
@@ -16,6 +18,10 @@
 
         public static GameCoordinate operator *(GameCoordinate a, float n) {
             return new GameCoordinate((int) (a.X * n), (int) (a.Y * n));
+        }
+        
+        public double EuclideanDistance(GameCoordinate other) {
+            return Math.Sqrt(Math.Pow(X - other.X, 2) + Math.Pow(Y - other.Y, 2));
         }
     }
 }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using ShaRPG.GameState;
 using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
@@ -17,7 +18,7 @@ namespace ShaRPG.Map {
             _tileStore = tileStore;
         }
 
-        public GameMap LoadMap(int id) {
+        public GameMap LoadMap(int id, StateGame game) {
             XDocument document;
 
             using (FileStream fs = File.OpenRead(Path.Combine(_directory, id + ".tmx"))) document = XDocument.Load(fs);
@@ -32,7 +33,7 @@ namespace ShaRPG.Map {
 
             if (tileLayer == null || colCount == -1 || rowCount == -1) return null;
 
-            return new GameMap(LoadTiles(tileLayer, 0, 0, colCount, rowCount), new Vector2I(colCount, rowCount),
+            return new GameMap(game, LoadTiles(tileLayer, 0, 0, colCount, rowCount), new Vector2I(colCount, rowCount),
                                _tileStore, LoadSpawnPoints(document));
         }
 

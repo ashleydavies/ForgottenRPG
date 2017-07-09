@@ -114,7 +114,7 @@
     <Compile Include="Entity\IEntityIdAssigner.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameState\AbstractGameState.cs" />
-    <Compile Include="GameState\GameState.cs" />
+    <Compile Include="GameState\StateGame.cs" />
     <Compile Include="LoadingException.cs" />
     <Compile Include="Map\GameMap.cs" />
     <Compile Include="Map\MapLoader.cs" />
@@ -137,12 +137,16 @@
     <Compile Include="Util\AnimatedSprite.cs" />
     <Compile Include="Util\Coordinate\Coordinate.cs" />
     <Compile Include="Util\Coordinate\GameCoordinate.cs" />
+    <Compile Include="Util\Coordinate\ScreenCoordinate.cs" />
     <Compile Include="Util\Coordinate\TileCoordinate.cs" />
     <Compile Include="Util\DeltaClock.cs" />
     <Compile Include="Util\Direction.cs" />
+    <Compile Include="Util\ClickManager.cs" />
+    <Compile Include="Util\IClickObserver.cs" />
     <Compile Include="Util\IDrawable.cs" />
     <Compile Include="Util\Image.cs" />
     <Compile Include="Util\IRenderSurface.cs" />
+    <Compile Include="Util\Mouse.cs" />
     <Compile Include="Util\Sprite.cs" />
     <Compile Include="Util\Texture.cs" />
     <Compile Include="Util\TextureType.cs" />

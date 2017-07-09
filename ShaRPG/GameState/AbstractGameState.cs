@@ -1,5 +1,6 @@
 ﻿using ShaRPG.Camera;
 using ShaRPG.Util;
+using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GameState {
     public abstract class AbstractGameState {
@@ -17,6 +18,7 @@ namespace ShaRPG.GameState {
             Game.SetGameState(state);
         }
 
+        public abstract void Clicked(ScreenCoordinate coordinates);
         public abstract void MouseWheelMoved(int delta);
     }
 }

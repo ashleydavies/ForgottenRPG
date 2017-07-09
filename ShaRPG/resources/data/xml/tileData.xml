@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Tiles>
     <Tile id="0" name="null" collision="1"/>
-    <Tile id="8" name="grass" collision="0"/>
-    <Tile id="3" name="dirt" collision="0"/>
-    <Tile id="2" name="water" collision="1" textureComplex="1" textureType="dynamic" textureTime="0.500">
+    <Tile id="8" name="grass" collision="0" textureXOffset="-32"/>
+    <Tile id="3" name="dirt" collision="0" textureXOffset="-32"/>
+    <Tile id="2" name="water" collision="1" textureComplex="1" textureType="dynamic" textureTime="0.500" textureXOffset="-32">
         <Texture name="water_1" />
         <Texture name="water_2" />
         <Texture name="water_3" />
         <Texture name="water_4" />
     </Tile>
-    <Tile id="15" name="stone" collision="0"/>
-    <Tile id="10" name="tilledDirt" collision="0"/>
-    <Tile id="11" name="treeAlive" collision="1" textureYOffset="-33"/>
-    <Tile id="19" name="treeDead" collision="1" textureYOffset="-33">
+    <Tile id="15" name="stone" collision="0" textureXOffset="-32"/>
+    <Tile id="10" name="tilledDirt" collision="0" textureXOffset="-32"/>
+    <Tile id="11" name="treeAlive" collision="1" textureXOffset="-32" textureYOffset="-33"/>
+    <Tile id="19" name="treeDead" collision="1" textureXOffset="-32" textureYOffset="-33">
     </Tile>
 </Tiles>

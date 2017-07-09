@@ -1,24 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using ShaRPG.Entity;
+using ShaRPG.GameState;
 using ShaRPG.Map.Pathfinding;
+using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Map {
-    public struct GameMapEntitySpawnDetails {
-        public readonly TileCoordinate Position;
-        public readonly string EntityName;
-        public readonly List<TileCoordinate> Path;
-
-        public GameMapEntitySpawnDetails(TileCoordinate position, string entityName, List<TileCoordinate> path) {
-            Position = position;
-            EntityName = entityName;
-            Path = path;
-        }
-    }
-
-    public class GameMap {
+    public class GameMap : IClickObserver {
+        private readonly StateGame _game;
         private readonly int[,] _tiles;
         private readonly MapNode[,] _pathfindingNodes;
         private readonly List<GameMapEntitySpawnDetails> _spawnPositions;
@@ -29,8 +20,18 @@ namespace ShaRPG.Map {
         public int TileId(TileCoordinate coordinate) => _tiles[coordinate.X, coordinate.Y];
         public bool Collideable(TileCoordinate position) => GetTile(position).Collideable;
 
-        public GameMap(int[,] tiles, Vector2I size, MapTileStore tileStore,
+        public bool TileAtPosition(TileCoordinate position) =>
+            position.X >= 0 && position.Y >= 0 && position.X < _tiles.GetLength(0) && position.Y < _tiles.GetLength(1);
+
+        public List<TileCoordinate> GetPath(TileCoordinate start, TileCoordinate finish)
+            => AStar.GetPath(_pathfindingNodes, start, finish);
+
+        public bool IsMouseOver(ScreenCoordinate screenCoordinates)
+            => TileAtPosition(_game.TranslateCoordinates(screenCoordinates));
+
+        public GameMap(StateGame game, int[,] tiles, Vector2I size, MapTileStore tileStore,
                        List<GameMapEntitySpawnDetails> spawnPositions) {
+            _game = game;
             _tiles = tiles;
             _pathfindingNodes = new MapNode[size.X, size.Y];
             _tileStore = tileStore;
@@ -52,6 +53,13 @@ namespace ShaRPG.Map {
 
         public void Update(float delta) {
             _tileStore.Update(delta);
+        }
+
+        public void Clicked(ScreenCoordinate coordinates) {
+            ServiceLocator.LogService.Log(
+                LogType.Information,
+                $"Clicked map at {(TileCoordinate) _game.TranslateCoordinates(coordinates)}"
+            );
         }
 
         private void InitialisePathfindingNodes() {
@@ -80,9 +88,17 @@ namespace ShaRPG.Map {
         private void EachTile(Action<int, int> f) {
             for (int x = 0; x < Size.X; x++) for (int y = 0; y < Size.Y; y++) f(x, y);
         }
+    }
 
-        public List<TileCoordinate> GetPath(TileCoordinate start, TileCoordinate finish) {
-            return AStar.GetPath(_pathfindingNodes, start, finish);
+    public struct GameMapEntitySpawnDetails {
+        public readonly TileCoordinate Position;
+        public readonly string EntityName;
+        public readonly List<TileCoordinate> Path;
+
+        public GameMapEntitySpawnDetails(TileCoordinate position, string entityName, List<TileCoordinate> path) {
+            Position = position;
+            EntityName = entityName;
+            Path = path;
         }
     }
 }
