@@ -6,6 +6,8 @@ namespace ShaRPG.Map {
         // Constants
         public const int Width = 64;
         public const int Height = 32;
+        public const int HalfWidth = Width / 2;
+        public const int HalfHeight = Height / 2;
         public static readonly MapTile Null = new NullMapTile(0, null, "Null Tile", false);
         private readonly IDrawable _sprite;
         public readonly bool Collideable;
@@ -27,7 +29,7 @@ namespace ShaRPG.Map {
         }
 
         public virtual void Draw(IRenderSurface renderSurface, TileCoordinate position) {
-            renderSurface.Render(_sprite, position + TextureOffset);
+            renderSurface.Render(_sprite, (GameCoordinate) position + TextureOffset);
         }
 
         private class NullMapTile : MapTile {

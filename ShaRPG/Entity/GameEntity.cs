@@ -25,9 +25,9 @@ namespace ShaRPG.Entity {
         private readonly GameMap _map;
         private readonly List<IComponent> _components = new List<IComponent>();
 
-        private GameCoordinate RenderOffset => new GameCoordinate(MapTile.Width / 2 - _sprite.Width / 2,
+        private GameCoordinate RenderOffset => new GameCoordinate(- _sprite.Width / 2,
                                                                   -_sprite.Height + MapTile.Height / 2)
-                                               + ((GameCoordinate) PreviousPosition - Position) * PositionLerpFraction;
+                                               + (GameCoordinate) (PreviousPosition - Position) * PositionLerpFraction;
 
         public GameEntity(IEntityIdAssigner idAssigner, string name, TileCoordinate position, Sprite sprite,
                       GameMap map, List<TileCoordinate> path) {
@@ -69,7 +69,7 @@ namespace ShaRPG.Entity {
 
         public void Render(IRenderSurface renderSurface) {
             _components.ForEach(x => x.Render(renderSurface));
-            renderSurface.Render(_sprite, Position + RenderOffset);
+            renderSurface.Render(_sprite, (GameCoordinate) Position + RenderOffset);
         }
     }
 }

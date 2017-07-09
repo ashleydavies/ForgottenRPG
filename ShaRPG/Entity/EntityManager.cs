@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using ShaRPG.Util;
+using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Entity {
-    internal class EntityManager : IEntityIdAssigner {
+    internal class EntityManager : IEntityIdAssigner, IClickObserver {
         public GameEntity Player => _playerId >= 0
                                     ? _entities[_playerId]
                                     : throw new EntityException("Unable to determine player - ID not set");
@@ -41,6 +42,14 @@ namespace ShaRPG.Entity {
             foreach (GameEntity e in _entities.Values) {
                 e.Render(renderSurface);
             }
+        }
+
+        public bool IsMouseOver(ScreenCoordinate coordinates) {
+            return false;
+        }
+
+        public void Clicked(ScreenCoordinate coordinates) {
+            throw new NotImplementedException();
         }
     }
 }

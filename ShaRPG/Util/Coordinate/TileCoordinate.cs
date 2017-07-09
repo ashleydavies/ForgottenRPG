@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using ShaRPG.Map;
+using ShaRPG.Service;
 
 namespace ShaRPG.Util.Coordinate {
     public class TileCoordinate : Coordinate {
@@ -7,9 +11,20 @@ namespace ShaRPG.Util.Coordinate {
 
         public static implicit operator GameCoordinate(TileCoordinate tileCoordinate) {
             return new GameCoordinate(
-                (int) ((tileCoordinate.X - tileCoordinate.Y) / 2.0 * MapTile.Width),
-                (int) ((tileCoordinate.X + tileCoordinate.Y) / 2.0 * MapTile.Height)
+                (tileCoordinate.X - tileCoordinate.Y) * MapTile.HalfWidth,
+                (tileCoordinate.X + tileCoordinate.Y) * MapTile.HalfHeight
             );
+        }
+        
+        public static implicit operator TileCoordinate(GameCoordinate gameCoordinate) {
+            return new TileCoordinate(
+                (int) Math.Floor(gameCoordinate.X / 64.0 + gameCoordinate.Y / 32.0),
+                (int) Math.Floor(gameCoordinate.Y / 32.0 - gameCoordinate.X / 64.0)
+            );
+        }
+
+        public static TileCoordinate operator +(TileCoordinate a, TileCoordinate b) {
+            return new TileCoordinate(a.X + b.X, a.Y + b.Y);
         }
 
         public static TileCoordinate operator -(TileCoordinate a, TileCoordinate b) {
