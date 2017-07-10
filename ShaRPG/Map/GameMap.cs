@@ -8,7 +8,7 @@ using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Map {
-    public class GameMap : IClickObserver {
+    public class GameMap : IClickObserver, IPathCreator {
         private readonly StateGame _game;
         private readonly int[,] _tiles;
         private readonly MapNode[,] _pathfindingNodes;
@@ -60,6 +60,7 @@ namespace ShaRPG.Map {
                 LogType.Information,
                 $"Clicked map at {(TileCoordinate) _game.TranslateCoordinates(coordinates)}"
             );
+            _game.MovePlayer(_game.TranslateCoordinates(coordinates));
         }
 
         private void InitialisePathfindingNodes() {

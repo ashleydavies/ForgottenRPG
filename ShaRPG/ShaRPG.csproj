@@ -107,6 +107,8 @@
     <Compile Include="Entity\Components\HealthComponent.cs" />
     <Compile Include="Entity\Components\IComponent.cs" />
     <Compile Include="Entity\Components\IComponentMessage.cs" />
+    <Compile Include="Entity\Components\MovementComponent.cs" />
+    <Compile Include="Entity\Components\PathFollowingComponent.cs" />
     <Compile Include="Entity\GameEntity.cs" />
     <Compile Include="Entity\EntityException.cs" />
     <Compile Include="Entity\EntityLoader.cs" />
@@ -117,6 +119,7 @@
     <Compile Include="GameState\StateGame.cs" />
     <Compile Include="LoadingException.cs" />
     <Compile Include="Map\GameMap.cs" />
+    <Compile Include="Map\IPathCreator.cs" />
     <Compile Include="Map\MapLoader.cs" />
     <Compile Include="Map\MapTile.cs" />
     <Compile Include="Map\MapTileStore.cs" />

@@ -18,8 +18,8 @@ namespace ShaRPG.Util.Coordinate {
         
         public static implicit operator TileCoordinate(GameCoordinate gameCoordinate) {
             return new TileCoordinate(
-                (int) Math.Floor(gameCoordinate.X / 64.0 + gameCoordinate.Y / 32.0),
-                (int) Math.Floor(gameCoordinate.Y / 32.0 - gameCoordinate.X / 64.0)
+                (int) Math.Floor(gameCoordinate.X / (float) MapTile.Width + gameCoordinate.Y / (float) MapTile.Height),
+                (int) Math.Floor(gameCoordinate.Y / (float) MapTile.Height - gameCoordinate.X / (float) MapTile.Width)
             );
         }
 
