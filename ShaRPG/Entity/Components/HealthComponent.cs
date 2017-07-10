@@ -25,9 +25,5 @@ namespace ShaRPG.Entity.Components {
         public override void Update(float delta) {
             Health += delta * 1;
         }
-
-        public override void Message(IComponentMessage componentMessage) {
-            throw new NotImplementedException();
-        }
     }
 }

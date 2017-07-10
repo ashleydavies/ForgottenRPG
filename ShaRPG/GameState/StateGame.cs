@@ -71,7 +71,7 @@ namespace ShaRPG.GameState {
         }
 
         public void MovePlayer(TileCoordinate destination) {
-            _player.GetComponent<MovementComponent>().TargetPosition = destination;
+            _player.SendMessage(new MoveMessage(destination));
         }
 
         public void ExitGame() {

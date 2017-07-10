@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Entity.Components {
@@ -16,21 +17,13 @@ namespace ShaRPG.Entity.Components {
 
         public override void Update(float delta) {
             if (_path.Count > 0 && _path[_pathIndex].Equals(_entity.Position)) {
-                IssueMovement(_path[_pathIndex++]);
+                SendMessage(new MoveMessage(_path[_pathIndex++]));
                 _pathIndex %= _path.Count;
             }
 
             if (!_path[_pathIndex].Equals(_entity.Position)) {
-                IssueMovement(_path[_pathIndex]);
+                SendMessage(new MoveMessage(_path[_pathIndex]));
             }
-        }
-
-        private TileCoordinate IssueMovement(TileCoordinate targetPosition) {
-            return _entity.GetComponent<MovementComponent>().TargetPosition = targetPosition;
-        }
-
-        public override void Message(IComponentMessage componentMessage) {
-            throw new System.NotImplementedException();
         }
     }
 }

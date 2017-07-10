@@ -40,5 +40,9 @@ namespace ShaRPG.Entity {
             _components.ForEach(x => x.Render(renderSurface));
             renderSurface.Render(_sprite, (GameCoordinate) Position + RenderOffset);
         }
+
+        public void SendMessage<T>(T message) {
+            _components.ForEach(x => (x as dynamic).Message(message));
+        }
     }
 }
