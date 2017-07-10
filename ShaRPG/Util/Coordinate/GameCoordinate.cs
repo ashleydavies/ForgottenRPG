@@ -4,6 +4,14 @@ namespace ShaRPG.Util.Coordinate {
     public class GameCoordinate : Coordinate {
         public GameCoordinate(int x, int y) : base(x, y) { }
 
+        public static implicit operator Vector2I(GameCoordinate coordinate) {
+            return new Vector2I(coordinate.X, coordinate.Y);
+        }
+        
+        public static implicit operator Vector2F(GameCoordinate coordinate) {
+            return new Vector2F(coordinate.X, coordinate.Y);
+        }
+
         public static GameCoordinate operator +(GameCoordinate a, GameCoordinate b) {
             return new GameCoordinate(a.X + b.X, a.Y + b.Y);
         }

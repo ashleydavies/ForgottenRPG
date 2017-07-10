@@ -38,8 +38,10 @@ namespace ShaRPG.Entity {
                 throw new EntityException($"Unable to load entity {entityName}");
             }
 
-            GameEntity entity = new GameEntity(_idAssigner, name, position, _spriteStore.GetSprite(spriteName), map, path);
+            GameEntity entity = new GameEntity(_idAssigner, name, position, _spriteStore.GetSprite(spriteName));
             entity.AddComponent(new HealthComponent(entity, health));
+            entity.AddComponent(new MovementComponent(entity, map));
+            if (path.Count > 0) entity.AddComponent(new PathFollowingComponent(entity, path));
             return entity;
         }
     }

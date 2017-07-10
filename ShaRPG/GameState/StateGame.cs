@@ -4,6 +4,7 @@ using SFML.Window;
 using ShaRPG.Camera;
 using ShaRPG.Command;
 using ShaRPG.Entity;
+using ShaRPG.Entity.Components;
 using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util;
@@ -37,6 +38,10 @@ namespace ShaRPG.GameState {
                 {Keyboard.Key.Right, new CameraMoveCommand(Camera, new Vector2F(300, 0))},
                 {Keyboard.Key.X, new ExitGameCommand(this)}
             };
+            
+            if (_player == null) throw new EntityException("No player was created during map loading time");
+
+            Camera.Center = (GameCoordinate) _player.Position;
         }
 
         public override void Update(float delta) {
@@ -63,6 +68,10 @@ namespace ShaRPG.GameState {
             ServiceLocator.LogService.Log(LogType.Information, Camera.Scale.X.ToString());
             Camera.Scale.X += delta / 10f;
             Camera.Scale.Y += delta / 10f;
+        }
+
+        public void MovePlayer(TileCoordinate destination) {
+            _player.GetComponent<MovementComponent>().TargetPosition = destination;
         }
 
         public void ExitGame() {
