@@ -107,6 +107,7 @@
     <Compile Include="Entity\Components\HealthComponent.cs" />
     <Compile Include="Entity\Components\IComponent.cs" />
     <Compile Include="Entity\Components\IComponentMessage.cs" />
+    <Compile Include="Entity\Components\IMessageHandler.cs" />
     <Compile Include="Entity\Components\MovementComponent.cs" />
     <Compile Include="Entity\Components\MoveMessage.cs" />
     <Compile Include="Entity\Components\PathFollowingComponent.cs" />

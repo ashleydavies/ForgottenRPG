@@ -12,7 +12,6 @@ namespace ShaRPG.Entity.Components {
         public void Render(IRenderSurface renderSurface) { }
 
         public abstract void Update(float delta);
-        public virtual void Message(IComponentMessage componentMessage) { }
 
         protected void Dependency<T>() {
             Dependency(typeof(T));
@@ -29,7 +28,7 @@ namespace ShaRPG.Entity.Components {
             }
         }
 
-        protected void SendMessage<T>(T message) {
+        protected void SendMessage<T>(T message) where T: IComponentMessage {
             _entity.SendMessage(message);
         }
     }

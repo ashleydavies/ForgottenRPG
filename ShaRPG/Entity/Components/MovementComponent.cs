@@ -4,7 +4,7 @@ using ShaRPG.Map;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Entity.Components {
-    public class MovementComponent : AbstractComponent {
+    public class MovementComponent : AbstractComponent, IMessageHandler<MoveMessage> {
         public GameCoordinate RenderOffset => (GameCoordinate) (_previousPosition - _entity.Position)
                                               * PositionLerpFraction;
 
