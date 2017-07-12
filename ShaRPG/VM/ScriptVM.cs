@@ -1,6 +1,8 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 #endregion
 
@@ -15,14 +17,20 @@ namespace ShaRPG.VM {
         public ScriptVM(List<int> bytes) {
             _bytes = bytes;
             _registers = new Dictionary<int, int> {
-                [InstructionRegister] = 0
+                [InstructionRegister] = bytes[0]
             };
             _flagRegister = new Flags();
             _stack = new Stack<int>();
         }
 
+        public void Execute() {
+            while (_registers[InstructionRegister] >= 0 && _registers[InstructionRegister] < _bytes.Count) {
+                ExecuteInstruction();
+            }
+        }
+
         private void ExecuteInstruction() {
-            int A, B;
+            int a, b;
             switch (PopInstruction()) {
                 case Instruction.NULL:
                     break;
@@ -42,9 +50,9 @@ namespace ShaRPG.VM {
                     SetFlags(PeekStack());
                     break;
                 case Instruction.Div:
-                    A = PopStack();
-                    B = PopStack();
-                    PushStack(A / B);
+                    a = PopStack();
+                    b = PopStack();
+                    PushStack(a / b);
                     SetFlags(PeekStack());
                     break;
                 case Instruction.Inc:
@@ -62,9 +70,9 @@ namespace ShaRPG.VM {
                     // TODO
                     break;
                 case Instruction.Cmp:
-                    A = PopStack();
-                    B = PopStack();
-                    SetFlags(A - B);
+                    a = PopStack();
+                    b = PopStack();
+                    SetFlags(a - b);
                     break;
                 case Instruction.Jmp:
                     Jump(true);
@@ -87,7 +95,24 @@ namespace ShaRPG.VM {
                 case Instruction.JmpLT:
                     Jump(_flagRegister.LT);
                     break;
+                case Instruction.StackToRegister:
+                    _registers[PopByte()] = PopStack();
+                    break;
+                case Instruction.RegisterToStack:
+                    if (!_registers.ContainsKey(PeekByte())) _registers[PeekByte()] = 0;
+                    PushStack(_registers[PopByte()]);
+                    break;
+                case Instruction.Print:
+                    Console.WriteLine(GetUserDataString(PopStack()));
+                    break;
             }
+        }
+
+        private string GetUserDataString(int userDataId) {
+            // Add one as the first byte is the initial instruction register
+            int pos = _bytes[userDataId + 1];
+            int len = _bytes[pos];
+            return new string(_bytes.GetRange(pos + 1, len).Select(Convert.ToChar).ToArray());
         }
 
         private void Jump(bool doJump) {
@@ -128,7 +153,7 @@ namespace ShaRPG.VM {
             return data;
         }
 
-        private int GetIr() => _bytes[_registers[InstructionRegister]];
+        private int PeekByte() => _bytes[_registers[InstructionRegister]];
         private void PushStack(int data) => _stack.Push(data);
         private int PeekStack() => _stack.Peek();
         private int PopStack() => _stack.Pop();
@@ -154,6 +179,7 @@ namespace ShaRPG.VM {
             JmpLT,
             JmpGTE,
             JmpLTE,
+            Print,
         }
 
         private class Flags {
