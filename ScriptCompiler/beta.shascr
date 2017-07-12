@@ -1,10 +1,18 @@
-﻿MOV r1 0
+﻿.data
+STRING loopmsg Looping...
+STRING endmsg Finished looping!
+.text
+MOV r1 0
 LABEL START
 CMP r1 5
 JEQ END
+
+PRINT loopmsg
 
 ADD r6 1
 
 INC r1
 JMP START
 LABEL END
+
+PRINT endmsg
