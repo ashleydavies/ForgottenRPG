@@ -1,4 +1,4 @@
-﻿namespace ShaRPG.Dialog {
+﻿namespace ShaRPG.EntityDialog {
     class DialogCondition {
     }
 }

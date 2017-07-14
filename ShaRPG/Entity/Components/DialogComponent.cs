@@ -1,6 +1,10 @@
 ﻿namespace ShaRPG.Entity.Components {
     public class DialogComponent : AbstractComponent {
-        public DialogComponent(GameEntity entity) : base(entity) { }
+        private readonly EntityDialog.Dialog _dialog;
+        
+        public DialogComponent(GameEntity entity, EntityDialog.Dialog dialog) : base(entity) {
+            _dialog = dialog;
+        }
 
         public override void Update(float delta) {
             throw new System.NotImplementedException();
