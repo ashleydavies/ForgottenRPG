@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Linq;
 using ShaRPG.Entity.Components;
+using ShaRPG.EntityDialog;
 using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util.Coordinate;
@@ -38,10 +40,12 @@ namespace ShaRPG.Entity {
                 throw new EntityException($"Unable to load entity {entityName}");
             }
 
+            XElement dialogElem = entityInformation.Elements("Dialog").FirstOrDefault();
             GameEntity entity = new GameEntity(_idAssigner, name, position, _spriteStore.GetSprite(spriteName));
             entity.AddComponent(new HealthComponent(entity, health));
             entity.AddComponent(new MovementComponent(entity, map));
             if (path.Count > 0) entity.AddComponent(new PathFollowingComponent(entity, path));
+            if (dialogElem != null) entity.AddComponent(new DialogComponent(entity, Dialog.FromXElement(dialogElem)));
             return entity;
         }
     }
