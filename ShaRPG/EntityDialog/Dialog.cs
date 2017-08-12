@@ -33,7 +33,7 @@ namespace ShaRPG.EntityDialog {
                     nodeReplies.Add(replies[replyId]);
                 }
                 
-                nodes.Add(nodeId, new DialogNode(nodeReplies));
+                nodes.Add(nodeId, new DialogNode(nodeReplies, node.Value.Trim()));
             }
             
             return new Dialog(nodes);

@@ -16,13 +16,14 @@ namespace ShaRPG.GameState {
         private readonly GameMap _map;
         private readonly MapLoader _mapLoader;
         private readonly EntityLoader _entityLoader;
-        private readonly EntityManager _entityManager = new EntityManager();
+        private readonly EntityManager _entityManager;
         private readonly ClickManager _clickManager = new ClickManager();
         private readonly Dictionary<Keyboard.Key, ICommand> _keyMappings;
 
         public StateGame(Game game, Vector2I size, ISpriteStoreService spriteStore,
                          MapTileStore mapTileStore): base(game) {
             Camera = new GameCamera(size);
+            _entityManager = new EntityManager(this);
             _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, spriteStore);
             _mapLoader = new MapLoader(Config.MapDataDirectory, mapTileStore);
             _map = _mapLoader.LoadMap(0, this);
