@@ -54,7 +54,7 @@ namespace ShaRPG.Map {
 
             return tiles;
         }
-
+    
         private List<GameMapEntitySpawnDetails> LoadSpawnPoints(XDocument map) {
             var spawnPoints = new List<GameMapEntitySpawnDetails>();
 

@@ -31,5 +31,9 @@ namespace ShaRPG.Util.Coordinate {
         public double EuclideanDistance(GameCoordinate other) {
             return Math.Sqrt(Math.Pow(X - other.X, 2) + Math.Pow(Y - other.Y, 2));
         }
+
+        public bool Overlaps(GameCoordinate position, int width, int height) {
+            return X > position.X && Y > position.Y && X < position.X + width && Y < position.Y + height;
+        }
     }
 }

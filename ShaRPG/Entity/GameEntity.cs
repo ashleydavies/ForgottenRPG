@@ -14,7 +14,7 @@ namespace ShaRPG.Entity {
         public TileCoordinate Position { get; set; }
         private readonly Sprite _sprite;
         private readonly List<IComponent> _components = new List<IComponent>();
-
+        private GameCoordinate RenderPosition => (GameCoordinate) Position + RenderOffset;
         private GameCoordinate RenderOffset => new GameCoordinate(- _sprite.Width / 2,
                                                                   -_sprite.Height + MapTile.Height / 2)
                                                + GetComponent<MovementComponent>()?.RenderOffset;
@@ -38,11 +38,15 @@ namespace ShaRPG.Entity {
 
         public void Render(IRenderSurface renderSurface) {
             _components.ForEach(x => x.Render(renderSurface));
-            renderSurface.Render(_sprite, (GameCoordinate) Position + RenderOffset);
+            renderSurface.Render(_sprite, RenderPosition);
         }
 
         public void SendMessage<T>(T message) where T: IComponentMessage {
             _components.OfType<IMessageHandler<T>>().ToList().ForEach(x => x.Message(message));
+        }
+
+        public bool MouseOver(GameCoordinate position) {
+            return position.Overlaps(RenderPosition, _sprite.Width, _sprite.Height);
         }
     }
 }
