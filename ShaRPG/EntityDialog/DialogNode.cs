@@ -3,6 +3,10 @@ using System.Xml.Linq;
 
 namespace ShaRPG.EntityDialog {
     public class DialogNode {
-        public List<DialogReply> Replies { get; set; } = new List<DialogReply>();
+        private readonly List<DialogReply> _replies;
+        
+        public DialogNode(List<DialogReply> replies) {
+            _replies = replies;
+        }
     }
 }
