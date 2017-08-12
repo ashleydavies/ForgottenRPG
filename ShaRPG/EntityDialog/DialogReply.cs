@@ -2,6 +2,10 @@
 
 namespace ShaRPG.EntityDialog {
     public class DialogReply {
-        public List<DialogAction> Actions { get; set; }
+        private readonly List<DialogAction> _actions;
+        
+        public DialogReply(List<DialogAction> actions) {
+            _actions = actions;
+        }
     }
 }

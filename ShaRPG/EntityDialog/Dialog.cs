@@ -6,9 +6,9 @@ using System.Xml.XPath;
 
 namespace ShaRPG.EntityDialog {
     public class Dialog {
-        private readonly List<DialogNode> _dialogNodes;
+        private readonly Dictionary<int, DialogNode> _dialogNodes;
         
-        public Dialog(List<DialogNode> dialogNodes) {
+        public Dialog(Dictionary<int, DialogNode> dialogNodes) {
             _dialogNodes = dialogNodes;
         }
 
@@ -17,7 +17,8 @@ namespace ShaRPG.EntityDialog {
             Dictionary<int, DialogNode> nodes = new Dictionary<int, DialogNode>();
 
             foreach (XElement node in dialog.XPathSelectElements("./Nodes/Node")) {
-                DialogNode dialogNode = new DialogNode();
+                int nodeId = int.Parse(node.Attribute("id")?.Value);
+                List<DialogReply> nodeReplies = new List<DialogReply>();
 
                 foreach (XElement nodeReply in node.Elements("Reply")) {
                     int replyId;
@@ -25,12 +26,37 @@ namespace ShaRPG.EntityDialog {
                         throw new DialogException("Unspecified ID in node's reply reference");
 
                     if (!replies.ContainsKey(replyId)) {
-                        
+                        XElement reply = dialog.XPathSelectElement($"./Replies/Reply[@id='{replyId}']");
+                        replies.Add(replyId, LoadReply(reply));
                     }
                     
-                    dialogNode.Replies.Add(replies[replyId]);
+                    nodeReplies.Add(replies[replyId]);
+                }
+                
+                nodes.Add(nodeId, new DialogNode(nodeReplies));
+            }
+            
+            return new Dialog(nodes);
+        }
+
+        private static DialogReply LoadReply(XElement reply) {
+            List<DialogAction> replyActions = new List<DialogAction>();
+            
+            foreach (XElement replyAction in reply.Elements("Action")) {
+                switch (replyAction.Attribute("type")?.Value) {
+                    case "changeNode":
+                        replyActions.Add(new DialogActionChangeNode(int.Parse(replyAction.Attribute("id").Value)));
+                        break;
+                    case "endDiscussion":
+                        replyAction.Add(new DialogActionEndDiscussion());
+                        break;
+                    case "code":
+                        replyAction.Add(new DialogActionCode(replyAction.Value.Split(',').Select(int.Parse).ToList()));
+                        break;
                 }
             }
+            
+            return new DialogReply(replyActions);
         }
     }
 

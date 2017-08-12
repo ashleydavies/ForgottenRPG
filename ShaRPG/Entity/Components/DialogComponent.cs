@@ -7,7 +7,7 @@
         }
 
         public override void Update(float delta) {
-            throw new System.NotImplementedException();
+
         }
     }
 }
