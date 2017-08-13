@@ -3,7 +3,7 @@
     <NamespaceResolutions>
         <NamespaceResolution id="0" name="tiles"/>
         <NamespaceResolution id="1" name="entities"/>
-        <NamespaceResolution id="2" name="ui"/>
+        <NamespaceResolution id="2" name="UI"/>
     </NamespaceResolutions>
     
     <TextureResolutions>
@@ -24,6 +24,11 @@
 
         <TextureResolution id="3" namespace="2">
             <name>ui</name>
+            <extension>png</extension>
+        </TextureResolution>
+        
+        <TextureResolution id="4" namespace="2">
+            <name>avatars</name>
             <extension>png</extension>
         </TextureResolution>
     </TextureResolutions>
@@ -159,6 +164,11 @@
         <ImageResolution id="10008" name="ui_background" texture="3">
             <position x="24" y="0"/>
             <size width="60" height="60"/>
+        </ImageResolution>
+
+        <ImageResolution id="10009" name="ui_avatar_farmer_joe" texture="4">
+            <position x="0" y="0"/>
+            <size width="64" height="128"/>
         </ImageResolution>
     </ImageResolutions>
     
