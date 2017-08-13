@@ -5,8 +5,9 @@ using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GUI {
-    public class TextContainer : AbstractGuiComponent, IGuiComponent {
+    public class TextContainer : AbstractGuiComponent {
         public int LineSpacing { get; set; } = 2;
+        public int Indent { get; set; } = 0;
         public override int Height => _textList.Aggregate(0, (h, text) => h + text.Height) + TotalSpacing;
         public override int Width => Parent.Width;
         private readonly string _contents;
@@ -29,7 +30,7 @@ namespace ShaRPG.GUI {
             _textList.Clear();
 
             Text previous = null;
-            string currentString = string.Empty;
+            string currentString = string.Empty.PadLeft(Indent);
             
             foreach (string word in _contents.Split(' ')) {
                 string testString = $"{currentString} {word}";
@@ -39,7 +40,7 @@ namespace ShaRPG.GUI {
                 if (testText.Width > Width) {
                     if (currentString == string.Empty) return;
                     _textList.Add(previous);
-                    currentString = string.Empty;
+                    currentString = word;
                     continue;
                 }
 
@@ -47,7 +48,7 @@ namespace ShaRPG.GUI {
                 previous = testText;
             }
 
-            if (currentString != string.Empty) {
+            if (currentString.Trim() != string.Empty) {
                 Text testText = new Text(Config.GuiFont, currentString);
                 if (testText.Width > Width) return;
                 _textList.Add(testText);
