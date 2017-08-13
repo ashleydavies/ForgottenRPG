@@ -7,7 +7,14 @@ using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GUI {
-    public class GuiWindow {
+    public class GuiWindow : IGuiComponentContainer {
+        public IGuiComponentContainer Parent {
+            get => null;
+            set => throw new NotImplementedException();
+        }
+        public int Width => _size.X - 2 * BorderTSize;
+        public int Height => _size.Y - 2 * BorderTSize;
+
         private const int BorderTSize = 12;
         private const int BgTSize = 60;
         private readonly ISpriteStoreService _spriteStore;
@@ -75,8 +82,22 @@ namespace ShaRPG.GUI {
             }
         }
 
-        protected void AddComponent(IGuiComponent component) {
+        public void Reflow() {
+            _components.ForEach(c => c.Reflow());
+        }
+
+        public void AddComponent(IGuiComponent component) {
             _components.Add(component);
+            component.Parent = this;
+        }
+
+        public void RemoveComponent(IGuiComponent component) {
+            _components.Remove(component);
+            if (component.Parent == this) component.Parent = null;
+        }
+
+        public bool HasComponent(IGuiComponent component) {
+            return _components.Contains(component);
         }
 
         private void RenderUi(IRenderSurface renderSurface, string part, ScreenCoordinate position) {
