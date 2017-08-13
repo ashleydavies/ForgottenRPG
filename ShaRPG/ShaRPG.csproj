@@ -121,7 +121,11 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameState\AbstractGameState.cs" />
     <Compile Include="GameState\StateGame.cs" />
-    <Compile Include="GUI\FlowContainer.cs" />
+    <Compile Include="GUI\AbstractGuiComponent.cs" />
+    <Compile Include="GUI\IGuiComponentContainer.cs" />
+    <Compile Include="GUI\PaddingContainer.cs" />
+    <Compile Include="GUI\TextContainer.cs" />
+    <Compile Include="GUI\VerticalFlowContainer.cs" />
     <Compile Include="GUI\GuiException.cs" />
     <Compile Include="GUI\GuiWindow.cs" />
     <Compile Include="GUI\IGuiComponent.cs" />
@@ -153,6 +157,7 @@
     <Compile Include="Util\DeltaClock.cs" />
     <Compile Include="Util\Direction.cs" />
     <Compile Include="Util\ClickManager.cs" />
+    <Compile Include="Util\Font.cs" />
     <Compile Include="Util\IClickObserver.cs" />
     <Compile Include="Util\IDrawable.cs" />
     <Compile Include="Util\Image.cs" />
@@ -160,6 +165,7 @@
     <Compile Include="Util\Mouse.cs" />
     <Compile Include="Util\RenderSurfaceOffset.cs" />
     <Compile Include="Util\Sprite.cs" />
+    <Compile Include="Util\Text.cs" />
     <Compile Include="Util\Texture.cs" />
     <Compile Include="Util\TextureType.cs" />
     <Compile Include="Util\Vector2F.cs" />
@@ -218,6 +224,18 @@
     <Content Include="Resources\Data\XML\Map\mapList.xml" />
     <Content Include="Resources\Data\XML\Mob\1.xml" />
     <Content Include="Resources\Data\XML\TileData.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Font\LiberationSans-Bold.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Font\LiberationSans-BoldItalic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Font\LiberationSans-Italic.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Font\LiberationSans-Regular.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Image\button.png" />
