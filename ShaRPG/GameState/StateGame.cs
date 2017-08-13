@@ -25,32 +25,48 @@ namespace ShaRPG.GameState {
         private readonly GuiWindow _guiWindow;
 
         public StateGame(Game game, Vector2I size, ISpriteStoreService spriteStore,
-                         MapTileStore mapTileStore): base(game) {
+                         MapTileStore mapTileStore) : base(game) {
             Camera = new GameCamera(size);
             _entityManager = new EntityManager(this);
             _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, spriteStore);
             _mapLoader = new MapLoader(Config.MapDataDirectory, mapTileStore);
             _map = _mapLoader.LoadMap(0, this);
             _map.SpawnEntities(_entityLoader);
-            
-            _guiWindow = new GuiWindow(spriteStore, size / 2, new Vector2I(444, 564));
-            VerticalFlowContainer container = new VerticalFlowContainer();
-            _guiWindow.AddComponent(container);
 
-            container.AddComponent(new PaddingContainer(5, new TextContainer("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")));
-            container.AddComponent(new TextContainer("Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."));
-            
+            string content = "Hello, my name is Farmer Joe. I'm a farmer who lives in Beginning Valley. I farm crops."
+                             + " I am walking around the map on a fixed path and this is some dialog.";
+
+            _guiWindow = new GuiWindow(spriteStore, size / 2, new Vector2I(444, 564));
+
+            VerticalFlowContainer container = new VerticalFlowContainer();
+            ColumnContainer columnContainer = new ColumnContainer(ColumnContainer.Side.Left, 80);
+            columnContainer.SetLeftComponent(new SpriteContainer(spriteStore.GetSprite("ui_avatar_farmer_joe"),
+                                                                 Alignment.Center));
+            columnContainer.SetRightComponent(container);
+            container.AddComponent(new PaddingContainer(5, new TextContainer(content) {
+                LineSpacing = 5,
+                Indent = 2
+            }));
+
+            _guiWindow.AddComponent(columnContainer);
+
             _clickManager.Register(ClickPriority.Entity, _entityManager);
             _clickManager.Register(ClickPriority.Map, _map);
-            
+
             _keyMappings = new Dictionary<Keyboard.Key, ICommand> {
-                {Keyboard.Key.Up, new CameraMoveCommand(Camera, new Vector2F(0, -300))},
-                {Keyboard.Key.Down, new CameraMoveCommand(Camera, new Vector2F(0, 300))},
-                {Keyboard.Key.Left, new CameraMoveCommand(Camera, new Vector2F(-300, 0))},
-                {Keyboard.Key.Right, new CameraMoveCommand(Camera, new Vector2F(300, 0))},
-                {Keyboard.Key.X, new ExitGameCommand(this)}
+                {
+                    Keyboard.Key.Up, new CameraMoveCommand(Camera, new Vector2F(0, -300))
+                }, {
+                    Keyboard.Key.Down, new CameraMoveCommand(Camera, new Vector2F(0, 300))
+                }, {
+                    Keyboard.Key.Left, new CameraMoveCommand(Camera, new Vector2F(-300, 0))
+                }, {
+                    Keyboard.Key.Right, new CameraMoveCommand(Camera, new Vector2F(300, 0))
+                }, {
+                    Keyboard.Key.X, new ExitGameCommand(this)
+                }
             };
-            
+
             if (_player == null) throw new EntityException("No player was created during map loading time");
 
             Camera.Center = (GameCoordinate) _player.Position;

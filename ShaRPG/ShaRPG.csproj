@@ -122,8 +122,11 @@
     <Compile Include="GameState\AbstractGameState.cs" />
     <Compile Include="GameState\StateGame.cs" />
     <Compile Include="GUI\AbstractGuiComponent.cs" />
+    <Compile Include="GUI\Alignment.cs" />
+    <Compile Include="GUI\ColumnContainer.cs" />
     <Compile Include="GUI\IGuiComponentContainer.cs" />
     <Compile Include="GUI\PaddingContainer.cs" />
+    <Compile Include="GUI\SpriteContainer.cs" />
     <Compile Include="GUI\TextContainer.cs" />
     <Compile Include="GUI\VerticalFlowContainer.cs" />
     <Compile Include="GUI\GuiException.cs" />
@@ -255,8 +258,10 @@
     </Content>
     <Content Include="Resources\Image\ts_items.png" />
     <Content Include="Resources\Image\ts_primary_ortho.png" />
-    <Content Include="Resources\Image\ui\avatar\mob\fred.png" />
-    <Content Include="Resources\Image\ui\ui.png">
+    <Content Include="Resources\Image\UI\avatars.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Image\UI\ui.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Image\worldmap.png" />
