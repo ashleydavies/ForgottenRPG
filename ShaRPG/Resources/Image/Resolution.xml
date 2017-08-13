@@ -3,6 +3,7 @@
     <NamespaceResolutions>
         <NamespaceResolution id="0" name="tiles"/>
         <NamespaceResolution id="1" name="entities"/>
+        <NamespaceResolution id="2" name="ui"/>
     </NamespaceResolutions>
     
     <TextureResolutions>
@@ -18,6 +19,11 @@
 
         <TextureResolution id="2" namespace="1">
             <name>farmerjoe</name>
+            <extension>png</extension>
+        </TextureResolution>
+
+        <TextureResolution id="3" namespace="2">
+            <name>ui</name>
             <extension>png</extension>
         </TextureResolution>
     </TextureResolutions>
@@ -98,6 +104,7 @@
             <size width="65" height="66"/>
         </ImageResolution>
 
+        
         <ImageResolution id="1000" name="player" texture="1">
             <position x="0" y="0"/>
             <size width="32" height="64"/>
@@ -106,6 +113,52 @@
         <ImageResolution id="1001" name="farmerjoe_texture" texture="2">
             <position x="0" y="0"/>
             <size width="32" height="64"/>
+        </ImageResolution>
+
+        
+        <ImageResolution id="10000" name="ui_corner_tl" texture="3">
+            <position x="0" y="0"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+        
+        <ImageResolution id="10001" name="ui_corner_tr" texture="3">
+            <position x="12" y="0"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+        
+        <ImageResolution id="10002" name="ui_corner_bl" texture="3">
+            <position x="0" y="12"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+
+        <ImageResolution id="10003" name="ui_corner_br" texture="3">
+            <position x="12" y="12"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+
+        <ImageResolution id="10004" name="ui_side_l" texture="3">
+            <position x="0" y="24"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+
+        <ImageResolution id="10005" name="ui_side_r" texture="3">
+            <position x="12" y="36"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+
+        <ImageResolution id="10006" name="ui_side_t" texture="3">
+            <position x="12" y="24"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+
+        <ImageResolution id="10007" name="ui_side_b" texture="3">
+            <position x="0" y="36"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+
+        <ImageResolution id="10008" name="ui_background" texture="3">
+            <position x="24" y="0"/>
+            <size width="60" height="60"/>
         </ImageResolution>
     </ImageResolutions>
     

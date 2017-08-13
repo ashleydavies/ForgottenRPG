@@ -121,6 +121,10 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameState\AbstractGameState.cs" />
     <Compile Include="GameState\StateGame.cs" />
+    <Compile Include="GUI\FlowContainer.cs" />
+    <Compile Include="GUI\GuiException.cs" />
+    <Compile Include="GUI\GuiWindow.cs" />
+    <Compile Include="GUI\IGuiComponent.cs" />
     <Compile Include="LoadingException.cs" />
     <Compile Include="Map\GameMap.cs" />
     <Compile Include="Map\IPathCreator.cs" />
@@ -154,6 +158,7 @@
     <Compile Include="Util\Image.cs" />
     <Compile Include="Util\IRenderSurface.cs" />
     <Compile Include="Util\Mouse.cs" />
+    <Compile Include="Util\RenderSurfaceOffset.cs" />
     <Compile Include="Util\Sprite.cs" />
     <Compile Include="Util\Texture.cs" />
     <Compile Include="Util\TextureType.cs" />
@@ -233,7 +238,9 @@
     <Content Include="Resources\Image\ts_items.png" />
     <Content Include="Resources\Image\ts_primary_ortho.png" />
     <Content Include="Resources\Image\ui\avatar\mob\fred.png" />
-    <Content Include="Resources\Image\ui\ui.png" />
+    <Content Include="Resources\Image\ui\ui.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Image\worldmap.png" />
   </ItemGroup>
   <ItemGroup>

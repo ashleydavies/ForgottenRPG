@@ -29,7 +29,6 @@ namespace ShaRPG.EntityDialog {
 
         public DialogActionCode(List<int> code) {
             _code = code;
-            Execute();
         }
 
         public override void Execute() {

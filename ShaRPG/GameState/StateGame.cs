@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using SFML.System;
 using SFML.Window;
 using ShaRPG.Camera;
 using ShaRPG.Command;
 using ShaRPG.Entity;
 using ShaRPG.Entity.Components;
+using ShaRPG.GUI;
 using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util;
@@ -19,6 +21,7 @@ namespace ShaRPG.GameState {
         private readonly EntityManager _entityManager;
         private readonly ClickManager _clickManager = new ClickManager();
         private readonly Dictionary<Keyboard.Key, ICommand> _keyMappings;
+        private readonly GuiWindow _guiWindow;
 
         public StateGame(Game game, Vector2I size, ISpriteStoreService spriteStore,
                          MapTileStore mapTileStore): base(game) {
@@ -28,6 +31,8 @@ namespace ShaRPG.GameState {
             _mapLoader = new MapLoader(Config.MapDataDirectory, mapTileStore);
             _map = _mapLoader.LoadMap(0, this);
             _map.SpawnEntities(_entityLoader);
+            
+            _guiWindow = new GuiWindow(spriteStore, size / 2, new Vector2I(444, 564));
             
             _clickManager.Register(ClickPriority.Entity, _entityManager);
             _clickManager.Register(ClickPriority.Map, _map);
@@ -59,6 +64,7 @@ namespace ShaRPG.GameState {
         public override void Render(IRenderSurface renderSurface) {
             _map.Render(renderSurface);
             _entityManager.Render(renderSurface);
+            _guiWindow.Render(renderSurface);
         }
 
         public override void Clicked(ScreenCoordinate coordinates) {
