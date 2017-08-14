@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ShaRPG.Map;
+﻿using ShaRPG.Map;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Entity.Components {
