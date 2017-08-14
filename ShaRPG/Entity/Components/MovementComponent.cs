@@ -33,6 +33,8 @@ namespace ShaRPG.Entity.Components {
                     _positionLerpTime -= delta;
                 }
             }
+            
+            if (_positionLerpTime < 0) _positionLerpTime = 0.0f;
         }
 
         public void Message(MoveMessage message) {
