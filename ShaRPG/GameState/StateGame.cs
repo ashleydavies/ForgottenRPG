@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using SFML.Window;
 using ShaRPG.Camera;
 using ShaRPG.Command;
 using ShaRPG.Entity;
 using ShaRPG.Entity.Components;
+using ShaRPG.GUI;
 using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util;
@@ -19,27 +20,33 @@ namespace ShaRPG.GameState {
         private readonly EntityManager _entityManager;
         private readonly ClickManager _clickManager = new ClickManager();
         private readonly Dictionary<Keyboard.Key, ICommand> _keyMappings;
+        private readonly FPSCounter _fpsCounter = new FPSCounter();
 
         public StateGame(Game game, Vector2I size, ISpriteStoreService spriteStore,
-                         MapTileStore mapTileStore): base(game) {
+                         MapTileStore mapTileStore) : base(game) {
             Camera = new GameCamera(size);
             _entityManager = new EntityManager(this);
             _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, spriteStore);
             _mapLoader = new MapLoader(Config.MapDataDirectory, mapTileStore);
             _map = _mapLoader.LoadMap(0, this);
             _map.SpawnEntities(_entityLoader);
-            
             _clickManager.Register(ClickPriority.Entity, _entityManager);
             _clickManager.Register(ClickPriority.Map, _map);
-            
+
             _keyMappings = new Dictionary<Keyboard.Key, ICommand> {
-                {Keyboard.Key.Up, new CameraMoveCommand(Camera, new Vector2F(0, -300))},
-                {Keyboard.Key.Down, new CameraMoveCommand(Camera, new Vector2F(0, 300))},
-                {Keyboard.Key.Left, new CameraMoveCommand(Camera, new Vector2F(-300, 0))},
-                {Keyboard.Key.Right, new CameraMoveCommand(Camera, new Vector2F(300, 0))},
-                {Keyboard.Key.X, new ExitGameCommand(this)}
+                {
+                    Keyboard.Key.Up, new CameraMoveCommand(Camera, new Vector2F(0, -300))
+                }, {
+                    Keyboard.Key.Down, new CameraMoveCommand(Camera, new Vector2F(0, 300))
+                }, {
+                    Keyboard.Key.Left, new CameraMoveCommand(Camera, new Vector2F(-300, 0))
+                }, {
+                    Keyboard.Key.Right, new CameraMoveCommand(Camera, new Vector2F(300, 0))
+                }, {
+                    Keyboard.Key.X, new ExitGameCommand(this)
+                }
             };
-            
+
             if (_player == null) throw new EntityException("No player was created during map loading time");
 
             Camera.Center = (GameCoordinate) _player.Position;
@@ -54,11 +61,13 @@ namespace ShaRPG.GameState {
 
             _map.Update(delta);
             _entityManager.Update(delta);
+            _fpsCounter.Update(delta);
         }
 
         public override void Render(IRenderSurface renderSurface) {
             _map.Render(renderSurface);
             _entityManager.Render(renderSurface);
+            _fpsCounter.Render(renderSurface);
         }
 
         public override void Clicked(ScreenCoordinate coordinates) {
