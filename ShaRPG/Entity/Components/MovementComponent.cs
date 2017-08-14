@@ -6,7 +6,7 @@ namespace ShaRPG.Entity.Components {
         public GameCoordinate RenderOffset => (GameCoordinate) (_previousPosition - _entity.Position)
                                               * PositionLerpFraction;
 
-        private const float TotalPositionLerpTime = 0.25f;
+        private const float TotalPositionLerpTime = 0.3f;
         private const float PositionLerpTimeMultiplier = 1 / TotalPositionLerpTime;
         private float _positionLerpTime;
         private float PositionLerpFraction => _positionLerpTime * PositionLerpTimeMultiplier;
