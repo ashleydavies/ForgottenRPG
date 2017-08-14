@@ -161,6 +161,7 @@
     <Compile Include="Util\Direction.cs" />
     <Compile Include="Util\ClickManager.cs" />
     <Compile Include="Util\Font.cs" />
+    <Compile Include="Util\FPSCounter.cs" />
     <Compile Include="Util\IClickObserver.cs" />
     <Compile Include="Util\IDrawable.cs" />
     <Compile Include="Util\Image.cs" />

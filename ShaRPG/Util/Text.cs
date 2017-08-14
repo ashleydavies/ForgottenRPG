@@ -11,7 +11,7 @@ namespace ShaRPG.Util {
         public Text(Font font, string content) {
             _text = new SFML.Graphics.Text(content, font.UnderlyingFont) {
                 Color = Color.Black,
-                CharacterSize = 14
+                CharacterSize = 12
             };
         }
 
