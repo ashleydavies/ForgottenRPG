@@ -7,6 +7,7 @@ It runs a simple 'bytecode' (integer array) VM as a scripting language, with a r
 
 # Status
 
+## Completed & information
 The following show the completed parts of / technical information about each main component:
 
  * Core information
@@ -39,6 +40,41 @@ The following show the completed parts of / technical information about each mai
      * Vertical flow container (renders children one below the other; height is sum of children's height)
      * Column container (dual column, one fixed, other stretches to fill space. Height is max of both column heights)
      * Padding container (simply adds padding around child component)
+
+## Upcoming / planned
+
+The following are (very broad) features I intend to implement in the future:
+
+ * Inventory system
+   * Items should be able to be on the floor, picked up, and dropped
+ * NPC inventory system
+   * Should use a component based system to share logic with player
+   * But player should have an inventory GUI and NPCs should have a shop component accessible through dialog
+ * World map
+   * Going to the border of the map should move you to the world map, where you can travel to the next location or go to previous locations
+   * Should load from a dynamic format
+ * Combat
+   * Combat with NPCs. NPCs should be able to be friendly and hostile. Hostile should engage on sight, whereas friendly will just talk to you. You may attack friendly NPCs which will turn them (and possibly their friends) hostile.
+ * Companions
+   * You should be able to recruit companions, who follow you around and may also have their own inventory
+ * Quests
+   * You should be able to see and accept quests, potentially from NPCs or events, and complete them
+ * Menu
+   * There should be a menu screen
+   * Settings
+ * Sound
+   * There should be sounds for walking, ambience, etc...
+ * Proper art
+   * Take a look at the resources/images folder... Need I say more...
+ * Saving/loading
+ * Level system with abilities to level up e.g. agility, swordsmanship
+ * Proper scripting language for the VM
+ * Nicer NPC editor (There is an existing dialog editor in my old RPG project which I can definitely repurpose)
+ * Loading screens
+   * Currently everything loads instantly, but this will likely change throughout development. I will likely do a loading screen when this actually presents a problem, though keeping it in mind to avoid embedding too much loading logic too strongly into the main synchronous game loop may be a good idea.
+ * ... An actual game!
+   * If everything above is implemented, the only thing left to do is actually create games on top of this engine. Finally! :)
+     * Though at the current rate I am developing, I'll probably die of old age before I get around to this
 
 # Scripting
 
