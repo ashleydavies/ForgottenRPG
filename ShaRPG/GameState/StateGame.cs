@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using SFML.System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using SFML.Window;
 using ShaRPG.Camera;
 using ShaRPG.Command;
@@ -22,7 +20,7 @@ namespace ShaRPG.GameState {
         private readonly EntityManager _entityManager;
         private readonly ClickManager _clickManager = new ClickManager();
         private readonly Dictionary<Keyboard.Key, ICommand> _keyMappings;
-        private readonly GuiWindow _guiWindow;
+        private readonly FPSCounter _fpsCounter = new FPSCounter();
 
         public StateGame(Game game, Vector2I size, ISpriteStoreService spriteStore,
                          MapTileStore mapTileStore) : base(game) {
@@ -32,24 +30,6 @@ namespace ShaRPG.GameState {
             _mapLoader = new MapLoader(Config.MapDataDirectory, mapTileStore);
             _map = _mapLoader.LoadMap(0, this);
             _map.SpawnEntities(_entityLoader);
-
-            string content = "Hello, my name is Farmer Joe. I'm a farmer who lives in Beginning Valley. I farm crops."
-                             + " I am walking around the map on a fixed path and this is some dialog.";
-
-            _guiWindow = new GuiWindow(spriteStore, size / 2, new Vector2I(444, 564));
-
-            VerticalFlowContainer container = new VerticalFlowContainer();
-            ColumnContainer columnContainer = new ColumnContainer(ColumnContainer.Side.Left, 80);
-            columnContainer.SetLeftComponent(new SpriteContainer(spriteStore.GetSprite("ui_avatar_farmer_joe"),
-                                                                 Alignment.Center));
-            columnContainer.SetRightComponent(container);
-            container.AddComponent(new PaddingContainer(5, new TextContainer(content) {
-                LineSpacing = 5,
-                Indent = 2
-            }));
-
-            _guiWindow.AddComponent(columnContainer);
-
             _clickManager.Register(ClickPriority.Entity, _entityManager);
             _clickManager.Register(ClickPriority.Map, _map);
 
@@ -81,12 +61,13 @@ namespace ShaRPG.GameState {
 
             _map.Update(delta);
             _entityManager.Update(delta);
+            _fpsCounter.Update(delta);
         }
 
         public override void Render(IRenderSurface renderSurface) {
             _map.Render(renderSurface);
             _entityManager.Render(renderSurface);
-            _guiWindow.Render(renderSurface);
+            _fpsCounter.Render(renderSurface);
         }
 
         public override void Clicked(ScreenCoordinate coordinates) {
