@@ -102,6 +102,7 @@
     <Compile Include="EntityDialog\DialogNode.cs" />
     <Compile Include="EntityDialog\DialogReply.cs" />
     <Compile Include="EndGameException.cs" />
+    <Compile Include="EntityDialog\IOpenDialog.cs" />
     <Compile Include="Entity\Components\ComponentException.cs" />
     <Compile Include="Entity\Components\AbstractComponent.cs" />
     <Compile Include="Entity\Components\DialogComponent.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Entity\IEntityIdAssigner.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameState\AbstractGameState.cs" />
+    <Compile Include="GameState\DialogState.cs" />
     <Compile Include="GameState\StateGame.cs" />
     <Compile Include="GUI\AbstractGuiComponent.cs" />
     <Compile Include="GUI\Alignment.cs" />

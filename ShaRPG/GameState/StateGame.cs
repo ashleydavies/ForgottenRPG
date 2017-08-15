@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using SFML.Window;
 using ShaRPG.Camera;
 using ShaRPG.Command;
 using ShaRPG.Entity;
 using ShaRPG.Entity.Components;
+using ShaRPG.EntityDialog;
 using ShaRPG.GUI;
 using ShaRPG.Map;
 using ShaRPG.Service;
@@ -12,7 +14,7 @@ using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GameState {
-    public class StateGame : AbstractGameState {
+    public class StateGame : AbstractGameState, IOpenDialog {
         private GameEntity _player => _entityManager.Player;
         private readonly GameMap _map;
         private readonly MapLoader _mapLoader;
@@ -23,8 +25,7 @@ namespace ShaRPG.GameState {
         private readonly FPSCounter _fpsCounter = new FPSCounter();
 
         public StateGame(Game game, Vector2I size, ISpriteStoreService spriteStore,
-                         MapTileStore mapTileStore) : base(game) {
-            Camera = new GameCamera(size);
+                         MapTileStore mapTileStore) : base(game, new GameCamera(size)) {
             _entityManager = new EntityManager(this);
             _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, spriteStore);
             _mapLoader = new MapLoader(Config.MapDataDirectory, mapTileStore);
@@ -90,6 +91,10 @@ namespace ShaRPG.GameState {
 
         public GameCoordinate TranslateCoordinates(ScreenCoordinate coordinates) {
             return coordinates.AsGameCoordinate(Camera);
+        }
+
+        public void StartDialog(Dialog dialog) {
+            ChangeState(new DialogState(Game, dialog, Camera));
         }
     }
 }
