@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Channels;
 using SFML.Graphics;
-using SFML.System;
 using SFML.Window;
 using ShaRPG.GameState;
 using ShaRPG.Map;
@@ -21,7 +21,6 @@ namespace ShaRPG {
         private readonly IRenderSurface _renderSurface;
         private readonly ISpriteStoreService _spriteStore;
         private readonly RenderWindow _window;
-        private static readonly Vector2u ScreenSize = new Vector2u(1800, 900);
 
         private Game() {
             ServiceLocator.LogService = new ConsoleLogService();
@@ -32,11 +31,10 @@ namespace ShaRPG {
             _spriteStore = new CachedFileSpriteStoreService(Path.Combine("Resources", "Image"));
             _mapTileStore = new MapTileStore(Path.Combine("Resources", "Data", "XML"), _spriteStore);
 
-            _window = new RenderWindow(new VideoMode(ScreenSize.X, ScreenSize.Y), "RPG", Styles.Titlebar) {
-                Size = ScreenSize
-            };
+            _window = new RenderWindow(VideoMode.FullscreenModes[0], "RPG", Styles.Titlebar | Styles.Fullscreen);
             _renderSurface = new WindowRenderSurface(_window);
             Mouse.SFMLWindow = _window;
+            Vector2I windowSize = new Vector2I((int) _window.Size.X, (int) _window.Size.Y);
 
             _window.Closed += (sender, args)
                 => _window.Close();
@@ -45,9 +43,9 @@ namespace ShaRPG {
             _window.MouseButtonReleased += (sender, args)
                 => _gameStates.Peek().Clicked(new ScreenCoordinate(args.X, args.Y));
             _window.Resized += (sender, args)
-                => _renderSurface.Size = new Vector2I((int) _window.Size.X, (int) _window.Size.Y);
+                => _renderSurface.Size = windowSize;
 
-            SetGameState(new GameState.StateGame(this, ScreenSize, _spriteStore, _mapTileStore));
+            SetGameState(new StateGame(this, windowSize, _spriteStore, _mapTileStore));
 
             while (_window.IsOpen) {
                 _window.DispatchEvents();
@@ -57,7 +55,10 @@ namespace ShaRPG {
 
                 try {
                     _gameStates.Peek().Update(_deltaClock.GetDelta());
-                    _gameStates.ToList().ForEach(state => state.Render(_renderSurface));
+
+                    foreach (var state in (_gameStates.ToList() as IEnumerable<AbstractGameState>).Reverse()) {
+                        state.Render(_renderSurface);
+                    }
                 } catch (EndGameException) {
                     break;
                 }

@@ -23,9 +23,13 @@ namespace ShaRPG.GameState {
         private readonly ClickManager _clickManager = new ClickManager();
         private readonly Dictionary<Keyboard.Key, ICommand> _keyMappings;
         private readonly FPSCounter _fpsCounter = new FPSCounter();
+        private readonly ISpriteStoreService _spriteStore;
+        private Vector2I _windowSize;
 
         public StateGame(Game game, Vector2I size, ISpriteStoreService spriteStore,
                          MapTileStore mapTileStore) : base(game, new GameCamera(size)) {
+            _windowSize = size;
+            _spriteStore = spriteStore;
             _entityManager = new EntityManager(this);
             _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, spriteStore);
             _mapLoader = new MapLoader(Config.MapDataDirectory, mapTileStore);
@@ -94,7 +98,7 @@ namespace ShaRPG.GameState {
         }
 
         public void StartDialog(Dialog dialog) {
-            ChangeState(new DialogState(Game, dialog, Camera));
+            ChangeState(new DialogState(Game, dialog, _windowSize, Camera, _spriteStore));
         }
     }
 }
