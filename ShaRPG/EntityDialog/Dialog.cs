@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace ShaRPG.EntityDialog {
     public class Dialog {
+        public string Name => "Farmer Joe";
+        public string Prompt => _dialogNodes[_currentNode].Prompt;
+        public List<string> Replies => _dialogNodes[_currentNode].Replies;
+        public string Character => "ui_avatar_farmer_joe";
         private readonly Dictionary<int, DialogNode> _dialogNodes;
         private readonly IOpenDialog _dialogOpener;
+        private int _currentNode = 0;
 
         public Dialog(IOpenDialog dialogOpener, Dictionary<int, DialogNode> dialogNodes) {
             _dialogOpener = dialogOpener;
@@ -46,6 +52,7 @@ namespace ShaRPG.EntityDialog {
         }
 
         private static DialogReply LoadReply(XElement reply) {
+            string prompt = reply.Value.Trim();
             List<DialogAction> replyActions = new List<DialogAction>();
             
             foreach (XElement replyAction in reply.Elements("Action")) {
@@ -55,6 +62,7 @@ namespace ShaRPG.EntityDialog {
                         break;
                     case "endDiscussion":
                         replyAction.Add(new DialogActionEndDiscussion());
+                        if (string.IsNullOrEmpty(prompt)) prompt = "End discussion";
                         break;
                     case "code":
                         replyAction.Add(new DialogActionCode(replyAction.Value.Split(',').Select(int.Parse).ToList()));
@@ -62,7 +70,7 @@ namespace ShaRPG.EntityDialog {
                 }
             }
             
-            return new DialogReply(replyActions);
+            return new DialogReply(prompt, replyActions);
         }
     }
 

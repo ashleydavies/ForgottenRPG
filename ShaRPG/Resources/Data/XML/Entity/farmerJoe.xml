@@ -6,8 +6,9 @@
     <Dialog>
         <Nodes>
             <Node id="0">
-                Hello, my name is Farmer Joe
+                Hello, my name is Farmer Joe. I am a farmer in this area and I farm a lot of crops such as Strawberries and Parsnips and Potatoes.
                 <Reply id="0"/>
+                <Reply id="1"/>
             </Node>
             <Node id="1">
                 I live in a farmhouse just to the North
@@ -21,7 +22,6 @@
                 <Action type="changeNode" id="1"/>
             </Reply>
             <Reply id="1">
-                End discussion
                 <Action type="endDiscussion"/>
             </Reply>
             <Reply id="2">

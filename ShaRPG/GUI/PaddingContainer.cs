@@ -56,7 +56,7 @@ namespace ShaRPG.GUI {
 
             public void Render(IRenderSurface renderSurface) {
                 using (new RenderSurfaceOffset(renderSurface, new Vector2I(Padding, Padding))) {
-                    _component.Render(renderSurface);
+                    _component?.Render(renderSurface);
                 }
             }
 
