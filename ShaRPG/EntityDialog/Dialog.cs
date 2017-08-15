@@ -7,12 +7,18 @@ using System.Xml.XPath;
 namespace ShaRPG.EntityDialog {
     public class Dialog {
         private readonly Dictionary<int, DialogNode> _dialogNodes;
-        
-        public Dialog(Dictionary<int, DialogNode> dialogNodes) {
+        private readonly IOpenDialog _dialogOpener;
+
+        public Dialog(IOpenDialog dialogOpener, Dictionary<int, DialogNode> dialogNodes) {
+            _dialogOpener = dialogOpener;
             _dialogNodes = dialogNodes;
         }
 
-        public static Dialog FromXElement(XElement dialog) {
+        public void StartDialog() {
+            _dialogOpener.StartDialog(this);
+        }
+
+        public static Dialog FromXElement(XElement dialog, IOpenDialog dialogOpener) {
             Dictionary<int, DialogReply> replies = new Dictionary<int, DialogReply>();
             Dictionary<int, DialogNode> nodes = new Dictionary<int, DialogNode>();
 
@@ -36,7 +42,7 @@ namespace ShaRPG.EntityDialog {
                 nodes.Add(nodeId, new DialogNode(nodeReplies, node.Value.Trim()));
             }
             
-            return new Dialog(nodes);
+            return new Dialog(dialogOpener, nodes);
         }
 
         private static DialogReply LoadReply(XElement reply) {

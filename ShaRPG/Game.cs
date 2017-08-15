@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Remoting.Channels;
 using SFML.Graphics;
 using SFML.System;
@@ -55,7 +57,7 @@ namespace ShaRPG {
 
                 try {
                     _gameStates.Peek().Update(_deltaClock.GetDelta());
-                    _gameStates.Peek().Render(_renderSurface);
+                    _gameStates.ToList().ForEach(state => state.Render(_renderSurface));
                 } catch (EndGameException) {
                     break;
                 }
@@ -71,8 +73,16 @@ namespace ShaRPG {
             _gameStates.Push(state);
         }
 
+        public void ChangeGameState(AbstractGameState state) {
+            _gameStates.Push(state);
+        }
+
+        public void EndGameState() {
+            _gameStates.Pop();
+        }
+
         public static void Main(string[] args) {
-            var game = new Game();
+            new Game();
         }
     }
 }
