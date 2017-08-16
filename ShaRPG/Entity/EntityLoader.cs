@@ -46,7 +46,8 @@ namespace ShaRPG.Entity {
             entity.AddComponent(new MovementComponent(entity, map));
             if (path.Count > 0) entity.AddComponent(new PathFollowingComponent(entity, path));
             if (dialogElem != null) {
-                entity.AddComponent(new DialogComponent(entity, Dialog.FromXElement(dialogElem, dialogOpener)));
+                entity.AddComponent(new DialogComponent(entity, Dialog.FromXElement(name, avatar,
+                                                                                    dialogElem, dialogOpener)));
             }
             return entity;
         }
