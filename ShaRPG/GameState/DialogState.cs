@@ -19,7 +19,7 @@ public class DialogState : AbstractGameState {
 
         ColumnContainer container = new ColumnContainer(ColumnContainer.Side.Left, 80);
         container.SetLeftComponent(
-            new PaddingContainer(10, new SpriteContainer(spriteStore.GetSprite(dialog.Character), Alignment.Center)));
+            new PaddingContainer(10, new SpriteContainer(spriteStore.GetSprite(dialog.Graphic), Alignment.Center)));
         _textContainer = new VerticalFlowContainer();
         container.SetRightComponent(new PaddingContainer(5, _textContainer));
 
