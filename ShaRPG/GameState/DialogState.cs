@@ -10,6 +10,7 @@ using ShaRPG.Util.Coordinate;
 public class DialogState : AbstractGameState {
     private readonly Dialog _dialog;
     private readonly GuiWindow _dialogGuiWindow;
+    private readonly VerticalFlowContainer _textContainer;
 
     public DialogState(Game game, Dialog dialog, Vector2I windowSize, ICamera camera,
                        ISpriteStoreService spriteStore) : base(game, camera) {
@@ -19,24 +20,10 @@ public class DialogState : AbstractGameState {
         ColumnContainer container = new ColumnContainer(ColumnContainer.Side.Left, 80);
         container.SetLeftComponent(
             new PaddingContainer(10, new SpriteContainer(spriteStore.GetSprite(dialog.Character), Alignment.Center)));
-        VerticalFlowContainer textContainer = new VerticalFlowContainer();
-        container.SetRightComponent(new PaddingContainer(5, textContainer));
+        _textContainer = new VerticalFlowContainer();
+        container.SetRightComponent(new PaddingContainer(5, _textContainer));
 
-        textContainer.AddComponent(new TextContainer(dialog.Name, 24));
-        textContainer.AddComponent(new PaddingContainer(10, null));
-        textContainer.AddComponent(new TextContainer(dialog.Prompt, 16) {
-            Indent = 4,
-            LineSpacing = 2
-        });
-        textContainer.AddComponent(new PaddingContainer(5, null));
-
-        {
-            int replyIndex = 1;
-            dialog.Replies.ForEach(reply => {
-                textContainer.AddComponent(new PaddingContainer(3, null));
-                textContainer.AddComponent(new TextContainer($"{replyIndex++}. {reply}", 16));
-            });
-        }
+        InitialiseText();
 
         _dialogGuiWindow.AddComponent(container);
     }
@@ -50,4 +37,24 @@ public class DialogState : AbstractGameState {
     public override void Clicked(ScreenCoordinate coordinates) { }
 
     public override void MouseWheelMoved(int delta) { }
+
+    private void InitialiseText() {
+        _textContainer.AddComponent(new TextContainer(_dialog.Name, 24));
+        _textContainer.AddComponent(new PaddingContainer(10, null));
+        _textContainer.AddComponent(new TextContainer(_dialog.Prompt, 16) {
+            Indent = 4,
+            LineSpacing = 2
+        });
+        _textContainer.AddComponent(new PaddingContainer(5, null));
+
+        {
+            int replyIndex = 1;
+            _dialog.Replies.ForEach(reply => {
+                _textContainer.AddComponent(new PaddingContainer(3, null));
+                _textContainer.AddComponent(new TextContainer($"{replyIndex++}. {reply}", 16) {
+                    Color = Color.Blue
+                });
+            });
+        }
+    }
 }
