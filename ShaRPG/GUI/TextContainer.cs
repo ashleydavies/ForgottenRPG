@@ -8,6 +8,7 @@ namespace ShaRPG.GUI {
     public class TextContainer : AbstractGuiComponent {
         public int LineSpacing { get; set; } = 2;
         public int Indent { get; set; } = 0;
+        public Color Color { get; set; } = Color.Black;
         public uint TextSize { get; }
         public override int Height => _textList.Aggregate(0, (h, text) => h + text.Height) + TotalSpacing;
         public override int Width => Parent?.Width ?? 0;
@@ -44,7 +45,7 @@ namespace ShaRPG.GUI {
             foreach (string word in Contents.Split(' ')) {
                 string testString = $"{currentString} {word}";
                 if (currentString == string.Empty) testString = word;
-                Text testText = new Text(Config.GuiFont, testString, TextSize);
+                Text testText = new Text(Config.GuiFont, testString, TextSize, Color);
                 
                 if (testText.Width > Width) {
                     if (currentString == string.Empty) return;
@@ -58,7 +59,7 @@ namespace ShaRPG.GUI {
             }
 
             if (currentString.Trim() != string.Empty) {
-                Text testText = new Text(Config.GuiFont, currentString, TextSize);
+                Text testText = new Text(Config.GuiFont, currentString, TextSize, Color);
                 if (testText.Width > Width) return;
                 _textList.Add(testText);
             }

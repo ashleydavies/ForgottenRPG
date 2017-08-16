@@ -8,9 +8,10 @@ namespace ShaRPG.Util {
         public int Height => (int) _text.GetLocalBounds().Height;
         private readonly SFML.Graphics.Text _text;
 
-        public Text(Font font, string content, uint characterSize = 12) {
+        public Text(Font font, string content, uint characterSize = 12, Color color = null) {
+            color = color ?? Color.Black;
             _text = new SFML.Graphics.Text(content, font.UnderlyingFont) {
-                Color = Color.Black,
+                Color = new SFML.Graphics.Color(color.UnderlyingColor),
                 CharacterSize = characterSize
             };
         }

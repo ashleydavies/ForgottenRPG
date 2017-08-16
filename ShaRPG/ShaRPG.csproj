@@ -155,6 +155,7 @@
     <Compile Include="Service\Null\NullScriptStoreService.cs" />
     <Compile Include="Service\ServiceLocator.cs" />
     <Compile Include="Util\AnimatedSprite.cs" />
+    <Compile Include="Util\Color.cs" />
     <Compile Include="Util\Coordinate\Coordinate.cs" />
     <Compile Include="Util\Coordinate\GameCoordinate.cs" />
     <Compile Include="Util\Coordinate\ScreenCoordinate.cs" />
