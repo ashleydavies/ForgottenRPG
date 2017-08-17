@@ -1,5 +1,6 @@
 ﻿using System;
 using ShaRPG.Util;
+using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GUI {
     public class ColumnContainer : AbstractGuiComponent, IGuiComponentContainer {
@@ -51,6 +52,12 @@ namespace ShaRPG.GUI {
             return (_left?.HasComponent(component) ?? false) || (_right?.HasComponent(component) ?? false);
         }
 
+        public ScreenCoordinate ChildScreenPosition(IGuiComponent component) {
+            if (component == _left) return ScreenPosition;
+
+            return ScreenPosition + new ScreenCoordinate(LeftWidth, 0);
+        }
+
         public void SetLeftComponent(IGuiComponent component) {
             _left.AddComponent(component);
         }
@@ -95,6 +102,10 @@ namespace ShaRPG.GUI {
 
             public bool HasComponent(IGuiComponent component) {
                 return _component == component;
+            }
+
+            public ScreenCoordinate ChildScreenPosition(IGuiComponent component) {
+                return ScreenPosition;
             }
         }
     }
