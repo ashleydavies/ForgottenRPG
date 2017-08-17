@@ -13,7 +13,7 @@ namespace ShaRPG.GUI {
             set => throw new NotImplementedException();
         }
         public int Width => _size.X - 2 * BorderTSize;
-        public ScreenCoordinate ScreenPosition => new ScreenCoordinate(Position);
+        public ScreenCoordinate ScreenPosition => new ScreenCoordinate(BgPos);
         public int Height => _size.Y - 2 * BorderTSize;
 
         private const int BorderTSize = 12;
@@ -110,7 +110,7 @@ namespace ShaRPG.GUI {
         }
 
         public bool IsMouseOver(ScreenCoordinate coordinates) {
-            return coordinates.Overlaps(ScreenPosition, Width, Height);
+            return coordinates.Overlaps(new ScreenCoordinate(Position), Width + 2 * BgTSize, Height + 2 * BgTSize);
         }
 
         public void Clicked(ScreenCoordinate coordinates) {
