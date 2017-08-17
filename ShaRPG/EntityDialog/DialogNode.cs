@@ -13,5 +13,9 @@ namespace ShaRPG.EntityDialog {
             _replies = replies;
             Prompt = prompt;
         }
+
+        public void ReplyActioned(Dialog dialog, int index) {
+            _replies[index].Actioned(dialog);
+        }
     }
 }

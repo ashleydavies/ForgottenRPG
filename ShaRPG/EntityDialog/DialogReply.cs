@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ShaRPG.EntityDialog {
     public class DialogReply {
@@ -8,6 +9,10 @@ namespace ShaRPG.EntityDialog {
         public DialogReply(string prompt, List<DialogAction> actions) {
             _actions = actions;
             Prompt = prompt;
+        }
+
+        public void Actioned(Dialog dialog) {
+            _actions.ForEach(a => a.Execute(dialog));
         }
     }
 }

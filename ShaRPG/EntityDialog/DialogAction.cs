@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ShaRPG.VM;
 
 namespace ShaRPG.EntityDialog {
     public abstract class DialogAction {
-        public abstract void Execute();
+        public abstract void Execute(Dialog dialog);
     }
 
     public class DialogActionChangeNode : DialogAction {
@@ -13,14 +14,14 @@ namespace ShaRPG.EntityDialog {
             _id = id;
         }
 
-        public override void Execute() {
-            throw new System.NotImplementedException();
+        public override void Execute(Dialog dialog) {
+            dialog.ChangeNode(_id);
         }
     }
 
     public class DialogActionEndDiscussion : DialogAction {
-        public override void Execute() {
-            throw new System.NotImplementedException();
+        public override void Execute(Dialog dialog) {
+            dialog.EndDialog();
         }
     }
 
@@ -31,8 +32,8 @@ namespace ShaRPG.EntityDialog {
             _code = code;
         }
 
-        public override void Execute() {
-            new ScriptVM(_code).Execute();
+        public override void Execute(Dialog dialog) {
+            new ScriptVM(new List<int>(_code)).Execute();
         }
     }
 }
