@@ -54,5 +54,9 @@ namespace ShaRPG.GUI {
         public override void Reflow() {
             _components.ForEach(c => c.Reflow());
         }
+
+        public void Clear() {
+            _components.Clear();
+        }
     }
 }
