@@ -13,7 +13,7 @@ namespace ShaRPG.Entity.Components {
         }
 
         public void Message(MouseClickMessage message) {
-            
+            _dialog.StartDialog();
         }
     }
 }

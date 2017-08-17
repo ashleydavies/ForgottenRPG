@@ -20,10 +20,11 @@ namespace ShaRPG.Entity {
             _spriteStore = spriteStore;
         }
 
-        public GameEntity LoadEntity(string entityName, GameMap map, TileCoordinate position, List<TileCoordinate> path) {
+        public GameEntity LoadEntity(string fileName, GameMap map, TileCoordinate position, List<TileCoordinate> path,
+                                     IOpenDialog dialogOpener) {
             XDocument document;
 
-            using (FileStream fs = File.OpenRead(Path.Combine(_directory, entityName + ".xml"))) {
+            using (FileStream fs = File.OpenRead(Path.Combine(_directory, fileName + ".xml"))) {
                 document = XDocument.Load(fs);
             }
 
@@ -31,13 +32,12 @@ namespace ShaRPG.Entity {
 
             string name = entityInformation?.Attribute("name")?.Value;
             string avatar = entityInformation?.Attribute("avatar")?.Value;
-            int health;
             string healthString = entityInformation?.Attribute("maxHealth")?.Value;
-
             string spriteName = entityInformation?.Element("EntityTextureInformation")?.Attribute("name")?.Value;
+            int health;
 
             if (spriteName == null || name == null || avatar == null || !int.TryParse(healthString, out health)) {
-                throw new EntityException($"Unable to load entity {entityName}");
+                throw new EntityException($"Unable to load entity {fileName}");
             }
 
             XElement dialogElem = entityInformation.Elements("Dialog").FirstOrDefault();
@@ -45,7 +45,10 @@ namespace ShaRPG.Entity {
             entity.AddComponent(new HealthComponent(entity, health));
             entity.AddComponent(new MovementComponent(entity, map));
             if (path.Count > 0) entity.AddComponent(new PathFollowingComponent(entity, path));
-            if (dialogElem != null) entity.AddComponent(new DialogComponent(entity, Dialog.FromXElement(dialogElem)));
+            if (dialogElem != null) {
+                entity.AddComponent(new DialogComponent(entity, Dialog.FromXElement(name, avatar,
+                                                                                    dialogElem, dialogOpener)));
+            }
             return entity;
         }
     }

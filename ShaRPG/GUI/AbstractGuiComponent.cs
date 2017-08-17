@@ -32,7 +32,7 @@ namespace ShaRPG.GUI {
             return coordinates.Overlaps(ScreenPosition, Width, Height);
         }
 
-        public void Clicked(ScreenCoordinate coordinates) {
+        public virtual void Clicked(ScreenCoordinate coordinates) {
             OnClicked?.Invoke(coordinates);
         }
     }

@@ -1,31 +1,31 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<Entity name="Farmer Joe" avatar="farmerjoe" maxHealth="100">
+<Entity name="Farmer Joe" avatar="farmer_joe" maxHealth="100">
     <!-- Temporary format - Will eventually be a way of loading animations from sheets for walking / attacking -->
     <EntityTextureInformation name="farmerjoe_texture" />
     
     <Dialog>
         <Nodes>
             <Node id="0">
-                Hello, my name is Farmer Joe
+                <Prompt>Hello, my name is Farmer Joe. I am a farmer in this area and I farm a lot of crops such as Strawberries and Parsnips and Potatoes.</Prompt>
                 <Reply id="0"/>
+                <Reply id="1"/>
             </Node>
             <Node id="1">
-                I live in a farmhouse just to the North
+                <Prompt>I live in a farmhouse just to the North</Prompt>
                 <Reply id="1"/>
                 <Reply id="2"/>
             </Node>
         </Nodes>
         <Replies>
             <Reply id="0">
-                Whereabouts do you live?
+                <Prompt>Whereabouts do you live?</Prompt>
                 <Action type="changeNode" id="1"/>
             </Reply>
             <Reply id="1">
-                End discussion
                 <Action type="endDiscussion"/>
             </Reply>
             <Reply id="2">
-                Run some code
+                <Prompt>Run some code</Prompt>
                 <Action type="code">34,3,15,11,32,76,111,111,112,105,110,103,46,46,46,18,32,70,105,110,105,115,104,101,100,32,108,111,111,112,105,110,103,33,1,0,8,1,9,1,1,5,12,15,62,1,0,20,9,6,1,1,2,8,6,9,1,6,8,1,13,38,1,1,20</Action>
                 <Action type="endDiscussion"/>
             </Reply>
