@@ -1,6 +1,6 @@
-﻿
-using System;
+﻿using System;
 using ShaRPG.Util;
+using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GUI {
     public abstract class AbstractGuiComponent : IGuiComponent {
@@ -16,14 +16,24 @@ namespace ShaRPG.GUI {
                 Reflow();
             }
         }
+        public ScreenCoordinate ScreenPosition => _parent.ChildScreenPosition(this);
         public abstract int Height { get; }
         public abstract int Width { get; }
         public abstract void Render(IRenderSurface renderSurface);
         public abstract void Reflow();
+        public event Action<ScreenCoordinate> OnClicked;
         public void ReflowAll() {
             IGuiComponent component = this;
             while (component.Parent != null) component = component.Parent;
             component.Reflow();
+        }
+
+        public bool IsMouseOver(ScreenCoordinate coordinates) {
+            return coordinates.Overlaps(ScreenPosition, Width, Height);
+        }
+
+        public void Clicked(ScreenCoordinate coordinates) {
+            OnClicked?.Invoke(coordinates);
         }
     }
 }

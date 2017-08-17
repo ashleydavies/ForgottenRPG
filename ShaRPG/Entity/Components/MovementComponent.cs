@@ -20,12 +20,11 @@ namespace ShaRPG.Entity.Components {
             _targetPosition = _previousPosition = entity.Position;
         }
 
-
         public override void Update(float delta) {
             if (!_targetPosition.Equals(_entity.Position) || _positionLerpTime > 0) {
                 if (_positionLerpTime <= 0) {
                     _previousPosition = _entity.Position;
-                    _entity.Position = _pathCreator.GetPath(_entity.Position, _targetPosition)[0];
+                    _entity.Position = _pathCreator.GetPath(_entity.Position, _targetPosition)?[0] ?? _entity.Position;
                     _positionLerpTime = TotalPositionLerpTime;
                 } else {
                     _positionLerpTime -= delta;
