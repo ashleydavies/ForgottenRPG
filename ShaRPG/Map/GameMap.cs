@@ -43,7 +43,7 @@ namespace ShaRPG.Map {
 
         public void SpawnEntities(EntityLoader entityLoader) {
             _spawnPositions.ForEach(spawnDetails => {
-                entityLoader.LoadEntity(spawnDetails.EntityName, this, spawnDetails.Position, spawnDetails.Path);
+                entityLoader.LoadEntity(spawnDetails.EntityName, this, spawnDetails.Position, spawnDetails.Path, _game);
             });
         }
 

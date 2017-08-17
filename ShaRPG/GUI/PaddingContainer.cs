@@ -43,6 +43,11 @@ namespace ShaRPG.GUI {
             return ScreenPosition + new ScreenCoordinate(Padding, Padding);
         }
 
+        public override void Clicked(ScreenCoordinate coordinates) {
+            base.Clicked(coordinates);
+            if (_paddedComponent.IsMouseOver(coordinates)) _paddedComponent.Clicked(coordinates);
+        }
+
         private class PaddedContainer : IGuiComponentContainer {
             public IGuiComponentContainer Parent { get; set; }
             public int Width => Parent.Width - Padding * 2;
@@ -62,7 +67,7 @@ namespace ShaRPG.GUI {
 
             public void Render(IRenderSurface renderSurface) {
                 using (new RenderSurfaceOffset(renderSurface, new Vector2I(Padding, Padding))) {
-                    _component.Render(renderSurface);
+                    _component?.Render(renderSurface);
                 }
             }
 

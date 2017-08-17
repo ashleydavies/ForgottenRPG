@@ -5,13 +5,16 @@ using ShaRPG.Util.Coordinate;
 namespace ShaRPG.Util {
     public class Text : IDrawable {
         public int Width => (int) _text.GetLocalBounds().Width;
-        public int Height => (int) _text.GetLocalBounds().Height;
+        public int Height => (int) _characterSize;
         private readonly SFML.Graphics.Text _text;
+        private readonly uint _characterSize;
 
-        public Text(Font font, string content) {
+        public Text(Font font, string content, uint characterSize = 12, Color color = null) {
+            _characterSize = characterSize;
+            color = color ?? Color.Black;
             _text = new SFML.Graphics.Text(content, font.UnderlyingFont) {
-                Color = Color.Black,
-                CharacterSize = 12
+                Color = new SFML.Graphics.Color(color.UnderlyingColor),
+                CharacterSize = characterSize
             };
         }
 
