@@ -1,5 +1,6 @@
 ﻿using System;
 using ShaRPG.Util;
+using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GUI {
     public class PaddingContainer : AbstractGuiComponent, IGuiComponentContainer {
@@ -38,9 +39,14 @@ namespace ShaRPG.GUI {
             return _paddedComponent.HasComponent(component);
         }
 
+        public ScreenCoordinate ChildScreenPosition(IGuiComponent component) {
+            return ScreenPosition + new ScreenCoordinate(Padding, Padding);
+        }
+
         private class PaddedContainer : IGuiComponentContainer {
             public IGuiComponentContainer Parent { get; set; }
             public int Width => Parent.Width - Padding * 2;
+            public ScreenCoordinate ScreenPosition => Parent.ChildScreenPosition(this);
             public int Height => _component?.Height ?? 0;
             public int Padding {
                 get => _padding;
@@ -80,6 +86,18 @@ namespace ShaRPG.GUI {
 
             public bool HasComponent(IGuiComponent component) {
                 return _component == component;
+            }
+
+            public ScreenCoordinate ChildScreenPosition(IGuiComponent component) {
+                return ScreenPosition;
+            }
+
+            public bool IsMouseOver(ScreenCoordinate coordinates) {
+                return coordinates.Overlaps(ScreenPosition, Width, Height);
+            }
+
+            public void Clicked(ScreenCoordinate coordinates) {
+                if (_component?.IsMouseOver(coordinates) ?? false) _component?.Clicked(coordinates);
             }
         }
     }
