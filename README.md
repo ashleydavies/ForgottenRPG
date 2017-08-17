@@ -24,8 +24,9 @@ The following show the completed parts of / technical information about each mai
  * Dialog
    * Dialog is embedded inside each entity's XML, and allows an uncapped number of prompts and replies.
    * Replies may lead to different prompts (with different replies), end the discussion, or execute arbitrary VM code (See scripting)
-   * Dialog does not yet have conditions but these will be implementedd based on code running atop the VM
-   * Dialog is not yet visible in-game -- this is currently being worked on
+   * Dialog does not yet have conditions but these will be implemented based on code running atop the VM
+   * Dialog is presented in a GUI form and engageable through clicking on NPCs that have dialog associated
+   * Dialog can be navigated through clicking replies in the GUI
  * Scripting / VM
    * Crude assembly-style language compiles into integer-based code format
    * String data can be embedded and referenced
