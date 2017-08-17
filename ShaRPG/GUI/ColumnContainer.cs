@@ -66,6 +66,12 @@ namespace ShaRPG.GUI {
             _right.AddComponent(component);
         }
 
+        public void Clicked(ScreenCoordinate coordinates) {
+            base.Clicked(coordinates);
+            if (coordinates.X < ScreenPosition.X + LeftWidth) _left.Clicked(coordinates);
+            else _right.Clicked(coordinates);
+        }
+
         private class ColumnContainerColumn : AbstractGuiComponent, IGuiComponentContainer {
             public override int Height => _component.Height;
             public override int Width => _container.ColumnWidth(_side);
@@ -106,6 +112,11 @@ namespace ShaRPG.GUI {
 
             public ScreenCoordinate ChildScreenPosition(IGuiComponent component) {
                 return ScreenPosition;
+            }
+
+            public override void Clicked(ScreenCoordinate coordinates) {
+                base.Clicked(coordinates);
+                if (_component.IsMouseOver(coordinates)) _component.Clicked(coordinates);
             }
         }
     }
