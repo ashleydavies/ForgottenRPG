@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
@@ -33,6 +32,7 @@ namespace ShaRPG.EntityDialog {
 
             foreach (XElement node in dialog.XPathSelectElements("./Nodes/Node")) {
                 int nodeId = int.Parse(node.Attribute("id")?.Value);
+                string prompt = node.Elements("Prompt").FirstOrDefault()?.Value.Trim() ?? "";
                 List<DialogReply> nodeReplies = new List<DialogReply>();
 
                 foreach (XElement nodeReply in node.Elements("Reply")) {
@@ -48,14 +48,14 @@ namespace ShaRPG.EntityDialog {
                     nodeReplies.Add(replies[replyId]);
                 }
                 
-                nodes.Add(nodeId, new DialogNode(nodeReplies, node.Value.Trim()));
+                nodes.Add(nodeId, new DialogNode(nodeReplies, prompt));
             }
             
             return new Dialog(name, graphic, dialogOpener, nodes);
         }
 
         private static DialogReply LoadReply(XElement reply) {
-            string prompt = reply.Value.Trim();
+            string prompt = reply.Elements("Prompt").FirstOrDefault()?.Value.Trim() ?? "";
             List<DialogAction> replyActions = new List<DialogAction>();
             
             foreach (XElement replyAction in reply.Elements("Action")) {
