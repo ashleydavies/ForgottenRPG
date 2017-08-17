@@ -1,3 +1,4 @@
+using System;
 using ShaRPG;
 using ShaRPG.Camera;
 using ShaRPG.EntityDialog;
@@ -34,7 +35,9 @@ public class DialogState : AbstractGameState {
         _dialogGuiWindow.Render(renderSurface);
     }
 
-    public override void Clicked(ScreenCoordinate coordinates) { }
+    public override void Clicked(ScreenCoordinate coordinates) {
+        if (_dialogGuiWindow.IsMouseOver(coordinates)) _dialogGuiWindow.Clicked(coordinates);
+    }
 
     public override void MouseWheelMoved(int delta) { }
 
@@ -51,9 +54,11 @@ public class DialogState : AbstractGameState {
             int replyIndex = 1;
             _dialog.Replies.ForEach(reply => {
                 _textContainer.AddComponent(new PaddingContainer(3, null));
-                _textContainer.AddComponent(new TextContainer($"{replyIndex++}. {reply}", 16) {
+                TextContainer replyTextContainer = new TextContainer($"{replyIndex++}. {reply}", 16) {
                     Color = Color.Blue
-                });
+                };
+                replyTextContainer.OnClicked += coordinate => Console.WriteLine($"Clicked {reply}");
+                _textContainer.AddComponent(replyTextContainer);
             });
         }
     }
