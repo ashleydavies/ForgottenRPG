@@ -13,6 +13,7 @@ namespace ShaRPG.GUI {
             set => throw new NotImplementedException();
         }
         public int Width => _size.X - 2 * BorderTSize;
+        public ScreenCoordinate ScreenPosition => new ScreenCoordinate(Position);
         public int Height => _size.Y - 2 * BorderTSize;
 
         private const int BorderTSize = 12;
@@ -100,8 +101,20 @@ namespace ShaRPG.GUI {
             return _components.Contains(component);
         }
 
+        public ScreenCoordinate ChildScreenPosition(IGuiComponent component) {
+            return new ScreenCoordinate(BgPos);
+        }
+
         private void RenderUi(IRenderSurface renderSurface, string part, ScreenCoordinate position) {
             renderSurface.Render(_spriteStore.GetSprite($"ui_{part}"), position);
+        }
+
+        public bool IsMouseOver(ScreenCoordinate coordinates) {
+            return coordinates.Overlaps(ScreenPosition, Width, Height);
+        }
+
+        public void Clicked(ScreenCoordinate coordinates) {
+            _components.ForEach(c => { if (c.IsMouseOver(coordinates)) c.Clicked(coordinates); });
         }
     }
 }
