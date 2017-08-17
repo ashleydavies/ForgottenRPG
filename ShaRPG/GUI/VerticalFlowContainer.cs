@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ShaRPG.Util;
+using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GUI {
     public class VerticalFlowContainer : AbstractGuiComponent, IGuiComponentContainer {
@@ -32,6 +33,22 @@ namespace ShaRPG.GUI {
 
         public bool HasComponent(IGuiComponent component) {
             return _components.Contains(component);
+        }
+
+        public ScreenCoordinate ChildScreenPosition(IGuiComponent child) {
+            int h = 0;
+            foreach (var component in _components) {
+                if (component == child) return ScreenPosition + new ScreenCoordinate(0, h);
+                h += component.Height;
+            }
+            throw new GuiException($"{child} is not a child of vertical flow container");
+        }
+
+        public void Clicked(ScreenCoordinate coordinates) {
+            base.Clicked(coordinates);
+            _components.ForEach(c => {
+                if (c.IsMouseOver(coordinates)) c.Clicked(coordinates);
+            });
         }
 
         public override void Reflow() {
