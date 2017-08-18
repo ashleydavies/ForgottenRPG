@@ -137,6 +137,7 @@
     <Compile Include="GUI\IGuiComponent.cs" />
     <Compile Include="Items\IItem.cs" />
     <Compile Include="Items\Inventory.cs" />
+    <Compile Include="Items\InventoryException.cs" />
     <Compile Include="Items\ItemStack.cs" />
     <Compile Include="LoadingException.cs" />
     <Compile Include="Map\GameMap.cs" />
