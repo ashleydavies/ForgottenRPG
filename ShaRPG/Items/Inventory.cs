@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ShaRPG.Items {
     public class Inventory {
@@ -7,9 +8,16 @@ namespace ShaRPG.Items {
 
         private readonly List<ItemStack> _items = new List<ItemStack>(MaxSize);
 
-        public void PickupItem(IItem item, int count = 1) {
+        public void PickupItem(ItemStack stack) {
             if (Full) throw new InventoryException("Inventory full, item cannot be added");
-            _items.Add(new ItemStack(item, count));
+
+            ItemStack existing = _items.FindAll(s => s.Item == stack.Item).FirstOrDefault();
+
+            if (existing != null) {
+                existing.Merge(stack);
+            } else {
+                _items.Add(stack);
+            }
         }
     }
 }
