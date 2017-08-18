@@ -135,10 +135,14 @@
     <Compile Include="GUI\GuiException.cs" />
     <Compile Include="GUI\GuiWindow.cs" />
     <Compile Include="GUI\IGuiComponent.cs" />
+    <Compile Include="Items\AbstractItem.cs" />
     <Compile Include="Items\IItem.cs" />
     <Compile Include="Items\Inventory.cs" />
     <Compile Include="Items\InventoryException.cs" />
+    <Compile Include="Items\ItemManager.cs" />
     <Compile Include="Items\ItemStack.cs" />
+    <Compile Include="Items\IWeapon.cs" />
+    <Compile Include="Items\MeleeWeapon.cs" />
     <Compile Include="LoadingException.cs" />
     <Compile Include="Map\GameMap.cs" />
     <Compile Include="Map\IPathCreator.cs" />
@@ -223,7 +227,9 @@
     <Content Include="Resources\Data\XML\Entity\player.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Data\XML\itemData.xml" />
+    <Content Include="Resources\Data\XML\ItemData.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Data\XML\Map\0.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -268,6 +274,9 @@
     <Content Include="Resources\Image\ts_items.png" />
     <Content Include="Resources\Image\ts_primary_ortho.png" />
     <Content Include="Resources\Image\UI\avatars.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Image\ui\items.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Image\UI\ui.png">
