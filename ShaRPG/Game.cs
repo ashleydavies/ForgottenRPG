@@ -7,6 +7,7 @@ using System.Runtime.Remoting.Channels;
 using SFML.Graphics;
 using SFML.Window;
 using ShaRPG.GameState;
+using ShaRPG.Items;
 using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util;
@@ -20,16 +21,20 @@ namespace ShaRPG {
         private readonly MapTileStore _mapTileStore;
         private readonly IRenderSurface _renderSurface;
         private readonly ISpriteStoreService _spriteStore;
+        private readonly ItemManager _itemManager;
         private readonly RenderWindow _window;
 
         private Game() {
+            string xmlDirectory = Path.Combine("Resources", "Data", "XML");
+            
             ServiceLocator.LogService = new ConsoleLogService();
 
             _gameStates = new Stack<AbstractGameState>();
 
             _deltaClock = new DeltaClock();
             _spriteStore = new CachedFileSpriteStoreService(Path.Combine("Resources", "Image"));
-            _mapTileStore = new MapTileStore(Path.Combine("Resources", "Data", "XML"), _spriteStore);
+            _mapTileStore = new MapTileStore(xmlDirectory, _spriteStore);
+            _itemManager = new ItemManager(xmlDirectory);
 
             _window = new RenderWindow(VideoMode.FullscreenModes[0], "RPG", Styles.Titlebar | Styles.Fullscreen);
             _renderSurface = new WindowRenderSurface(_window);
