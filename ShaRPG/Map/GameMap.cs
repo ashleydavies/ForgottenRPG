@@ -14,7 +14,7 @@ namespace ShaRPG.Map {
         private readonly int[,] _tiles;
         private readonly MapNode[,] _pathfindingNodes;
         private readonly List<GameMapEntitySpawnDetails> _spawnPositions;
-        private readonly List<(ItemStack, GameCoordinate)> _items;
+        private readonly List<(ItemStack itemStack, GameCoordinate position)> _items;
         private readonly MapTileStore _tileStore;
         public readonly Vector2I Size;
 
@@ -52,6 +52,9 @@ namespace ShaRPG.Map {
 
         public void Render(IRenderSurface renderSurface) {
             EachTile((x, y) => GetTile(new TileCoordinate(x, y)).Draw(renderSurface, new TileCoordinate(x, y)));
+            _items.ForEach(itemInstance => {
+                renderSurface.Render(itemInstance.itemStack.Item.Sprite, itemInstance.position);
+            });
         }
 
         public void Update(float delta) {
