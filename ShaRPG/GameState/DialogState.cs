@@ -1,4 +1,3 @@
-using System;
 using ShaRPG;
 using ShaRPG.Camera;
 using ShaRPG.EntityDialog;
@@ -13,11 +12,13 @@ public class DialogState : AbstractGameState {
     private readonly GuiWindow _dialogGuiWindow;
     private readonly VerticalFlowContainer _textContainer;
     private bool _reloadRequired = true;
+    private static readonly Vector2I GuiWindowSize = new Vector2I(60 * 9 + 24, 60 * 12 + 24);
 
-    public DialogState(Game game, Dialog dialog, Vector2I windowSize, ICamera camera, ISpriteStoreService spriteStore) : base(game, camera) {
+    public DialogState(Game game, Dialog dialog, Vector2I windowSize, ICamera camera, ISpriteStoreService spriteStore)
+        : base(game, camera) {
         _dialog = dialog;
         _dialog.OnEnd += EndState;
-        _dialogGuiWindow = new GuiWindow(spriteStore, windowSize / 2, new Vector2I(60 * 9 + 24, 60 * 12 + 24));
+        _dialogGuiWindow = new GuiWindow(spriteStore, windowSize / 2, GuiWindowSize);
 
         ColumnContainer container = new ColumnContainer(ColumnContainer.Side.Left, 80);
         container.SetLeftComponent(

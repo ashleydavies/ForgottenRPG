@@ -52,6 +52,8 @@ namespace ShaRPG.GameState {
                     Keyboard.Key.Right, new CameraMoveCommand(Camera, new Vector2F(300, 0))
                 }, {
                     Keyboard.Key.X, new ExitGameCommand(this)
+                }, {
+                    Keyboard.Key.Tab, new OpenInventoryCommand(this)
                 }
             };
 
@@ -102,6 +104,11 @@ namespace ShaRPG.GameState {
 
         public void StartDialog(Dialog dialog) {
             ChangeState(new DialogState(Game, dialog, _windowSize, Camera, _spriteStore));
+        }
+
+        public void OpenInventory() {
+            ChangeState(new InventoryState(Game, _player.GetComponent<InventoryComponent>().Inventory,
+                                           _windowSize, Camera, _spriteStore));
         }
     }
 }

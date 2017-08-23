@@ -98,6 +98,7 @@
     <Compile Include="Command\ExitGameCommand.cs" />
     <Compile Include="Command\ICommand.cs" />
     <Compile Include="Command\NullCommand.cs" />
+    <Compile Include="Command\OpenInventoryCommand.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="EntityDialog\Dialog.cs" />
     <Compile Include="EntityDialog\DialogAction.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameState\AbstractGameState.cs" />
     <Compile Include="GameState\DialogState.cs" />
+    <Compile Include="GameState\InventoryState.cs" />
     <Compile Include="GameState\StateGame.cs" />
     <Compile Include="GUI\AbstractGuiComponent.cs" />
     <Compile Include="GUI\Alignment.cs" />
