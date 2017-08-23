@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using ShaRPG.GameState;
+using ShaRPG.Items;
 using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
@@ -34,7 +35,7 @@ namespace ShaRPG.Map {
             if (tileLayer == null || colCount == -1 || rowCount == -1) return null;
 
             return new GameMap(game, LoadTiles(tileLayer, 0, 0, colCount, rowCount), new Vector2I(colCount, rowCount),
-                               _tileStore, LoadSpawnPoints(document));
+                               _tileStore, LoadSpawnPoints(document), LoadItems(document));
         }
 
         private static int[,] LoadTiles(XContainer layer, int x, int y, int colCount, int rowCount) {
@@ -54,7 +55,7 @@ namespace ShaRPG.Map {
 
             return tiles;
         }
-    
+
         private List<GameMapEntitySpawnDetails> LoadSpawnPoints(XDocument map) {
             var spawnPoints = new List<GameMapEntitySpawnDetails>();
 
@@ -93,6 +94,14 @@ namespace ShaRPG.Map {
             }
 
             return path;
+        }
+
+        private List<(ItemStack, GameCoordinate)> LoadItems(XDocument document) {
+            List<(ItemStack, GameCoordinate)> items = new List<(ItemStack, GameCoordinate)>();
+            
+            // TODO: Load items from XML
+
+            return items;
         }
     }
 }

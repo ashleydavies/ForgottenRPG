@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ShaRPG.Entity;
 using ShaRPG.GameState;
+using ShaRPG.Items;
 using ShaRPG.Map.Pathfinding;
 using ShaRPG.Service;
 using ShaRPG.Util;
@@ -13,6 +14,7 @@ namespace ShaRPG.Map {
         private readonly int[,] _tiles;
         private readonly MapNode[,] _pathfindingNodes;
         private readonly List<GameMapEntitySpawnDetails> _spawnPositions;
+        private readonly List<(ItemStack, GameCoordinate)> _items;
         private readonly MapTileStore _tileStore;
         public readonly Vector2I Size;
 
@@ -30,12 +32,13 @@ namespace ShaRPG.Map {
             => TileAtPosition(_game.TranslateCoordinates(screenCoordinates));
 
         public GameMap(StateGame game, int[,] tiles, Vector2I size, MapTileStore tileStore,
-                       List<GameMapEntitySpawnDetails> spawnPositions) {
+                       List<GameMapEntitySpawnDetails> spawnPositions, List<(ItemStack, GameCoordinate)> items) {
             _game = game;
             _tiles = tiles;
             _pathfindingNodes = new MapNode[size.X, size.Y];
             _tileStore = tileStore;
             _spawnPositions = spawnPositions;
+            _items = items;
             Size = size;
 
             InitialisePathfindingNodes();
