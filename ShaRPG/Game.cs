@@ -34,7 +34,7 @@ namespace ShaRPG {
             _deltaClock = new DeltaClock();
             _spriteStore = new CachedFileSpriteStoreService(Path.Combine("Resources", "Image"));
             _mapTileStore = new MapTileStore(xmlDirectory, _spriteStore);
-            _itemManager = new ItemManager(xmlDirectory);
+            _itemManager = new ItemManager(xmlDirectory, _spriteStore);
 
             _window = new RenderWindow(VideoMode.FullscreenModes[0], "RPG", Styles.Titlebar | Styles.Fullscreen);
             _renderSurface = new WindowRenderSurface(_window);

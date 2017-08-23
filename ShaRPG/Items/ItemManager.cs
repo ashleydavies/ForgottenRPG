@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using ShaRPG.Service;
 
 namespace ShaRPG.Items {
     public class ItemManager {
@@ -10,7 +11,7 @@ namespace ShaRPG.Items {
         public IItem GetItem(int id) => _itemDictionary[id];
         public IItem GetItem(string codename) => _itemDictionary.Values.FirstOrDefault(i => i.Codename == codename);
 
-        public ItemManager(string path) {
+        public ItemManager(string path, ISpriteStoreService spriteStore) {
             XDocument document = XDocument.Load(Path.Combine(path, "ItemData.xml"));
             foreach (XElement itemElement in document.Descendants("Item")) {
                 int.TryParse(itemElement.Attribute("Id").Value, out int id);
@@ -21,7 +22,7 @@ namespace ShaRPG.Items {
 
                 if (type == "MeleeWeapon") {
                     _itemDictionary.Add(id, MeleeWeapon.Load(id, name, codename, description,
-                                                                 itemElement.Element("Modifiers")));
+                                                                 itemElement.Element("Modifiers"), spriteStore));
                 }
             }
         }
