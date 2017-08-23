@@ -50,7 +50,7 @@ namespace ShaRPG {
             _window.Resized += (sender, args)
                 => _renderSurface.Size = windowSize;
 
-            SetGameState(new StateGame(this, windowSize, _spriteStore, _mapTileStore));
+            SetGameState(new StateGame(this, windowSize, _spriteStore, _mapTileStore, _itemManager));
 
             while (_window.IsOpen) {
                 _window.DispatchEvents();
