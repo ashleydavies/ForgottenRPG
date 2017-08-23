@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using ShaRPG.Map;
-using ShaRPG.Service;
 
 namespace ShaRPG.Util.Coordinate {
     public class TileCoordinate : Coordinate {
         public TileCoordinate(int x, int y) : base(x, y) { }
 
-        public static implicit operator GameCoordinate(TileCoordinate tileCoordinate) {
+        public static GameCoordinate IsoToCartesian(int x, int y) {
             return new GameCoordinate(
-                (tileCoordinate.X - tileCoordinate.Y) * MapTile.HalfWidth,
-                (tileCoordinate.X + tileCoordinate.Y) * MapTile.HalfHeight
+                (x / MapTile.HalfWidth - y / MapTile.HalfWidth) * MapTile.HalfWidth,
+                (x / MapTile.HalfWidth + y / MapTile.HalfWidth) * MapTile.HalfHeight
             );
+        }
+
+        public static implicit operator GameCoordinate(TileCoordinate tileCoordinate) {
+            return IsoToCartesian(tileCoordinate.X * MapTile.HalfWidth, tileCoordinate.Y * MapTile.HalfWidth);
         }
         
         public static implicit operator TileCoordinate(GameCoordinate gameCoordinate) {
