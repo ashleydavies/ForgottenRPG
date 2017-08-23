@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Items>
-    <Item Id="0" Name="Iron Longsword" Type="MeleeWeapon" Graphic="iron_longsword">
+    <Item Id="0" Name="Iron Longsword" Type="MeleeWeapon" Codename="iron_longsword">
         <Description>A basic but effective sword.</Description>
         <Modifiers>
             <Damage>3</Damage>
