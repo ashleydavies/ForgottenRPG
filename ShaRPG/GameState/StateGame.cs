@@ -8,6 +8,7 @@ using ShaRPG.Entity;
 using ShaRPG.Entity.Components;
 using ShaRPG.EntityDialog;
 using ShaRPG.GUI;
+using ShaRPG.Items;
 using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util;
@@ -20,6 +21,7 @@ namespace ShaRPG.GameState {
         private readonly MapLoader _mapLoader;
         private readonly EntityLoader _entityLoader;
         private readonly EntityManager _entityManager;
+        private readonly ItemManager _itemManager;
         private readonly ClickManager _clickManager = new ClickManager();
         private readonly Dictionary<Keyboard.Key, ICommand> _keyMappings;
         private readonly FPSCounter _fpsCounter = new FPSCounter();
@@ -27,12 +29,13 @@ namespace ShaRPG.GameState {
         private Vector2I _windowSize;
 
         public StateGame(Game game, Vector2I size, ISpriteStoreService spriteStore,
-                         MapTileStore mapTileStore) : base(game, new GameCamera(size)) {
+                         MapTileStore mapTileStore, ItemManager itemManager) : base(game, new GameCamera(size)) {
             _windowSize = size;
             _spriteStore = spriteStore;
+            _itemManager = itemManager;
             _entityManager = new EntityManager(this);
             _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, spriteStore);
-            _mapLoader = new MapLoader(Config.MapDataDirectory, mapTileStore);
+            _mapLoader = new MapLoader(Config.MapDataDirectory, mapTileStore, _itemManager);
             _map = _mapLoader.LoadMap(0, this);
             _map.SpawnEntities(_entityLoader);
             _clickManager.Register(ClickPriority.Entity, _entityManager);
