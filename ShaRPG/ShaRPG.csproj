@@ -132,6 +132,7 @@
     <Compile Include="GUI\AbstractGuiComponent.cs" />
     <Compile Include="GUI\Alignment.cs" />
     <Compile Include="GUI\ColumnContainer.cs" />
+    <Compile Include="GUI\FixedContainer.cs" />
     <Compile Include="GUI\IGuiComponentContainer.cs" />
     <Compile Include="GUI\PaddingContainer.cs" />
     <Compile Include="GUI\SpriteContainer.cs" />

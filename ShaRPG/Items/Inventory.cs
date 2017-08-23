@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace ShaRPG.Items {
     public class Inventory {
-        private const int MaxSize = 36;
+        private const int MaxSize = 30;
         public bool Full => _items.Count == MaxSize;
 
         private readonly List<ItemStack> _items = new List<ItemStack>(MaxSize);
