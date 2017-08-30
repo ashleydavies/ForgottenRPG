@@ -26,9 +26,14 @@
             <name>ui</name>
             <extension>png</extension>
         </TextureResolution>
-        
+
         <TextureResolution id="4" namespace="2">
             <name>avatars</name>
+            <extension>png</extension>
+        </TextureResolution>
+
+        <TextureResolution id="5" namespace="2">
+            <name>items</name>
             <extension>png</extension>
         </TextureResolution>
     </TextureResolutions>
@@ -166,9 +171,21 @@
             <size width="60" height="60"/>
         </ImageResolution>
 
-        <ImageResolution id="10009" name="ui_avatar_farmer_joe" texture="4">
+        <ImageResolution id="10008" name="ui_item_slot" texture="3">
+            <position x="84" y="0"/>
+            <size width="48" height="48"/>
+        </ImageResolution>
+        
+
+        <ImageResolution id="10500" name="ui_avatar_farmer_joe" texture="4">
             <position x="0" y="0"/>
             <size width="64" height="128"/>
+        </ImageResolution>
+
+        
+        <ImageResolution id="110000" name="ui_item_iron_longsword" texture="5">
+            <position x="0" y="0"/>
+            <size width="32" height="32"/>
         </ImageResolution>
     </ImageResolutions>
     

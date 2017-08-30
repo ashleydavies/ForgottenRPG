@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ShaRPG.Entity;
 using ShaRPG.GameState;
+using ShaRPG.Items;
 using ShaRPG.Map.Pathfinding;
 using ShaRPG.Service;
 using ShaRPG.Util;
@@ -13,6 +14,7 @@ namespace ShaRPG.Map {
         private readonly int[,] _tiles;
         private readonly MapNode[,] _pathfindingNodes;
         private readonly List<GameMapEntitySpawnDetails> _spawnPositions;
+        private readonly List<(ItemStack itemStack, GameCoordinate position)> _items;
         private readonly MapTileStore _tileStore;
         public readonly Vector2I Size;
 
@@ -30,12 +32,13 @@ namespace ShaRPG.Map {
             => TileAtPosition(_game.TranslateCoordinates(screenCoordinates));
 
         public GameMap(StateGame game, int[,] tiles, Vector2I size, MapTileStore tileStore,
-                       List<GameMapEntitySpawnDetails> spawnPositions) {
+                       List<GameMapEntitySpawnDetails> spawnPositions, List<(ItemStack, GameCoordinate)> items) {
             _game = game;
             _tiles = tiles;
             _pathfindingNodes = new MapNode[size.X, size.Y];
             _tileStore = tileStore;
             _spawnPositions = spawnPositions;
+            _items = items;
             Size = size;
 
             InitialisePathfindingNodes();
@@ -49,6 +52,9 @@ namespace ShaRPG.Map {
 
         public void Render(IRenderSurface renderSurface) {
             EachTile((x, y) => GetTile(new TileCoordinate(x, y)).Draw(renderSurface, new TileCoordinate(x, y)));
+            _items.ForEach(itemInstance => {
+                renderSurface.Render(itemInstance.itemStack.Item.Sprite, itemInstance.position);
+            });
         }
 
         public void Update(float delta) {
