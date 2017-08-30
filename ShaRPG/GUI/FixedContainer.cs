@@ -17,7 +17,7 @@ namespace ShaRPG.GUI {
         public FixedContainer(int top, int left, IGuiComponent component) {
             Top = top;
             Left = left;
-            _components.Add(component);
+            AddComponent(component);
         }
 
         public override void Render(IRenderSurface renderSurface) {
@@ -30,6 +30,7 @@ namespace ShaRPG.GUI {
 
         public void AddComponent(IGuiComponent component) {
             _components.Add(component);
+            component.Parent = this;
         }
 
         public void RemoveComponent(IGuiComponent component) {
@@ -44,6 +45,16 @@ namespace ShaRPG.GUI {
 
         public ScreenCoordinate ChildScreenPosition(IGuiComponent component) {
             return Parent.ChildScreenPosition(this) + new ScreenCoordinate(Top, Left);
+        }
+
+        public bool IsMouseOver(ScreenCoordinate coordinates) {
+            return coordinates.Overlaps(ScreenPosition + new ScreenCoordinate(Top, Left), Width, Height);
+        }
+
+        public void Clicked(ScreenCoordinate coordinates) {
+            foreach (IGuiComponent component in _components.Where(x => x.IsMouseOver(coordinates))) {
+                component.Clicked(coordinates);
+            }
         }
     }
 }
