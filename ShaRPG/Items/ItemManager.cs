@@ -6,6 +6,9 @@ using ShaRPG.Service;
 
 namespace ShaRPG.Items {
     public class ItemManager {
+        public const int SpriteSizeX = 32;
+        public const int SpriteSizeY = 32;
+
         private readonly Dictionary<int, IItem> _itemDictionary = new Dictionary<int, IItem>();
 
         public IItem GetItem(int id) => _itemDictionary[id];

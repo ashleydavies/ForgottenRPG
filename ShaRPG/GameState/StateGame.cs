@@ -59,6 +59,9 @@ namespace ShaRPG.GameState {
 
             if (_player == null) throw new EntityException("No player was created during map loading time");
 
+            _player.GetComponent<InventoryComponent>().Inventory
+                   .PickupItem(new ItemStack(_itemManager.GetItem("iron_longsword"), 1));
+
             Camera.Center = (GameCoordinate) _player.Position;
         }
 
