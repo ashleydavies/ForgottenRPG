@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using ShaRPG.GameState;
+using ShaRPG.Items;
 using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
@@ -12,10 +13,12 @@ namespace ShaRPG.Map {
     internal class MapLoader {
         private readonly string _directory;
         private readonly MapTileStore _tileStore;
+        private readonly ItemManager _itemManager;
 
-        public MapLoader(string directory, MapTileStore tileStore) {
+        public MapLoader(string directory, MapTileStore tileStore, ItemManager itemManager) {
             _directory = directory;
             _tileStore = tileStore;
+            _itemManager = itemManager;
         }
 
         public GameMap LoadMap(int id, StateGame game) {
@@ -34,7 +37,7 @@ namespace ShaRPG.Map {
             if (tileLayer == null || colCount == -1 || rowCount == -1) return null;
 
             return new GameMap(game, LoadTiles(tileLayer, 0, 0, colCount, rowCount), new Vector2I(colCount, rowCount),
-                               _tileStore, LoadSpawnPoints(document));
+                               _tileStore, LoadSpawnPoints(document), LoadItems(document));
         }
 
         private static int[,] LoadTiles(XContainer layer, int x, int y, int colCount, int rowCount) {
@@ -54,7 +57,7 @@ namespace ShaRPG.Map {
 
             return tiles;
         }
-    
+
         private List<GameMapEntitySpawnDetails> LoadSpawnPoints(XDocument map) {
             var spawnPoints = new List<GameMapEntitySpawnDetails>();
 
@@ -88,11 +91,36 @@ namespace ShaRPG.Map {
                 foreach (var pathElem in pathElements) {
                     path.Add(new TileCoordinate(int.Parse(pathElem.Attribute("x").Value) / 32,
                                                 int.Parse(pathElem.Attribute("y").Value) / 32));
-                    ServiceLocator.LogService.Log(LogType.Information, $"{path[path.Count - 1]}");
+                    ServiceLocator.LogService.Log(LogType.Information, $"Pathing point {path[path.Count - 1]}");
                 }
             }
 
             return path;
+        }
+
+        private List<(ItemStack, GameCoordinate)> LoadItems(XDocument document) {
+            List<(ItemStack, GameCoordinate)> items = new List<(ItemStack, GameCoordinate)>();
+
+            var itemElems = document.XPathSelectElements("/map/objectgroup[@name='Items']/object");
+
+            foreach (XElement itemElem in itemElems) {
+                string name = itemElem.Attribute("name").Value;
+                int xPosition = int.Parse(itemElem.Attribute("x")?.Value ?? "");
+                int yPosition = int.Parse(itemElem.Attribute("y")?.Value ?? "");
+
+                GameCoordinate position = TileCoordinate.IsoToCartesian(xPosition, yPosition);
+
+                int.TryParse(
+                    itemElem.XPathSelectElement("properties/property[@name='quantity']").Attribute("value").Value,
+                    out int quantity
+                );
+
+                items.Add((new ItemStack(_itemManager.GetItem(name), quantity), position));
+            }
+
+            ServiceLocator.LogService.Log(LogType.Information, $"Loaded {items.Count} map-based items");
+
+            return items;
         }
     }
 }

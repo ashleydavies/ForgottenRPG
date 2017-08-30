@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<data>
-    <items>
-        <item name="Generic Sword" type="MeleeWeapon">
-        	<description>A basic but effective sword.</description>
-			<modifiers>
-				<modifier data="intData" index="19" value="15"/>
-			</modifiers>
-        	<texture spritesheet="2" xPos="0" yPos="0"/>
-        </item>
-        <item name="Generic Bow" type="RangedWeapon">
-        	<description>A basic but effective bow.</description>
-        	<modifiers>
-        		<modifier data="intData" index="20" value="15"/>
-        	</modifiers>
-        	<texture spritesheet="2" xPos="32" yPos="0"/>
-        </item>
-    </items>
-</data>
+<Items>
+    <Item Id="0" Name="Iron Longsword" Type="MeleeWeapon" Codename="iron_longsword">
+        <Description>A basic but effective sword.</Description>
+        <Modifiers>
+            <Damage>3</Damage>
+        </Modifiers>
+    </Item>
+</Items>

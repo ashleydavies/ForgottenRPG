@@ -44,6 +44,7 @@ namespace ShaRPG.Entity {
             GameEntity entity = new GameEntity(_idAssigner, name, position, _spriteStore.GetSprite(spriteName));
             entity.AddComponent(new HealthComponent(entity, health));
             entity.AddComponent(new MovementComponent(entity, map));
+            entity.AddComponent(new InventoryComponent(entity));
             if (path.Count > 0) entity.AddComponent(new PathFollowingComponent(entity, path));
             if (dialogElem != null) {
                 entity.AddComponent(new DialogComponent(entity, Dialog.FromXElement(name, avatar,

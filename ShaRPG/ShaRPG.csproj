@@ -81,6 +81,9 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -95,6 +98,7 @@
     <Compile Include="Command\ExitGameCommand.cs" />
     <Compile Include="Command\ICommand.cs" />
     <Compile Include="Command\NullCommand.cs" />
+    <Compile Include="Command\OpenInventoryCommand.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="EntityDialog\Dialog.cs" />
     <Compile Include="EntityDialog\DialogAction.cs" />
@@ -110,6 +114,7 @@
     <Compile Include="Entity\Components\IComponent.cs" />
     <Compile Include="Entity\Components\IComponentMessage.cs" />
     <Compile Include="Entity\Components\IMessageHandler.cs" />
+    <Compile Include="Entity\Components\InventoryComponent.cs" />
     <Compile Include="Entity\Components\MouseClickMessage.cs" />
     <Compile Include="Entity\Components\MovementComponent.cs" />
     <Compile Include="Entity\Components\MoveMessage.cs" />
@@ -122,10 +127,12 @@
     <Compile Include="Game.cs" />
     <Compile Include="GameState\AbstractGameState.cs" />
     <Compile Include="GameState\DialogState.cs" />
+    <Compile Include="GameState\InventoryState.cs" />
     <Compile Include="GameState\StateGame.cs" />
     <Compile Include="GUI\AbstractGuiComponent.cs" />
     <Compile Include="GUI\Alignment.cs" />
     <Compile Include="GUI\ColumnContainer.cs" />
+    <Compile Include="GUI\FixedContainer.cs" />
     <Compile Include="GUI\IGuiComponentContainer.cs" />
     <Compile Include="GUI\PaddingContainer.cs" />
     <Compile Include="GUI\SpriteContainer.cs" />
@@ -134,6 +141,14 @@
     <Compile Include="GUI\GuiException.cs" />
     <Compile Include="GUI\GuiWindow.cs" />
     <Compile Include="GUI\IGuiComponent.cs" />
+    <Compile Include="Items\AbstractItem.cs" />
+    <Compile Include="Items\IItem.cs" />
+    <Compile Include="Items\Inventory.cs" />
+    <Compile Include="Items\InventoryException.cs" />
+    <Compile Include="Items\ItemManager.cs" />
+    <Compile Include="Items\ItemStack.cs" />
+    <Compile Include="Items\IWeapon.cs" />
+    <Compile Include="Items\MeleeWeapon.cs" />
     <Compile Include="LoadingException.cs" />
     <Compile Include="Map\GameMap.cs" />
     <Compile Include="Map\IPathCreator.cs" />
@@ -184,6 +199,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="csfml-audio-2.dll">
@@ -218,7 +234,9 @@
     <Content Include="Resources\Data\XML\Entity\player.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Data\XML\itemData.xml" />
+    <Content Include="Resources\Data\XML\ItemData.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Data\XML\Map\0.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -263,6 +281,9 @@
     <Content Include="Resources\Image\ts_items.png" />
     <Content Include="Resources\Image\ts_primary_ortho.png" />
     <Content Include="Resources\Image\UI\avatars.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Image\ui\items.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Image\UI\ui.png">
