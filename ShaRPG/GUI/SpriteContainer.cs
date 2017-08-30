@@ -3,9 +3,9 @@ using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GUI {
     public class SpriteContainer : AbstractGuiComponent {
-        public override int Height => _sprite.Height;
-        public override int Width => _sprite.Width;
-        private readonly Sprite _sprite;
+        public override int Height => Sprite.Height;
+        public override int Width => Sprite.Width;
+        public Sprite Sprite;
         private readonly Alignment _alignment;
 
         private ScreenCoordinate position => _alignment == Alignment.Left
@@ -15,12 +15,12 @@ namespace ShaRPG.GUI {
                                                         : new ScreenCoordinate(Parent.Width / 2 - Width / 2, 0));
 
         public SpriteContainer(Sprite sprite, Alignment alignment = Alignment.Left) {
-            _sprite = sprite;
+            Sprite = sprite;
             _alignment = alignment;
         }
 
         public override void Render(IRenderSurface renderSurface) {
-            renderSurface.Render(_sprite, position);
+            renderSurface.Render(Sprite, position);
         }
 
         public override void Reflow() { }
