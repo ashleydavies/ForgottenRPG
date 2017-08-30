@@ -19,6 +19,9 @@ namespace ShaRPG.GameState {
         private const int TilesMargin = 2;
         private const int TilesEdgeMargin = (WindowSizeX - TilesX * (TileSize + TilesMargin)) / 2;
 
+        private SpriteContainer[] _inventoryItemSpriteContainers = new SpriteContainer[Inventory.MaxSize];
+        private ItemStack _heldItemStack;
+
         public InventoryState(Game game, Inventory inventory, Vector2I windowSize, ICamera camera,
                               ISpriteStoreService spriteStore)
             : base(game, camera) {
@@ -28,26 +31,45 @@ namespace ShaRPG.GameState {
 
             Sprite itemSlotSprite = spriteStore.GetSprite("ui_item_slot");
 
-            int pos = 0;
-
             for (int y = 0; y < 3; y++) {
                 for (int x = 0; x < 10; x++) {
+                    int pos = y * TilesX + x;
                     int xPosition = TilesEdgeMargin + x * (TileSize + TilesMargin);
                     int yPosition = WindowSizeY - TilesEdgeMargin - (TilesY - y) * (TileSize + TilesMargin);
 
-                    _guiWindow.AddComponent(
-                        new FixedContainer(xPosition, yPosition, new SpriteContainer(itemSlotSprite)));
+                    SpriteContainer slotContainer = new SpriteContainer(itemSlotSprite);
+                    slotContainer.OnClicked += _ => SlotClicked(pos);
 
-                    if (inventory.ItemStack(pos) != null) {
-                        _guiWindow.AddComponent(new FixedContainer(
-                                                    xPosition + TileSize / 2 - ItemManager.SpriteSizeX / 2,
-                                                    yPosition + TileSize / 2 - ItemManager.SpriteSizeY / 2,
-                                                    new SpriteContainer(
-                                                        inventory.ItemStack(pos).Item.Sprite)));
-                    }
+                    _guiWindow.AddComponent(new FixedContainer(xPosition, yPosition, slotContainer));
 
-                    pos++;
+                    SpriteContainer spriteContainer = new SpriteContainer(inventory.ItemStack(pos) != null
+                                                                              ? inventory.ItemStack(pos).Item.Sprite
+                                                                              : Sprite.Null);
+                    _inventoryItemSpriteContainers[pos] = spriteContainer;
+                    _guiWindow.AddComponent(new FixedContainer(
+                                                xPosition + TileSize / 2 - ItemManager.SpriteSizeX / 2,
+                                                yPosition + TileSize / 2 - ItemManager.SpriteSizeY / 2,
+                                                spriteContainer));
                 }
+            }
+        }
+
+        private void SlotClicked(int pos) {
+            ServiceLocator.LogService.Log(LogType.Information, $"Clicked slot {pos}");
+
+            ItemStack inSlot = _inventory.ItemStack(pos);
+
+            if (inSlot == null && _heldItemStack == null) {
+                return;
+            }
+
+            if (inSlot == null) {
+                _inventory.InsertToSlot(pos, _heldItemStack);
+                _inventoryItemSpriteContainers[pos].Sprite = _heldItemStack.Item.Sprite;
+                _heldItemStack = null;
+            } else {
+                _heldItemStack = _inventory.RemoveFromSlot(pos);
+                _inventoryItemSpriteContainers[pos].Sprite = Sprite.Null;
             }
         }
 
@@ -59,8 +81,12 @@ namespace ShaRPG.GameState {
 
         public override void Render(IRenderSurface renderSurface) {
             _guiWindow.Render(renderSurface);
+            if (_heldItemStack != null) {
+                renderSurface.Render(_heldItemStack.Item.Sprite,
+                                     new ScreenCoordinate(SFML.Window.Mouse.GetPosition().X,
+                                                          SFML.Window.Mouse.GetPosition().Y));
+            }
         }
-
         public override void Clicked(ScreenCoordinate coordinates) {
             if (_guiWindow.IsMouseOver(coordinates)) _guiWindow.Clicked(coordinates);
         }
