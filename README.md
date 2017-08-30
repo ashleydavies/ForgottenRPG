@@ -41,6 +41,9 @@ The following show the completed parts of / technical information about each mai
      * Vertical flow container (renders children one below the other; height is sum of children's height)
      * Column container (dual column, one fixed, other stretches to fill space. Height is max of both column heights)
      * Padding container (simply adds padding around child component)
+ * Inventory
+   * You can view your inventory with a GUI
+   * You can move items around in your inventory
 
 ## Upcoming / planned
 
