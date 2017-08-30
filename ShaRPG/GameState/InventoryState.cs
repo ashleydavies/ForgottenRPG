@@ -1,4 +1,5 @@
-﻿using ShaRPG.Camera;
+﻿using SFML.Window;
+using ShaRPG.Camera;
 using ShaRPG.GUI;
 using ShaRPG.Items;
 using ShaRPG.Service;
@@ -27,6 +28,8 @@ namespace ShaRPG.GameState {
 
             Sprite itemSlotSprite = spriteStore.GetSprite("ui_item_slot");
 
+            int pos = 0;
+
             for (int y = 0; y < 3; y++) {
                 for (int x = 0; x < 10; x++) {
                     int xPosition = TilesEdgeMargin + x * (TileSize + TilesMargin);
@@ -34,11 +37,25 @@ namespace ShaRPG.GameState {
 
                     _guiWindow.AddComponent(
                         new FixedContainer(xPosition, yPosition, new SpriteContainer(itemSlotSprite)));
+
+                    if (inventory.ItemStack(pos) != null) {
+                        _guiWindow.AddComponent(new FixedContainer(
+                                                    xPosition + TileSize / 2 - ItemManager.SpriteSizeX / 2,
+                                                    yPosition + TileSize / 2 - ItemManager.SpriteSizeY / 2,
+                                                    new SpriteContainer(
+                                                        inventory.ItemStack(pos).Item.Sprite)));
+                    }
+
+                    pos++;
                 }
             }
         }
 
-        public override void Update(float delta) { }
+        public override void Update(float delta) {
+            if (Keyboard.IsKeyPressed(Keyboard.Key.Escape)) {
+                EndState();
+            }
+        }
 
         public override void Render(IRenderSurface renderSurface) {
             _guiWindow.Render(renderSurface);
