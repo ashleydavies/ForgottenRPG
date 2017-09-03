@@ -1,21 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ShaRPG.Util.Coordinate;
+using SFML.Graphics;
+using SFML.System;
 
 namespace ShaRPG.Util {
-    public class FPSCounter {
+    public class FpsCounter {
         private float _time = 0.0f;
         private List<float> _deltas = new List<float>();
-        private float _fps => _deltas.Count;
+        private float Fps => _deltas.Count;
 
         public void Update(float delta) {
             _time += delta;
             _deltas.Add(_time);
             _deltas = _deltas.SkipWhile(x => _time > x + 1.0f).ToList();
         }
-        
-        public void Render(IRenderSurface renderSurface) {
-            renderSurface.Render(new Text(Config.GuiFont, $"FPS: {_fps}"), new ScreenCoordinate(0, 0));
+
+        public void Render(RenderTarget renderSurface) {
+            renderSurface.Draw(new Text($"FPS: {Fps}", Config.GuiFont) {
+                Position = new Vector2f(0, 0),
+                CharacterSize = 12,
+                Color = Color.White
+            });
         }
     }
 }

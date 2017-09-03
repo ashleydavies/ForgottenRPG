@@ -1,5 +1,4 @@
 using System;
-using ShaRPG.Service;
 
 namespace ShaRPG.Entity.Components {
     public class HealthComponent : AbstractComponent {

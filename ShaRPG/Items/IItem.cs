@@ -1,4 +1,4 @@
-﻿using ShaRPG.Util;
+﻿using SFML.Graphics;
 
 namespace ShaRPG.Items {
     public interface IItem {
@@ -6,6 +6,6 @@ namespace ShaRPG.Items {
         string Name { get; }
         string Codename { get; }
         string Description { get; }
-        Sprite Sprite { get; }
+        Sprite Texture { get; }
     }
 }

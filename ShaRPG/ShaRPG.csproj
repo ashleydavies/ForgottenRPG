@@ -92,13 +92,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Camera\GameCamera.cs" />
-    <Compile Include="Camera\ICamera.cs" />
-    <Compile Include="Command\CameraMoveCommand.cs" />
-    <Compile Include="Command\ExitGameCommand.cs" />
-    <Compile Include="Command\ICommand.cs" />
-    <Compile Include="Command\NullCommand.cs" />
-    <Compile Include="Command\OpenInventoryCommand.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="EntityDialog\Dialog.cs" />
     <Compile Include="EntityDialog\DialogAction.cs" />
@@ -157,20 +150,17 @@
     <Compile Include="Map\MapTileStore.cs" />
     <Compile Include="Map\Pathfinding\AStar.cs" />
     <Compile Include="Map\Pathfinding\MapNode.cs" />
-    <Compile Include="Service\CachedFileSpriteStoreService.cs" />
+    <Compile Include="Service\CachedFileTextureStore.cs" />
     <Compile Include="Service\ConsoleLogService.cs" />
     <Compile Include="Service\IAudioService.cs" />
-    <Compile Include="Service\IImageStoreService.cs" />
     <Compile Include="Service\ILogService.cs" />
     <Compile Include="Service\IScriptStoreService.cs" />
-    <Compile Include="Service\ISpriteStoreService.cs" />
+    <Compile Include="Service\ITextureStore.cs" />
     <Compile Include="Service\Null\NullAudioService.cs" />
-    <Compile Include="Service\Null\NullImageStoreService.cs" />
     <Compile Include="Service\Null\NullLogService.cs" />
     <Compile Include="Service\Null\NullScriptStoreService.cs" />
     <Compile Include="Service\ServiceLocator.cs" />
     <Compile Include="Util\AnimatedSprite.cs" />
-    <Compile Include="Util\Color.cs" />
     <Compile Include="Util\Coordinate\Coordinate.cs" />
     <Compile Include="Util\Coordinate\GameCoordinate.cs" />
     <Compile Include="Util\Coordinate\ScreenCoordinate.cs" />
@@ -181,18 +171,13 @@
     <Compile Include="Util\Font.cs" />
     <Compile Include="Util\FPSCounter.cs" />
     <Compile Include="Util\IClickObserver.cs" />
-    <Compile Include="Util\IDrawable.cs" />
-    <Compile Include="Util\Image.cs" />
-    <Compile Include="Util\IRenderSurface.cs" />
-    <Compile Include="Util\Mouse.cs" />
-    <Compile Include="Util\RenderSurfaceOffset.cs" />
-    <Compile Include="Util\Sprite.cs" />
-    <Compile Include="Util\Text.cs" />
+    <Compile Include="Util\ISpriteable.cs" />
+    <Compile Include="Util\RenderTargetExtensions.cs" />
     <Compile Include="Util\Texture.cs" />
     <Compile Include="Util\TextureType.cs" />
+    <Compile Include="Util\SpriteableWrapper.cs" />
     <Compile Include="Util\Vector2F.cs" />
     <Compile Include="Util\Vector2I.cs" />
-    <Compile Include="Util\WindowRenderSurface.cs" />
     <Compile Include="VM\ScriptVM.cs" />
   </ItemGroup>
   <ItemGroup>

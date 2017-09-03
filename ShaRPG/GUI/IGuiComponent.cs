@@ -1,4 +1,5 @@
-﻿using ShaRPG.Util;
+﻿using SFML.Graphics;
+using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GUI {
@@ -7,7 +8,7 @@ namespace ShaRPG.GUI {
         ScreenCoordinate ScreenPosition { get; }
         int Height { get; }
         int Width { get; }
-        void Render(IRenderSurface renderSurface);
+        void Render(RenderTarget renderSurface);
         void Reflow();
     }
 }

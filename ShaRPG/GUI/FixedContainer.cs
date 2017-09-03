@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SFML.Graphics;
+using SFML.System;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
@@ -20,10 +22,9 @@ namespace ShaRPG.GUI {
             AddComponent(component);
         }
 
-        public override void Render(IRenderSurface renderSurface) {
-            using (new RenderSurfaceOffset(renderSurface, new Vector2I(Top, Left))) {
-                _components.ForEach(component => component.Render(renderSurface));
-            }
+        public override void Render(RenderTarget renderSurface) {
+            renderSurface.WithOffset(new Vector2f(Top, Left),
+                                     () => _components.ForEach(component => component.Render(renderSurface)));
         }
 
         public override void Reflow() { }

@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
+﻿using System;
+using System.Collections.Generic;
+using SFML.Graphics;
+using SFML.System;
 using SFML.Window;
-using ShaRPG.Camera;
-using ShaRPG.Command;
 using ShaRPG.Entity;
 using ShaRPG.Entity.Components;
 using ShaRPG.EntityDialog;
-using ShaRPG.GUI;
 using ShaRPG.Items;
 using ShaRPG.Map;
 using ShaRPG.Service;
@@ -23,37 +21,40 @@ namespace ShaRPG.GameState {
         private readonly EntityManager _entityManager;
         private readonly ItemManager _itemManager;
         private readonly ClickManager _clickManager = new ClickManager();
-        private readonly Dictionary<Keyboard.Key, ICommand> _keyMappings;
-        private readonly FPSCounter _fpsCounter = new FPSCounter();
-        private readonly ISpriteStoreService _spriteStore;
-        private Vector2I _windowSize;
+        private readonly Dictionary<Keyboard.Key, Action<float>> _keyMappings;
+        private readonly FpsCounter _fpsCounter = new FpsCounter();
+        private readonly ITextureStore _textureStore;
+        private Vector2f _gameCenter;
+        private Vector2f _renderOffset => _gameCenter - _windowSize / 2;
+        private Vector2f _windowSize;
+        private float _scale = 1;
 
-        public StateGame(Game game, Vector2I size, ISpriteStoreService spriteStore,
-                         MapTileStore mapTileStore, ItemManager itemManager) : base(game, new GameCamera(size)) {
+        public StateGame(Game game, Vector2f size, ITextureStore textureStore, MapTileStore mapTileStore,
+                         ItemManager itemManager) : base(game) {
             _windowSize = size;
-            _spriteStore = spriteStore;
+            _textureStore = textureStore;
             _itemManager = itemManager;
             _entityManager = new EntityManager(this);
-            _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, spriteStore);
+            _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, textureStore);
             _mapLoader = new MapLoader(Config.MapDataDirectory, mapTileStore, _itemManager);
             _map = _mapLoader.LoadMap(0, this);
             _map.SpawnEntities(_entityLoader);
             _clickManager.Register(ClickPriority.Entity, _entityManager);
             _clickManager.Register(ClickPriority.Map, _map);
 
-            _keyMappings = new Dictionary<Keyboard.Key, ICommand> {
+            _keyMappings = new Dictionary<Keyboard.Key, Action<float>> {
                 {
-                    Keyboard.Key.Up, new CameraMoveCommand(Camera, new Vector2F(0, -300))
+                    Keyboard.Key.Up, delta => _gameCenter = new Vector2f(_gameCenter.X, _gameCenter.Y - 300 * delta)
                 }, {
-                    Keyboard.Key.Down, new CameraMoveCommand(Camera, new Vector2F(0, 300))
+                    Keyboard.Key.Down, delta => _gameCenter = new Vector2f(_gameCenter.X, _gameCenter.Y + 300 * delta)
                 }, {
-                    Keyboard.Key.Left, new CameraMoveCommand(Camera, new Vector2F(-300, 0))
+                    Keyboard.Key.Left, delta => _gameCenter = new Vector2f(_gameCenter.X - 300 * delta, _gameCenter.Y)
                 }, {
-                    Keyboard.Key.Right, new CameraMoveCommand(Camera, new Vector2F(300, 0))
+                    Keyboard.Key.Right, delta => _gameCenter = new Vector2f(_gameCenter.X + 300 * delta, _gameCenter.Y)
                 }, {
-                    Keyboard.Key.X, new ExitGameCommand(this)
+                    Keyboard.Key.X, delta => throw new EndGameException()
                 }, {
-                    Keyboard.Key.Tab, new OpenInventoryCommand(this)
+                    Keyboard.Key.Tab, delta => OpenInventory()
                 }
             };
 
@@ -62,13 +63,13 @@ namespace ShaRPG.GameState {
             _player.GetComponent<InventoryComponent>().Inventory
                    .PickupItem(new ItemStack(_itemManager.GetItem("iron_longsword"), 1));
 
-            Camera.Center = (GameCoordinate) _player.Position;
+            _gameCenter = (GameCoordinate) _player.Position;
         }
 
         public override void Update(float delta) {
             foreach (Keyboard.Key key in _keyMappings.Keys) {
                 if (Keyboard.IsKeyPressed(key)) {
-                    _keyMappings[key].Execute(delta);
+                    _keyMappings[key](delta);
                 }
             }
 
@@ -77,9 +78,11 @@ namespace ShaRPG.GameState {
             _fpsCounter.Update(delta);
         }
 
-        public override void Render(IRenderSurface renderSurface) {
-            _map.Render(renderSurface);
-            _entityManager.Render(renderSurface);
+        public override void Render(RenderTarget renderSurface) {
+            renderSurface.WithView(new View(_gameCenter, _windowSize / _scale), () => {
+                _map.Render(renderSurface);
+                _entityManager.Render(renderSurface);
+            });
             _fpsCounter.Render(renderSurface);
         }
 
@@ -88,9 +91,7 @@ namespace ShaRPG.GameState {
         }
 
         public override void MouseWheelMoved(int delta) {
-            ServiceLocator.LogService.Log(LogType.Information, Camera.Scale.X.ToString());
-            Camera.Scale.X += delta / 10f;
-            Camera.Scale.Y += delta / 10f;
+            _scale += delta / 10f;
         }
 
         public void MovePlayer(TileCoordinate destination) {
@@ -102,16 +103,16 @@ namespace ShaRPG.GameState {
         }
 
         public GameCoordinate TranslateCoordinates(ScreenCoordinate coordinates) {
-            return coordinates.AsGameCoordinate(Camera);
+            return coordinates.AsGameCoordinate(_renderOffset);
         }
 
         public void StartDialog(Dialog dialog) {
-            ChangeState(new DialogState(Game, dialog, _windowSize, Camera, _spriteStore));
+            ChangeState(new DialogState(Game, dialog, _windowSize, _textureStore));
         }
 
         public void OpenInventory() {
-            ChangeState(new InventoryState(Game, _player.GetComponent<InventoryComponent>().Inventory,
-                                           _windowSize, Camera, _spriteStore));
+            ChangeState(new InventoryState(Game, _player.GetComponent<InventoryComponent>().Inventory, _windowSize,
+                                           _textureStore));
         }
     }
 }

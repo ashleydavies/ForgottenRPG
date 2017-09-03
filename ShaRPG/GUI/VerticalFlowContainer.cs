@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using SFML.Graphics;
+using SFML.System;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
@@ -10,13 +11,11 @@ namespace ShaRPG.GUI {
         public override int Width => Parent?.Width ?? 0;
         private readonly List<IGuiComponent> _components = new List<IGuiComponent>();
 
-        public override void Render(IRenderSurface renderSurface) {
+        public override void Render(RenderTarget renderSurface) {
             int h = 0;
 
             foreach (IGuiComponent component in _components) {
-                using (new RenderSurfaceOffset(renderSurface, new Vector2I(0, h))) {
-                    component.Render(renderSurface);
-                }
+                renderSurface.WithOffset(new Vector2f(0, h), () => component.Render(renderSurface));
                 h += component.Height;
             }
         }

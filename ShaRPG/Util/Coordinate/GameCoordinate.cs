@@ -1,4 +1,5 @@
 ﻿using System;
+using SFML.System;
 
 namespace ShaRPG.Util.Coordinate {
     public class GameCoordinate : Coordinate {
@@ -11,7 +12,11 @@ namespace ShaRPG.Util.Coordinate {
         public static implicit operator Vector2F(GameCoordinate coordinate) {
             return new Vector2F(coordinate.X, coordinate.Y);
         }
-
+        
+        public static implicit operator Vector2f(GameCoordinate coordinate) {
+            return new Vector2f(coordinate.X, coordinate.Y);
+        }
+        
         public static GameCoordinate operator +(GameCoordinate a, GameCoordinate b) {
             return new GameCoordinate(a.X + b.X, a.Y + b.Y);
         }
