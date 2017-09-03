@@ -1,4 +1,5 @@
-﻿using ShaRPG.Util;
+﻿using SFML.Graphics;
+using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Map {
@@ -9,15 +10,15 @@ namespace ShaRPG.Map {
         public const int HalfWidth = Width / 2;
         public const int HalfHeight = Height / 2;
         public static readonly MapTile Null = new NullMapTile(0, null, "Null Tile", false);
-        private readonly IDrawable _sprite;
+        private readonly ISpriteable _spriteable;
         public readonly bool Collideable;
         // Instance fields
         public readonly int Id;
         public readonly string Name;
 
-        internal MapTile(int id, IDrawable sprite, string name, bool collideable) {
+        internal MapTile(int id, ISpriteable spriteable, string name, bool collideable) {
             Id = id;
-            _sprite = sprite;
+            _spriteable = spriteable;
             Name = name;
             Collideable = collideable;
         }
@@ -25,19 +26,21 @@ namespace ShaRPG.Map {
         public GameCoordinate TextureOffset { get; set; } = new GameCoordinate(0, 0);
 
         public virtual void Update(float delta) {
-            _sprite.Update(delta);
+            _spriteable.Update(delta);
         }
 
-        public virtual void Draw(IRenderSurface renderSurface, TileCoordinate position) {
-            renderSurface.Render(_sprite, (GameCoordinate) position + TextureOffset);
+        public virtual void Draw(RenderTarget renderSurface, TileCoordinate position) {
+            Sprite sprite = _spriteable.Sprite;
+            sprite.Position = (GameCoordinate) position + TextureOffset;
+            renderSurface.Draw(sprite);
         }
 
         private class NullMapTile : MapTile {
-            public NullMapTile(int id, IDrawable sprite, string name, bool collideable)
-                : base(id, sprite, name, collideable) { }
+            public NullMapTile(int id, ISpriteable spriteable, string name, bool collideable)
+                : base(id, spriteable, name, collideable) { }
 
             public override void Update(float delta) { }
-            public override void Draw(IRenderSurface renderSurface, TileCoordinate position) { }
+            public override void Draw(RenderTarget renderSurface, TileCoordinate position) { }
         }
     }
 }

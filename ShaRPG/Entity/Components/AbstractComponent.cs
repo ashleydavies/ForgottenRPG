@@ -1,5 +1,5 @@
 ﻿using System;
-using ShaRPG.Util;
+using SFML.Graphics;
 
 namespace ShaRPG.Entity.Components {
     public abstract class AbstractComponent : IComponent {
@@ -9,7 +9,7 @@ namespace ShaRPG.Entity.Components {
             _entity = entity;
         }
 
-        public void Render(IRenderSurface renderSurface) { }
+        public void Render(RenderTarget renderSurface) { }
 
         public abstract void Update(float delta);
 

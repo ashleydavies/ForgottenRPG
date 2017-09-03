@@ -1,19 +1,16 @@
-﻿using ShaRPG.Camera;
-using ShaRPG.Util;
+﻿using SFML.Graphics;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GameState {
     public abstract class AbstractGameState {
         protected Game Game;
 
-        protected AbstractGameState(Game game, ICamera camera) {
+        protected AbstractGameState(Game game) {
             Game = game;
-            Camera = camera;
         }
 
-        public ICamera Camera { get; protected set; }
         public abstract void Update(float delta);
-        public abstract void Render(IRenderSurface renderSurface);
+        public abstract void Render(RenderTarget renderSurface);
 
         public void SetState(AbstractGameState state) {
             Game.SetGameState(state);

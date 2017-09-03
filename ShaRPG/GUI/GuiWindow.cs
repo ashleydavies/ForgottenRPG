@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using SFML.Graphics;
+using SFML.System;
 using ShaRPG.Service;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
+using Sprite = SFML.Graphics.Sprite;
 
 namespace ShaRPG.GUI {
     public class GuiWindow : IGuiComponentContainer {
@@ -12,75 +14,35 @@ namespace ShaRPG.GUI {
             get => null;
             set => throw new NotImplementedException();
         }
-        public int Width => _size.X - 2 * BorderTSize;
-        public ScreenCoordinate ScreenPosition => new ScreenCoordinate(BgPos);
-        public int Height => _size.Y - 2 * BorderTSize;
+        public ScreenCoordinate ScreenPosition => new ScreenCoordinate(Position);
+        public int Width => _size.X;
+        public int Height => _size.Y;
 
         private const int BorderTSize = 12;
         private const int BgTSize = 60;
-        private readonly ISpriteStoreService _spriteStore;
-        private readonly Vector2I _center;
-        private readonly Vector2I _size;
-        private Vector2I Position => _center - _size / 2;
-        private Vector2I BgPos => Position + new Vector2I(BorderTSize, BorderTSize);
+        private Sprite _backgroundSprite;
+        private Vector2i Position => _center - _size / 2;
+        private readonly Vector2i _center;
+        private readonly Vector2i _size;
         private readonly List<IGuiComponent> _components = new List<IGuiComponent>();
+        private RenderTexture _renderSurface;
 
-        private ScreenCoordinate BackgroundTilePos(int x, int y) =>
-            new ScreenCoordinate(BgPos + new Vector2I(x * BgTSize, y * BgTSize));
-
-        private ScreenCoordinate TopBorderPos(int n) =>
-            new ScreenCoordinate(Position.X + n * BorderTSize, Position.Y);
-
-        private ScreenCoordinate BottomBorderPos(int n) =>
-            new ScreenCoordinate(Position.X + n * BorderTSize,
-                                 Position.Y + (SideSegments - 1) * BorderTSize);
-
-        private ScreenCoordinate LeftBorderPos(int n) =>
-            new ScreenCoordinate(Position.X, Position.Y + n * BorderTSize);
-
-        private ScreenCoordinate RightBorderPos(int n) =>
-            new ScreenCoordinate(Position.X + (TopBottomSegments - 1) * BorderTSize,
-                                 Position.Y + n * BorderTSize);
-
-        private int TopBottomSegments => Math.Max(_size.X / BorderTSize, 0);
-        private int SideSegments => Math.Max(_size.Y / BorderTSize, 0);
-        private int BgXSegments => Math.Max((_size.X - BorderTSize * 2) / 60, 0);
-        private int BgYSegments => Math.Max((_size.Y - BorderTSize * 2) / 60, 0);
-
-        public GuiWindow(ISpriteStoreService spriteStore, Vector2I center, Vector2I size) {
-            if ((size.X - 2 * BorderTSize) % BgTSize != 0 || (size.Y - 2 * BorderTSize) % BgTSize != 0)
+        public GuiWindow(ITextureStore textureStore, Vector2i center, Vector2i size) {
+            if (size.X % BgTSize != 0 || size.Y % BgTSize != 0)
                 throw new GuiException("Bad size for GUI window");
 
-            _spriteStore = spriteStore;
             _center = center;
             _size = size;
+            RenderBackground(textureStore);
         }
 
-        public void Render(IRenderSurface renderSurface) {
-            RenderUi(renderSurface, "corner_tl", TopBorderPos(0));
-            RenderUi(renderSurface, "corner_tr", TopBorderPos(TopBottomSegments - 1));
-            RenderUi(renderSurface, "corner_bl", LeftBorderPos(SideSegments - 1));
-            RenderUi(renderSurface, "corner_br", RightBorderPos(SideSegments - 1));
-
-            for (int t = 1; t < TopBottomSegments - 1; t++) {
-                RenderUi(renderSurface, "side_t", TopBorderPos(t));
-                RenderUi(renderSurface, "side_b", BottomBorderPos(t));
-            }
-
-            for (int t = 1; t < SideSegments - 1; t++) {
-                RenderUi(renderSurface, "side_l", LeftBorderPos(t));
-                RenderUi(renderSurface, "side_r", RightBorderPos(t));
-            }
-
-            for (int y = 0; y < BgYSegments; y++) {
-                for (int x = 0; x < BgXSegments; x++) {
-                    RenderUi(renderSurface, "background", BackgroundTilePos(x, y));
-                }
-            }
-
-            using (new RenderSurfaceOffset(renderSurface, BgPos)) {
-                _components.ForEach(component => component.Render(renderSurface));
-            }
+        public void Render(RenderTarget renderSurface) {
+            renderSurface.WithOffset((Vector2f) Position,
+                                     () => {
+                                         renderSurface.WithOffset(new Vector2f(-BorderTSize, -BorderTSize),
+                                                                  () => { renderSurface.Draw(_backgroundSprite); });
+                                         _components.ForEach(component => component.Render(renderSurface));
+                                     });
         }
 
         public void Reflow() {
@@ -102,19 +64,62 @@ namespace ShaRPG.GUI {
         }
 
         public ScreenCoordinate ChildScreenPosition(IGuiComponent component) {
-            return new ScreenCoordinate(BgPos);
-        }
-
-        private void RenderUi(IRenderSurface renderSurface, string part, ScreenCoordinate position) {
-            renderSurface.Render(_spriteStore.GetSprite($"ui_{part}"), position);
+            return new ScreenCoordinate(Position);
         }
 
         public bool IsMouseOver(ScreenCoordinate coordinates) {
-            return coordinates.Overlaps(new ScreenCoordinate(Position), Width + 2 * BgTSize, Height + 2 * BgTSize);
+            return coordinates.Overlaps(new ScreenCoordinate(Position), Width, Height);
         }
 
         public void Clicked(ScreenCoordinate coordinates) {
-            _components.ForEach(c => { if (c.IsMouseOver(coordinates)) c.Clicked(coordinates); });
+            _components.ForEach(c => {
+                if (c.IsMouseOver(coordinates)) c.Clicked(coordinates);
+            });
+        }
+
+        private void RenderBackground(ITextureStore textureStore) {
+            Sprite cornerTl = textureStore.GetNewSprite("ui_corner_tl");
+            Sprite cornerTr = textureStore.GetNewSprite("ui_corner_tr");
+            Sprite cornerBl = textureStore.GetNewSprite("ui_corner_bl");
+            Sprite cornerBr = textureStore.GetNewSprite("ui_corner_br");
+            Sprite sideT = textureStore.GetNewSprite("ui_side_t");
+            Sprite sideB = textureStore.GetNewSprite("ui_side_b");
+            Sprite sideL = textureStore.GetNewSprite("ui_side_l");
+            Sprite sideR = textureStore.GetNewSprite("ui_side_r");
+            Sprite background = textureStore.GetNewSprite("ui_background");
+
+            cornerTr.Position = new Vector2f(Width + BorderTSize, 0);
+            cornerBl.Position = new Vector2f(0, Height + BorderTSize);
+            cornerBr.Position = new Vector2f(Width + BorderTSize, Height + BorderTSize);
+            sideR.Position = new Vector2f(Width + BorderTSize, 0);
+            sideB.Position = new Vector2f(0, Height + BorderTSize);
+            background.Position = new Vector2f(BorderTSize, BorderTSize);
+            sideT.Texture.Repeated = true;
+            sideB.Texture.Repeated = true;
+            sideL.Texture.Repeated = true;
+            sideR.Texture.Repeated = true;
+            background.Texture.Repeated = true;
+            sideT.TextureRect = new IntRect(0, 0, Width + BorderTSize * 2, BorderTSize);
+            sideB.TextureRect = new IntRect(0, 0, Width + BorderTSize * 2, BorderTSize);
+            sideL.TextureRect = new IntRect(0, 0, BorderTSize, Height + BorderTSize * 2);
+            sideR.TextureRect = new IntRect(0, 0, BorderTSize, Height + BorderTSize * 2);
+            background.TextureRect = new IntRect(0, 0, Width, Height);
+
+            _renderSurface = new RenderTexture((uint) (Width + BorderTSize * 2),
+                                               (uint) (Height + BorderTSize * 2));
+
+            _renderSurface.Draw(sideT);
+            _renderSurface.Draw(sideB);
+            _renderSurface.Draw(sideL);
+            _renderSurface.Draw(sideR);
+            _renderSurface.Draw(cornerTl);
+            _renderSurface.Draw(cornerTr);
+            _renderSurface.Draw(cornerBl);
+            _renderSurface.Draw(cornerBr);
+            _renderSurface.Draw(background);
+            _renderSurface.Display();
+
+            _backgroundSprite = new Sprite(_renderSurface.Texture);
         }
     }
 }

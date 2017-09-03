@@ -1,5 +1,4 @@
 ﻿using System;
-using SFML.System;
 
 namespace ShaRPG.Util {
     public class Vector2F {

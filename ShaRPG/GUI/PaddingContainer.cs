@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SFML.Graphics;
+using SFML.System;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
@@ -19,7 +20,7 @@ namespace ShaRPG.GUI {
             if (component != null) AddComponent(component);
         }
 
-        public override void Render(IRenderSurface renderSurface) {
+        public override void Render(RenderTarget renderSurface) {
             _paddedComponent.Render(renderSurface);
         }
 
@@ -65,10 +66,8 @@ namespace ShaRPG.GUI {
                 Padding = padding;
             }
 
-            public void Render(IRenderSurface renderSurface) {
-                using (new RenderSurfaceOffset(renderSurface, new Vector2I(Padding, Padding))) {
-                    _component?.Render(renderSurface);
-                }
+            public void Render(RenderTarget renderSurface) {
+                renderSurface.WithOffset(new Vector2f(Padding, Padding), () => _component?.Render(renderSurface));
             }
 
             public void Reflow() {

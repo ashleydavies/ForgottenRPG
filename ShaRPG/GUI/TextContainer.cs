@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ShaRPG.Util;
+using SFML.Graphics;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GUI {
@@ -10,7 +10,7 @@ namespace ShaRPG.GUI {
         public int Indent { get; set; } = 0;
         public Color Color { get; set; } = Color.Black;
         public uint TextSize { get; }
-        public override int Height => _textList.Aggregate(0, (h, text) => h + text.Height) + TotalSpacing;
+        public override int Height => _textList.Aggregate(0, (h, text) => h + (int) text.CharacterSize) + TotalSpacing;
         public override int Width => Parent?.Width ?? 0;
         public string Contents {
             get => _contents;
@@ -28,11 +28,12 @@ namespace ShaRPG.GUI {
             TextSize = size;
         }
 
-        public override void Render(IRenderSurface renderSurface) {
+        public override void Render(RenderTarget renderSurface) {
             int h = 0;
             _textList.ForEach(text => {
-                renderSurface.Render(text, new ScreenCoordinate(0, h));
-                h += text.Height + LineSpacing;
+                text.Position = new ScreenCoordinate(0, h);
+                renderSurface.Draw(text);
+                h += (int) text.CharacterSize + LineSpacing;
             });
         }
 
@@ -45,9 +46,11 @@ namespace ShaRPG.GUI {
             foreach (string word in Contents.Split(' ')) {
                 string testString = $"{currentString} {word}";
                 if (currentString == string.Empty) testString = word;
-                Text testText = new Text(Config.GuiFont, testString, TextSize, Color);
-                
-                if (testText.Width > Width) {
+                Text testText = new Text(testString, Config.GuiFont, TextSize) {
+                    Color = Color
+                };
+
+                if (testText.GetLocalBounds().Width > Width) {
                     if (currentString == string.Empty) return;
                     _textList.Add(previous);
                     currentString = word;
@@ -59,8 +62,10 @@ namespace ShaRPG.GUI {
             }
 
             if (currentString.Trim() != string.Empty) {
-                Text testText = new Text(Config.GuiFont, currentString, TextSize, Color);
-                if (testText.Width > Width) return;
+                Text testText = new Text(currentString, Config.GuiFont, TextSize) {
+                    Color = Color
+                };
+                if (testText.GetLocalBounds().Width > Width) return;
                 _textList.Add(testText);
             }
         }

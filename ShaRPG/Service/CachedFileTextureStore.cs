@@ -2,51 +2,53 @@
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using ShaRPG.Util;
+using SFML.Graphics;
 
 namespace ShaRPG.Service {
-    internal class CachedFileSpriteStoreService : ISpriteStoreService {
-        private readonly Dictionary<int, string> _namespaceCacheDictionary;
+    internal class CachedFileTextureStore : ITextureStore {
+        private readonly Dictionary<int, string> _namespaceCacheDictionary = new Dictionary<int, string>();
         private readonly XDocument _resolutionDocument;
         private readonly string _rootDirectory;
-        private readonly Dictionary<string, Sprite> _spriteCacheDictionary;
-        private readonly Dictionary<int, Texture> _textureCacheDictionary;
+        private readonly Dictionary<string, Texture> _textureCacheDirectory = new Dictionary<string, Texture>();
+        private readonly Dictionary<int, string> _textureFileCacheDictionary = new Dictionary<int, string>();
+        private readonly Texture _nullTexture = new Texture(1, 1);
 
-        public CachedFileSpriteStoreService(string directory) {
+        public CachedFileTextureStore(string directory) {
             _rootDirectory = directory;
-            _namespaceCacheDictionary = new Dictionary<int, string>();
-            _textureCacheDictionary = new Dictionary<int, Texture>();
-            _spriteCacheDictionary = new Dictionary<string, Sprite>();
 
             using (var fs = File.OpenRead(Path.Combine(directory, "Resolution.xml"))) {
                 _resolutionDocument = XDocument.Load(fs);
             }
         }
 
-        public Sprite GetSprite(string name) {
-            if (!_spriteCacheDictionary.ContainsKey(name)) {
-                _spriteCacheDictionary[name] = LoadSprite(name);
-                if (_spriteCacheDictionary[name] == Sprite.Null) {
+        public Texture GetTexture(string name) {
+            if (!_textureCacheDirectory.ContainsKey(name)) {
+                _textureCacheDirectory[name] = LoadTexture(name);
+                if (ReferenceEquals(_textureCacheDirectory[name], _nullTexture)) {
                     ServiceLocator.LogService.Log(LogType.Error, "Attempt to load image " + name + " failed.");
                 }
             }
 
-            return _spriteCacheDictionary[name];
+            return _textureCacheDirectory[name];
         }
 
-        private Sprite LoadSprite(string name) {
+        public Sprite GetNewSprite(string name) {
+            return new Sprite(GetTexture(name));
+        }
+
+        private Texture LoadTexture(string name) {
             var imageData = _resolutionDocument
                 .Elements("Resolutions")
                 .Elements("ImageResolutions")
                 .Elements("ImageResolution")
                 .FirstOrDefault(elems => elems.Attribute("name").Value.Equals(name));
 
-            if (imageData == null) return Sprite.Null;
+            if (imageData == null) return _nullTexture;
 
             var posData = imageData.Element("position");
             var sizeData = imageData.Element("size");
 
-            if (posData == null || sizeData == null) return Sprite.Null;
+            if (posData == null || sizeData == null) return _nullTexture;
 
             int texture, x, y, width, height;
 
@@ -54,16 +56,16 @@ namespace ShaRPG.Service {
                 || !int.TryParse(posData.Attribute("x")?.Value, out x)
                 || !int.TryParse(posData.Attribute("y")?.Value, out y)
                 || !int.TryParse(sizeData.Attribute("width")?.Value, out width)
-                || !int.TryParse(sizeData.Attribute("height")?.Value, out height)) return Sprite.Null;
+                || !int.TryParse(sizeData.Attribute("height")?.Value, out height)) return _nullTexture;
 
-            if (!_textureCacheDictionary.ContainsKey(texture)) {
-                _textureCacheDictionary[texture] = LoadTexture(texture.ToString());
+            if (!_textureFileCacheDictionary.ContainsKey(texture)) {
+                _textureFileCacheDictionary[texture] = LoadTextureFile(texture.ToString());
             }
 
-            return new Sprite(_textureCacheDictionary[texture], x, y, width, height);
+            return new Texture(Path.Combine(_textureFileCacheDictionary[texture]), new IntRect(x, y, width, height));
         }
 
-        private Texture LoadTexture(string id) {
+        private string LoadTextureFile(string id) {
             var textureData = _resolutionDocument
                 .Elements("Resolutions")
                 .Elements("TextureResolutions")
@@ -91,9 +93,9 @@ namespace ShaRPG.Service {
                 _namespaceCacheDictionary[textureNamespace] = LoadNamespace(textureNamespace.ToString());
             }
 
-            name += "." + extension;
+            name += $".{extension}";
 
-            return new Texture(Path.Combine(_rootDirectory, _namespaceCacheDictionary[textureNamespace], name));
+            return Path.Combine(_rootDirectory, _namespaceCacheDictionary[textureNamespace], name);
         }
 
         private string LoadNamespace(string id) {

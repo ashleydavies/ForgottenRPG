@@ -1,5 +1,5 @@
 ﻿using System;
-using ShaRPG.Util;
+using SFML.Graphics;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GUI {
@@ -19,9 +19,10 @@ namespace ShaRPG.GUI {
         public ScreenCoordinate ScreenPosition => _parent.ChildScreenPosition(this);
         public abstract int Height { get; }
         public abstract int Width { get; }
-        public abstract void Render(IRenderSurface renderSurface);
+        public abstract void Render(RenderTarget renderSurface);
         public abstract void Reflow();
         public event Action<ScreenCoordinate> OnClicked;
+        
         public void ReflowAll() {
             IGuiComponent component = this;
             while (component.Parent != null) component = component.Parent;

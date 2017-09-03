@@ -1,5 +1,4 @@
 ﻿using System.Xml.Linq;
-using ShaRPG.Entity;
 using ShaRPG.Service;
 
 namespace ShaRPG.Items {
@@ -7,14 +6,14 @@ namespace ShaRPG.Items {
         public int Damage { get; }
 
         public static IItem Load(int id, string name, string codename, string description, XElement modifiers,
-                                 ISpriteStoreService spriteStore) {
+                                 ITextureStore textureStore) {
             int.TryParse(modifiers.Element("Damage")?.Value ?? "0", out int damage);
-            return new MeleeWeapon(id, name, codename, description, damage, spriteStore);
+            return new MeleeWeapon(id, name, codename, description, damage, textureStore);
         }
 
         private MeleeWeapon(int id, string name, string codename, string description, int damage,
-                            ISpriteStoreService spriteStore)
-            : base(id, name, description, codename, spriteStore.GetSprite($"ui_item_{codename}")) {
+                            ITextureStore textureStore)
+            : base(id, name, description, codename, textureStore.GetNewSprite($"ui_item_{codename}")) {
             Damage = damage;
         }
     }

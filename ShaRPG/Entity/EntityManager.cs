@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SFML.Graphics;
 using ShaRPG.Entity.Components;
 using ShaRPG.GameState;
 using ShaRPG.Util;
@@ -45,7 +46,7 @@ namespace ShaRPG.Entity {
             }
         }
 
-        public void Render(IRenderSurface renderSurface) {
+        public void Render(RenderTarget renderSurface) {
             foreach (GameEntity e in _entities.Values) {
                 e.Render(renderSurface);
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SFML.Graphics;
 using ShaRPG.Entity;
 using ShaRPG.GameState;
 using ShaRPG.Items;
@@ -50,10 +51,12 @@ namespace ShaRPG.Map {
             });
         }
 
-        public void Render(IRenderSurface renderSurface) {
+        public void Render(RenderTarget renderSurface) {
             EachTile((x, y) => GetTile(new TileCoordinate(x, y)).Draw(renderSurface, new TileCoordinate(x, y)));
             _items.ForEach(itemInstance => {
-                renderSurface.Render(itemInstance.itemStack.Item.Sprite, itemInstance.position);
+                renderSurface.Draw(new Sprite(itemInstance.itemStack.Item.Texture) {
+                    Position = itemInstance.position
+                });
             });
         }
 

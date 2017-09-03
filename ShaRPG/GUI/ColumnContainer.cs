@@ -1,4 +1,6 @@
 ﻿using System;
+using SFML.Graphics;
+using SFML.System;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
@@ -26,12 +28,10 @@ namespace ShaRPG.GUI {
             _right = new ColumnContainerColumn(this, Side.Right);
         }
 
-        public override void Render(IRenderSurface renderSurface) {
+        public override void Render(RenderTarget renderSurface) {
             _left.Render(renderSurface);
 
-            using (new RenderSurfaceOffset(renderSurface, new Vector2I(LeftWidth, 0))) {
-                _right.Render(renderSurface);
-            }
+            renderSurface.WithOffset(new Vector2f(LeftWidth, 0), () => _right.Render(renderSurface));
         }
 
         public override void Reflow() {
@@ -84,7 +84,7 @@ namespace ShaRPG.GUI {
                 _side = side;
             }
 
-            public override void Render(IRenderSurface renderSurface) {
+            public override void Render(RenderTarget renderSurface) {
                 _component?.Render(renderSurface);
             }
 

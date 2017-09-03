@@ -1,13 +1,17 @@
-using ShaRPG.Camera;
+using SFML.System;
 
 namespace ShaRPG.Util.Coordinate {
     public class ScreenCoordinate : Coordinate {
         public ScreenCoordinate(int x, int y) : base(x, y) { }
 
-        public ScreenCoordinate(Vector2I v) : base(v.X, v.Y) { }
+        public ScreenCoordinate(Vector2i v) : base(v.X, v.Y) { }
+        
+        public static implicit operator Vector2f(ScreenCoordinate coordinate) {
+            return new Vector2f(coordinate.X, coordinate.Y);
+        }
 
-        public GameCoordinate AsGameCoordinate(ICamera camera) {
-            return camera.TranslateScreenCoordinate(this);
+        public GameCoordinate AsGameCoordinate(Vector2f offset) {
+            return new GameCoordinate((int) (offset.X + X), (int) (offset.Y + Y));
         }
         
         public static ScreenCoordinate operator +(ScreenCoordinate a, ScreenCoordinate b) {

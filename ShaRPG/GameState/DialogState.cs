@@ -1,10 +1,10 @@
+using SFML.Graphics;
+using SFML.System;
 using ShaRPG;
-using ShaRPG.Camera;
 using ShaRPG.EntityDialog;
 using ShaRPG.GameState;
 using ShaRPG.GUI;
 using ShaRPG.Service;
-using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
 public class DialogState : AbstractGameState {
@@ -12,17 +12,17 @@ public class DialogState : AbstractGameState {
     private readonly GuiWindow _dialogGuiWindow;
     private readonly VerticalFlowContainer _textContainer;
     private bool _reloadRequired = true;
-    private static readonly Vector2I GuiWindowSize = new Vector2I(60 * 9 + 24, 60 * 12 + 24);
+    private static readonly Vector2i GuiWindowSize = new Vector2i(60 * 9, 60 * 12);
 
-    public DialogState(Game game, Dialog dialog, Vector2I windowSize, ICamera camera, ISpriteStoreService spriteStore)
-        : base(game, camera) {
+    public DialogState(Game game, Dialog dialog, Vector2f windowSize, ITextureStore textureStore)
+        : base(game) {
         _dialog = dialog;
         _dialog.OnEnd += EndState;
-        _dialogGuiWindow = new GuiWindow(spriteStore, windowSize / 2, GuiWindowSize);
+        _dialogGuiWindow = new GuiWindow(textureStore, (Vector2i) (windowSize / 2), GuiWindowSize);
 
         ColumnContainer container = new ColumnContainer(ColumnContainer.Side.Left, 80);
         container.SetLeftComponent(
-            new PaddingContainer(10, new SpriteContainer(spriteStore.GetSprite(dialog.Graphic), Alignment.Center)));
+            new PaddingContainer(10, new SpriteContainer(textureStore.GetNewSprite(dialog.Graphic), Alignment.Center)));
         _textContainer = new VerticalFlowContainer();
         container.SetRightComponent(new PaddingContainer(5, _textContainer));
 
@@ -34,7 +34,7 @@ public class DialogState : AbstractGameState {
         _reloadRequired = false;
     }
 
-    public override void Render(IRenderSurface renderSurface) {
+    public override void Render(RenderTarget renderSurface) {
         _dialogGuiWindow.Render(renderSurface);
     }
 

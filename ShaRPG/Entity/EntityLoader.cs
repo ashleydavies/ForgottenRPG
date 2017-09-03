@@ -12,12 +12,12 @@ namespace ShaRPG.Entity {
     public class EntityLoader {
         private readonly string _directory;
         private readonly IEntityIdAssigner _idAssigner;
-        private readonly ISpriteStoreService _spriteStore;
+        private readonly ITextureStore _textureStore;
 
-        public EntityLoader(string directory, IEntityIdAssigner idAssigner, ISpriteStoreService spriteStore) {
+        public EntityLoader(string directory, IEntityIdAssigner idAssigner, ITextureStore textureStore) {
             _directory = directory;
             _idAssigner = idAssigner;
-            _spriteStore = spriteStore;
+            _textureStore = textureStore;
         }
 
         public GameEntity LoadEntity(string fileName, GameMap map, TileCoordinate position, List<TileCoordinate> path,
@@ -41,7 +41,7 @@ namespace ShaRPG.Entity {
             }
 
             XElement dialogElem = entityInformation.Elements("Dialog").FirstOrDefault();
-            GameEntity entity = new GameEntity(_idAssigner, name, position, _spriteStore.GetSprite(spriteName));
+            GameEntity entity = new GameEntity(_idAssigner, name, position, _textureStore.GetNewSprite(spriteName));
             entity.AddComponent(new HealthComponent(entity, health));
             entity.AddComponent(new MovementComponent(entity, map));
             entity.AddComponent(new InventoryComponent(entity));

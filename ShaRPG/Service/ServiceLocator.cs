@@ -4,11 +4,9 @@ namespace ShaRPG.Service {
     public static class ServiceLocator {
         private static ILogService _logService;
         private static IAudioService _audioService;
-        private static IImageStoreService _imageStoreService;
         private static IScriptStoreService _scriptStoreService;
         private static readonly ILogService NullLogService = new NullLogService();
         private static readonly IAudioService NullAudioService = new NullAudioService();
-        private static readonly IImageStoreService NullImageStoreService = new NullImageStoreService();
         private static readonly IScriptStoreService NullScriptStoreService = new NullScriptStoreService();
 
         public static ILogService LogService {
@@ -19,11 +17,6 @@ namespace ShaRPG.Service {
         public static IAudioService AudioService {
             get { return _audioService ?? NullAudioService; }
             set { _audioService = value; }
-        }
-
-        public static IImageStoreService ImageStoreService {
-            get { return _imageStoreService ?? NullImageStoreService; }
-            set { _imageStoreService = value; }
         }
 
         public static IScriptStoreService ScriptStoreService {

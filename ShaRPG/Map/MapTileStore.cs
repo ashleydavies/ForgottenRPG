@@ -9,12 +9,12 @@ using ShaRPG.Util.Coordinate;
 namespace ShaRPG.Map {
     public class MapTileStore {
         private readonly Dictionary<int, MapTile> _mapTileDictionary;
-        private readonly ISpriteStoreService _spriteStore;
+        private readonly ITextureStore _textureStore;
         private readonly XDocument _tileDocument;
 
-        public MapTileStore(string directory, ISpriteStoreService spriteStore) {
+        public MapTileStore(string directory, ITextureStore textureStore) {
             _mapTileDictionary = new Dictionary<int, MapTile>();
-            _spriteStore = spriteStore;
+            _textureStore = textureStore;
 
             using (var fs = File.OpenRead(Path.Combine(directory, "TileData.xml"))) {
                 _tileDocument = XDocument.Load(fs);
@@ -47,18 +47,19 @@ namespace ShaRPG.Map {
 
             if (name == null) return MapTile.Null;
 
-            IDrawable graphic;
+            ISpriteable graphic;
 
             if (complex) {
                 var spriteElems = tileData.Elements("Texture");
 
-                var sprites = spriteElems.Select(spriteElem
-                                                     => _spriteStore.GetSprite(spriteElem.Attribute("name").Value))
-                                         .ToList();
+                var sprites = spriteElems.Select(
+                    spriteElem =>
+                        _textureStore.GetNewSprite(spriteElem.Attribute("name").Value)
+                ).ToList();
 
                 graphic = new AnimatedSprite(sprites, double.Parse(tileData.Attribute("textureTime").Value));
             } else {
-                graphic = _spriteStore.GetSprite(name);
+                graphic = new SpriteableWrapper(_textureStore.GetNewSprite(name));
             }
 
             var newTile = new MapTile(id, graphic, name, collision);

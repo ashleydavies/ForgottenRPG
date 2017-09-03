@@ -1,5 +1,5 @@
 using System.IO;
-using ShaRPG.Util;
+using SFML.Graphics;
 
 namespace ShaRPG {
     public class Config {
