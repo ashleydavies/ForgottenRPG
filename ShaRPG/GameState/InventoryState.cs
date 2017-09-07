@@ -85,9 +85,11 @@ namespace ShaRPG.GameState {
                 _inventory.InsertToSlot(pos, _heldItemStack);
                 _inventoryItemContainers[pos].Sprite = _heldItemStack.Item.Texture;
                 _heldItemStack = null;
+                Game.ShowMouse();
             } else {
                 _heldItemStack = _inventory.RemoveFromSlot(pos);
                 _inventoryItemContainers[pos].Sprite = new Sprite();
+                Game.HideMouse();
             }
         }
 
@@ -99,6 +101,7 @@ namespace ShaRPG.GameState {
                 _positionalItemStorage.DropItem(_playerPosition, _heldItemStack);
                 _heldItemStack = null;
                 UpdateNearbyItemSprites();
+                Game.ShowMouse();
             } else {
                 ItemStack inSlot = pos < NearbyItems.Count ? NearbyItems[pos] : null;
 
@@ -106,6 +109,7 @@ namespace ShaRPG.GameState {
                     _heldItemStack = inSlot;
                     _positionalItemStorage.CollectItem(inSlot);
                     UpdateNearbyItemSprites();
+                    Game.HideMouse();
                 }
             }
         }
@@ -131,7 +135,7 @@ namespace ShaRPG.GameState {
             _guiWindow.Render(renderSurface);
             if (_heldItemStack != null) {
                 renderSurface.Draw(new Sprite(_heldItemStack.Item.Texture) {
-                    Position = new ScreenCoordinate(Mouse.GetPosition())
+                    Position = Game.MousePosition - new ScreenCoordinate(ItemManager.SpriteSize) / 2
                 });
             }
         }
