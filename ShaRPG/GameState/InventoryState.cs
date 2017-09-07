@@ -16,17 +16,21 @@ namespace ShaRPG.GameState {
         private readonly SpriteContainer[] _inventoryItemContainers = new SpriteContainer[Inventory.MaxSize];
         private readonly SpriteContainer[] _nearbyItemContainers = new SpriteContainer[NearbyItemsX * NearbyItemsY];
         private ItemStack _heldItemStack;
+        private readonly IPositionalItemStorage _positionalItemStorage;
+        private readonly GameCoordinate _playerPosition;
 
-        public InventoryState(Game game, Inventory inventory, Vector2f windowSize, ITextureStore textureStore)
-            : base(game) {
+        public InventoryState(Game game, Inventory inventory, IPositionalItemStorage closeItemStorage,
+                              GameCoordinate playerPos, Vector2f windowSize, ITextureStore textureStore) : base(game) {
+            _positionalItemStorage = closeItemStorage;
+            _playerPosition = playerPos;
             _inventory = inventory;
 
             _guiWindow = new GuiWindow(textureStore, (Vector2i) (windowSize / 2), Size);
 
             Sprite itemSlotSprite = textureStore.GetNewSprite("ui_item_slot");
 
-            for (int y = 0; y < 3; y++) {
-                for (int x = 0; x < 10; x++) {
+            for (int y = 0; y < TilesY; y++) {
+                for (int x = 0; x < TilesX; x++) {
                     int pos = y * TilesX + x;
                     int xPosition = TilesEdgeMargin + x * (TileSize + TilesMargin);
                     int yPosition = WindowSizeY - TilesEdgeMargin - (TilesY - y) * (TileSize + TilesMargin);
@@ -36,20 +40,40 @@ namespace ShaRPG.GameState {
 
                     _guiWindow.AddComponent(new FixedContainer(xPosition, yPosition, slotContainer));
 
-                    SpriteContainer spriteContainer = new SpriteContainer(inventory.ItemStack(pos) != null
-                                                                              ? inventory.ItemStack(pos).Item.Texture
-                                                                              : new Sprite());
-                    _inventoryItemSpriteContainers[pos] = spriteContainer;
+                    _inventoryItemContainers[pos] = new SpriteContainer(inventory.ItemStack(pos) != null
+                                                                            ? inventory.ItemStack(pos).Item.Texture
+                                                                            : new Sprite());
                     _guiWindow.AddComponent(new FixedContainer(
                                                 xPosition + TileSize / 2 - ItemManager.SpriteSizeX / 2,
                                                 yPosition + TileSize / 2 - ItemManager.SpriteSizeY / 2,
-                                                spriteContainer));
+                                                _inventoryItemContainers[pos]));
                 }
             }
+
+            for (int y = 0; y < NearbyItemsY; y++) {
+                for (int x = 0; x < NearbyItemsX; x++) {
+                    int pos = y * NearbyItemsX + x;
+                    int xPosition = WindowSizeX - TilesEdgeMargin - (2 - x) * (TileSize + TilesMargin);
+                    int yPosition = TilesEdgeMargin + TilesMargin + y * (TileSize + TilesMargin);
+
+                    SpriteContainer slotContainer = new SpriteContainer(itemSlotSprite);
+                    slotContainer.OnClicked += _ => NearbySlotClicked(0);
+
+                    _guiWindow.AddComponent(new FixedContainer(xPosition, yPosition, slotContainer));
+
+                    _nearbyItemContainers[pos] = new SpriteContainer(new Sprite());
+                    _guiWindow.AddComponent(new FixedContainer(
+                                                xPosition + TileSize / 2 - ItemManager.SpriteSizeX / 2,
+                                                yPosition + TileSize / 2 - ItemManager.SpriteSizeY / 2,
+                                                _nearbyItemContainers[pos]));
+                }
+            }
+
+            UpdateNearbyItemSprites();
         }
 
         private void SlotClicked(int pos) {
-            ServiceLocator.LogService.Log(LogType.Information, $"Clicked slot {pos}");
+            ServiceLocator.LogService.Log(LogType.Information, $"Clicked inventory slot {pos}");
 
             ItemStack inSlot = _inventory.ItemStack(pos);
 
@@ -59,11 +83,41 @@ namespace ShaRPG.GameState {
 
             if (inSlot == null) {
                 _inventory.InsertToSlot(pos, _heldItemStack);
-                _inventoryItemSpriteContainers[pos].Sprite = _heldItemStack.Item.Texture;
+                _inventoryItemContainers[pos].Sprite = _heldItemStack.Item.Texture;
                 _heldItemStack = null;
             } else {
                 _heldItemStack = _inventory.RemoveFromSlot(pos);
-                _inventoryItemSpriteContainers[pos].Sprite = new Sprite();
+                _inventoryItemContainers[pos].Sprite = new Sprite();
+            }
+        }
+
+        private void NearbySlotClicked(int pos) {
+            ServiceLocator.LogService.Log(LogType.Information, $"Clicked nearby slot {pos}");
+
+
+            if (_heldItemStack != null) {
+                _positionalItemStorage.DropItem(_playerPosition, _heldItemStack);
+                _heldItemStack = null;
+                UpdateNearbyItemSprites();
+            } else {
+                ItemStack inSlot = pos < NearbyItems.Count ? NearbyItems[pos] : null;
+
+                if (inSlot != null) {
+                    _heldItemStack = inSlot;
+                    _positionalItemStorage.CollectItem(inSlot);
+                    UpdateNearbyItemSprites();
+                }
+            }
+        }
+
+        private void UpdateNearbyItemSprites() {
+            List<ItemStack> nearbyItems = NearbyItems;
+            for (int i = 0; i < _nearbyItemContainers.Length; i++) {
+                if (nearbyItems.Count > i) {
+                    _nearbyItemContainers[i].Sprite = new Sprite(nearbyItems[i].Item.Texture);
+                } else {
+                    _nearbyItemContainers[i].Sprite = new Sprite();
+                }
             }
         }
 
