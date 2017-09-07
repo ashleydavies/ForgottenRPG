@@ -77,6 +77,16 @@ namespace ShaRPG {
             _gameStates.Pop();
         }
 
+        public void ShowMouse() {
+            _window.SetMouseCursorVisible(true);
+        }
+
+        public void HideMouse() {
+            _window.SetMouseCursorVisible(false);
+        }
+
+        public ScreenCoordinate MousePosition => new ScreenCoordinate(Mouse.GetPosition(_window));
+
         public static void Main(string[] args) {
             new Game();
         }
