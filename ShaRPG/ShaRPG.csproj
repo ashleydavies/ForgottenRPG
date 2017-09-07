@@ -121,6 +121,7 @@
     <Compile Include="GameState\AbstractGameState.cs" />
     <Compile Include="GameState\DialogState.cs" />
     <Compile Include="GameState\InventoryState.cs" />
+    <Compile Include="GameState\InventoryStateConstants.cs" />
     <Compile Include="GameState\StateGame.cs" />
     <Compile Include="GUI\AbstractGuiComponent.cs" />
     <Compile Include="GUI\Alignment.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="LoadingException.cs" />
     <Compile Include="Map\GameMap.cs" />
     <Compile Include="Map\IPathCreator.cs" />
+    <Compile Include="Map\IPositionalItemStorage.cs" />
     <Compile Include="Map\MapLoader.cs" />
     <Compile Include="Map\MapTile.cs" />
     <Compile Include="Map\MapTileStore.cs" />

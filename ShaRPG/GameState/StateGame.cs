@@ -110,9 +110,9 @@ namespace ShaRPG.GameState {
             ChangeState(new DialogState(Game, dialog, _windowSize, _textureStore));
         }
 
-        public void OpenInventory() {
-            ChangeState(new InventoryState(Game, _player.GetComponent<InventoryComponent>().Inventory, _windowSize,
-                                           _textureStore));
+        private void OpenInventory() {
+            ChangeState(new InventoryState(Game, _player.GetComponent<InventoryComponent>().Inventory, _map,
+                                           _player.Position, _windowSize, _textureStore));
         }
     }
 }
