@@ -145,6 +145,7 @@
     <Compile Include="LoadingException.cs" />
     <Compile Include="Map\GameMap.cs" />
     <Compile Include="Map\IPathCreator.cs" />
+    <Compile Include="Map\IPositionalItemStorage.cs" />
     <Compile Include="Map\MapLoader.cs" />
     <Compile Include="Map\MapTile.cs" />
     <Compile Include="Map\MapTileStore.cs" />
