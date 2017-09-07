@@ -2,13 +2,15 @@
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using SFML.System;
 using ShaRPG.Service;
+using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Items {
     public class ItemManager {
         public const int SpriteSizeX = 32;
         public const int SpriteSizeY = 32;
-
+        public static readonly Vector2i SpriteSize = new Vector2i(SpriteSizeX, SpriteSizeY);
         private readonly Dictionary<int, IItem> _itemDictionary = new Dictionary<int, IItem>();
 
         public IItem GetItem(int id) => _itemDictionary[id];
