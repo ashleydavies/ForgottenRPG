@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SFML.Graphics;
 using ShaRPG.Entity;
 using ShaRPG.GameState;
@@ -10,7 +11,7 @@ using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Map {
-    public class GameMap : IClickObserver, IPathCreator {
+    public class GameMap : IClickObserver, IPathCreator, IPositionalItemStorage {
         private readonly StateGame _game;
         private readonly int[,] _tiles;
         private readonly MapNode[,] _pathfindingNodes;
@@ -97,6 +98,21 @@ namespace ShaRPG.Map {
 
         private void EachTile(Action<int, int> f) {
             for (int x = 0; x < Size.X; x++) for (int y = 0; y < Size.Y; y++) f(x, y);
+        }
+
+        public List<ItemStack> GetItems(GameCoordinate position, int distance) {
+            return (from t in _items
+                    where (t.position + new GameCoordinate(ItemManager.SpriteSizeX, ItemManager.SpriteSizeY) / 2)
+                          .EuclideanDistance(position) < distance
+                    select t.itemStack).ToList();
+        }
+
+        public void DropItem(GameCoordinate position, ItemStack item) {
+            _items.Add((item, position));
+        }
+
+        public void CollectItem(ItemStack itemStack) {
+            _items.RemoveAll(t => ReferenceEquals(t.itemStack, itemStack));
         }
     }
 
