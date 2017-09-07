@@ -121,6 +121,7 @@
     <Compile Include="GameState\AbstractGameState.cs" />
     <Compile Include="GameState\DialogState.cs" />
     <Compile Include="GameState\InventoryState.cs" />
+    <Compile Include="GameState\InventoryStateConstants.cs" />
     <Compile Include="GameState\StateGame.cs" />
     <Compile Include="GUI\AbstractGuiComponent.cs" />
     <Compile Include="GUI\Alignment.cs" />
