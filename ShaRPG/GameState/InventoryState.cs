@@ -1,24 +1,20 @@
-﻿using SFML.Graphics;
+﻿using System.Collections.Generic;
+using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 using ShaRPG.GUI;
 using ShaRPG.Items;
+using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GameState {
-    public class InventoryState : AbstractGameState {
+    public partial class InventoryState : AbstractGameState {
         private readonly GuiWindow _guiWindow;
         private readonly Inventory _inventory;
         private static readonly Vector2i Size = new Vector2i(WindowSizeX, WindowSizeY);
-        private const int WindowSizeX = 60 * 9;
-        private const int WindowSizeY = 60 * 10;
-        private const int TileSize = 48;
-        private const int TilesX = 10;
-        private const int TilesY = 3;
-        private const int TilesMargin = 2;
-        private const int TilesEdgeMargin = (WindowSizeX - TilesX * (TileSize + TilesMargin)) / 2;
-        private readonly SpriteContainer[] _inventoryItemSpriteContainers = new SpriteContainer[Inventory.MaxSize];
+        private readonly SpriteContainer[] _inventoryItemContainers = new SpriteContainer[Inventory.MaxSize];
+        private readonly SpriteContainer[] _nearbyItemContainers = new SpriteContainer[NearbyItemsX * NearbyItemsY];
         private ItemStack _heldItemStack;
 
         public InventoryState(Game game, Inventory inventory, Vector2f windowSize, ITextureStore textureStore)
