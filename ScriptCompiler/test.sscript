@@ -1,0 +1,7 @@
+print "Hello, world";
+
+function test <> {
+    print "Called a function";
+};
+
+test<>;
