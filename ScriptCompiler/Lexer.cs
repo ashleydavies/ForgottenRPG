@@ -9,7 +9,8 @@ namespace ScriptCompiler {
 
         private static readonly char[] Symbols = {
             '+', '-', '*', '/', '=', ';',
-            '<', '>', '[', ']', '{', '}'
+            '<', '>', '[', ']', '{', '}',
+            '(', ')', '.', ','
         };
 
         private static readonly Dictionary<char, char[]> MultiCharSymbols = new Dictionary<char, char[]> {
@@ -178,38 +179,38 @@ namespace ScriptCompiler {
     }
 
     public class StringToken : LexToken {
-        private readonly string _content;
+        public readonly string Content;
 
         public StringToken(int line, int position, string content) : base(line, position) {
-            _content = content;
+            Content = content;
         }
 
         protected override string StringRepresentation() {
-            return _content;
+            return Content;
         }
     }
 
     public class IdentifierToken : LexToken {
-        private readonly string _content;
+        public readonly string Content;
 
         public IdentifierToken(int line, int position, string content) : base(line, position) {
-            _content = content;
+            Content = content;
         }
 
         protected override string StringRepresentation() {
-            return _content;
+            return Content;
         }
     }
 
     public class SymbolToken : LexToken {
-        private readonly string _symbol;
+        public readonly string Symbol;
 
         public SymbolToken(int line, int position, string symbol) : base(line, position) {
-            _symbol = symbol;
+            Symbol = symbol;
         }
 
         protected override string StringRepresentation() {
-            return _symbol;
+            return Symbol;
         }
     }
 }
