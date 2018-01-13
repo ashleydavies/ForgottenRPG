@@ -12,6 +12,17 @@ namespace ScriptCompiler {
             '<', '>', '[', ']', '{', '}'
         };
 
+        private static readonly Dictionary<char, char[]> MultiCharSymbols = new Dictionary<char, char[]> {
+            {'+', new [] { '=', '+' } },
+            {'-', new [] { '=', '-' } },
+            {'*', new [] { '=', '*' } },
+            {'/', new [] { '=', '/' } },
+            {'>', new [] { '=', '>' } },
+            {'<', new [] { '=', '<' } },
+            {'=', new [] { '=' } },
+            {'!', new [] { '=' } }
+        };
+
         private int _scanLine = 1;
         private int _scanPosition;
         private bool _unpopped = false;
@@ -69,9 +80,18 @@ namespace ScriptCompiler {
         }
 
         private LexToken LexSymbol() {
+            char first = NextChar();
+            string symbol = first.ToString();
+            
+            if (MultiCharSymbols.ContainsKey(first)) {
+                if (MultiCharSymbols[first].Contains(PeekNextChar())) {
+                    symbol += NextChar();
+                }
+            }
+            
             return new SymbolToken(_scanLine,
                                    _scanPosition,
-                                   NextChar().ToString());
+                                   symbol);
         }
 
         private (string str, bool terminated) TakeUntil(Predicate<char> condition) {
@@ -142,13 +162,19 @@ namespace ScriptCompiler {
     }
 
     public abstract class LexToken {
-        private int _line;
-        private int _position;
+        private readonly int _line;
+        private readonly int _position;
 
-        public LexToken(int line, int position) {
+        protected LexToken(int line, int position) {
             _line = line;
             _position = position;
         }
+
+        public override string ToString() {
+            return $"{this.GetType().Name}<{StringRepresentation()}> [{_line}:{_position}]";
+        }
+
+        protected abstract string StringRepresentation();
     }
 
     public class StringToken : LexToken {
@@ -156,6 +182,10 @@ namespace ScriptCompiler {
 
         public StringToken(int line, int position, string content) : base(line, position) {
             _content = content;
+        }
+
+        protected override string StringRepresentation() {
+            return _content;
         }
     }
 
@@ -165,6 +195,10 @@ namespace ScriptCompiler {
         public IdentifierToken(int line, int position, string content) : base(line, position) {
             _content = content;
         }
+
+        protected override string StringRepresentation() {
+            return _content;
+        }
     }
 
     public class SymbolToken : LexToken {
@@ -172,6 +206,10 @@ namespace ScriptCompiler {
 
         public SymbolToken(int line, int position, string symbol) : base(line, position) {
             _symbol = symbol;
+        }
+
+        protected override string StringRepresentation() {
+            return _symbol;
         }
     }
 }
