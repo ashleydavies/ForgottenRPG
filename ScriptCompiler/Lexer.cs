@@ -35,6 +35,8 @@ namespace ScriptCompiler {
         }
 
         public LexToken NextToken() {
+            while (HasMore() && IsWhitespace(PeekNextChar())) SkipChar();
+            
             if (!HasMore()) return null;
 
             var next = PeekNextChar();
@@ -45,11 +47,6 @@ namespace ScriptCompiler {
 
             if (IsIdentifierStart(next)) {
                 return LexIdentifier();
-            }
-
-            if (IsWhitespace(next)) {
-                SkipChar();
-                return NextToken();
             }
 
             if (IsSymbol(next)) {
@@ -173,6 +170,10 @@ namespace ScriptCompiler {
 
         public override string ToString() {
             return $"{this.GetType().Name}<{StringRepresentation()}> [{_line}:{_position}]";
+        }
+
+        public void Throw(string message) {
+            throw new CompileException(message, _line, _position);
         }
 
         protected abstract string StringRepresentation();
