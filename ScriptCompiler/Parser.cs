@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Security.Principal;
+using System.Runtime.Remoting.Messaging;
 using ScriptCompiler.AST;
 
 namespace ScriptCompiler {
@@ -44,7 +43,20 @@ namespace ScriptCompiler {
         }
 
         private FunctionNode ParseFunctionNode() {
+            Expecting<IdentifierToken>(token => token.Content == "function");
             return new FunctionNode();
+        }
+
+        private void Expecting<T>(Func<T, bool> predicate) {
+            LexToken token = NextToken();
+
+            if (token is T tToken) {
+                if (!predicate(tToken)) {
+                    token.Throw($"Token \"{token}\" did not satisfy expected condition");
+                }
+            } else {
+                token.Throw($"Unexpected token \"{token}\" (expecting {typeof(T)})");
+            }
         }
 
         private LexToken NextToken() {
