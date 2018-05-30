@@ -22,16 +22,19 @@ namespace ScriptCompiler {
             List<FunctionNode> functions = new List<FunctionNode>();
             List<StatementNode> statements = new List<StatementNode>();
 
-            while (_lexer.HasMore() || _cachedToken != null) {
+            while (_cachedToken != null || _lexer.HasMore() && PeekToken() != null) {
                 LexToken token = PeekToken();
 
                 if (token is IdentifierToken itok) {
-                    Console.WriteLine(itok.Content);
+                    //Console.WriteLine(itok.Content);
+                    
                     if (itok.Content == "function") {
                         ParseFunctionNode();
                     } else {
                         ParseStatementNode();
                     }
+                } else {
+                    token.Throw($"Unexpected token {token} - unable to process");
                 }
             }
 
@@ -39,24 +42,41 @@ namespace ScriptCompiler {
         }
 
         private StatementNode ParseStatementNode() {
+            // TODO: Handle StatementNodes correctly instead of just discarding them
+            NextToken();
+            while (!(PeekToken() is SymbolToken s && s.Symbol == ";")) NextToken();
+            Expecting<SymbolToken>(t => t.Symbol == ";");
             return new StatementNode();
         }
 
         private FunctionNode ParseFunctionNode() {
-            Expecting<IdentifierToken>(token => token.Content == "function");
-            return new FunctionNode();
+            Expecting<IdentifierToken>(t => t.Content == "function");
+            var typeToken = Expecting<IdentifierToken>();
+            var nameToken = Expecting<IdentifierToken>();
+            // TODO: Parse argument lists
+            Expecting<SymbolToken>(t => t.Symbol == "(");
+            Expecting<SymbolToken>(t => t.Symbol == ")");
+            Expecting<SymbolToken>(t => t.Symbol == "{");
+            ParseStatementNode();
+            Expecting<SymbolToken>(t => t.Symbol == "}");
+            Expecting<SymbolToken>(t => t.Symbol == ";");
+            return new FunctionNode(new ExplicitTypeNode(typeToken.Content));
         }
 
-        private void Expecting<T>(Func<T, bool> predicate) {
+        private T Expecting<T>(Func<T, bool> predicate = null) where T : class {
             LexToken token = NextToken();
 
             if (token is T tToken) {
-                if (!predicate(tToken)) {
-                    token.Throw($"Token \"{token}\" did not satisfy expected condition");
+                if (predicate != null && !predicate(tToken)) {
+                    token.Throw($"Token '{token}' did not satisfy expected condition");
                 }
+
+                return tToken;
             } else {
-                token.Throw($"Unexpected token \"{token}\" (expecting {typeof(T)})");
+                token.Throw($"Unexpected token '{token}' (expecting {typeof(T)})");
             }
+
+            return null;
         }
 
         private LexToken NextToken() {
@@ -65,14 +85,13 @@ namespace ScriptCompiler {
             LexToken cached = _cachedToken;
             _cachedToken    = null;
             return cached;
-
         }
 
         private LexToken PeekToken() {
             if (_cachedToken != null) return _cachedToken;
 
             _cachedToken = _lexer.NextToken();
-            return NextToken();
+            return _cachedToken;
         }
     }
 }
