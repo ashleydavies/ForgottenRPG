@@ -8,7 +8,7 @@ namespace ScriptCompiler {
         private readonly string _contents;
         private Lexer _lexer;
         private LexToken _cachedToken;
-        
+
         public Parser(string contents) {
             _contents = contents;
         }
@@ -19,22 +19,19 @@ namespace ScriptCompiler {
         }
 
         private ASTNode ParseProgram() {
-            List<FunctionNode> functions = new List<FunctionNode>();
-            List<StatementNode> statements = new List<StatementNode>();
+            var functions = new List<FunctionNode>();
+            var statements = new List<StatementNode>();
 
             while (_cachedToken != null || _lexer.HasMore() && PeekToken() != null) {
-                LexToken token = PeekToken();
+                var token = PeekToken();
 
-                if (token is IdentifierToken itok) {
-                    //Console.WriteLine(itok.Content);
-                    
-                    if (itok.Content == "function") {
-                        ParseFunctionNode();
-                    } else {
-                        ParseStatementNode();
-                    }
-                } else {
-                    token.Throw($"Unexpected token {token} - unable to process");
+                switch (token) {
+                    case IdentifierToken itok when itok.Content == "function":
+                        functions.Add(ParseFunctionNode());
+                        break;
+                    default:
+                        statements.Add(ParseStatementNode());
+                        break;
                 }
             }
 
@@ -43,8 +40,14 @@ namespace ScriptCompiler {
 
         private StatementNode ParseStatementNode() {
             // TODO: Handle StatementNodes correctly instead of just discarding them
-            NextToken();
-            while (!(PeekToken() is SymbolToken s && s.Symbol == ";")) NextToken();
+            if (PeekMatch<IdentifierToken>(t => t.Content == "print")) {
+                // Handle print
+            }
+
+            while (!(PeekToken() is SymbolToken s && s.Symbol == ";")) {
+                NextToken();
+            }
+
             Expecting<SymbolToken>(t => t.Symbol == ";");
             return new StatementNode();
         }
@@ -56,11 +59,21 @@ namespace ScriptCompiler {
             // TODO: Parse argument lists
             Expecting<SymbolToken>(t => t.Symbol == "(");
             Expecting<SymbolToken>(t => t.Symbol == ")");
+            var block = ParseCodeBlock();
+            return new FunctionNode(new ExplicitTypeNode(typeToken.Content), block);
+        }
+
+        private CodeBlockNode ParseCodeBlock() {
+            var statements = new List<StatementNode>();
             Expecting<SymbolToken>(t => t.Symbol == "{");
-            ParseStatementNode();
+
+            while (!(PeekToken() is SymbolToken st && st.Symbol == "}")) {
+                statements.Add(ParseStatementNode());
+            }
+
             Expecting<SymbolToken>(t => t.Symbol == "}");
-            Expecting<SymbolToken>(t => t.Symbol == ";");
-            return new FunctionNode(new ExplicitTypeNode(typeToken.Content));
+
+            return new CodeBlockNode(statements);
         }
 
         private T Expecting<T>(Func<T, bool> predicate = null) where T : class {
@@ -79,11 +92,23 @@ namespace ScriptCompiler {
             return null;
         }
 
+        private bool PeekMatch<T>(Func<T, bool> predicate) where T : class {
+            LexToken token = PeekToken();
+
+            if (token is T tToken) {
+                if (predicate(tToken)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private LexToken NextToken() {
             if (_cachedToken == null) return _lexer.NextToken();
 
             LexToken cached = _cachedToken;
-            _cachedToken    = null;
+            _cachedToken = null;
             return cached;
         }
 
