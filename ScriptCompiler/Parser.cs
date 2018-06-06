@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.Remoting.Messaging;
 using ScriptCompiler.AST;
+using ScriptCompiler.Visitors;
 
 namespace ScriptCompiler {
     public class Parser {
@@ -13,12 +15,13 @@ namespace ScriptCompiler {
             _contents = contents;
         }
 
-        public void Parse() {
+        public string Parse() {
             _lexer = new Lexer(_contents);
-            ParseProgram();
+            dynamic ast = ParseProgram();
+            return new CodeGenVisitor().Visit(ast);
         }
 
-        private ASTNode ParseProgram() {
+        private ProgramNode ParseProgram() {
             var functions = new List<FunctionNode>();
             var statements = new List<StatementNode>();
 
@@ -41,7 +44,7 @@ namespace ScriptCompiler {
         private StatementNode ParseStatementNode() {
             // TODO: Handle StatementNodes correctly instead of just discarding them
             if (PeekMatch<IdentifierToken>(t => t.Content == "print")) {
-                // Handle print
+                return ParsePrintStatementNode();
             }
 
             while (!(PeekToken() is SymbolToken s && s.Symbol == ";")) {
@@ -50,6 +53,12 @@ namespace ScriptCompiler {
 
             Expecting<SymbolToken>(t => t.Symbol == ";");
             return new StatementNode();
+        }
+
+        private PrintStatementNode ParsePrintStatementNode() {
+            Expecting<IdentifierToken>(t => t.Content == "print");
+            string result = Expecting<StringToken>().Content;
+            return new PrintStatementNode(new StringLiteralNode(result));
         }
 
         private FunctionNode ParseFunctionNode() {

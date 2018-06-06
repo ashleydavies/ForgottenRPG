@@ -1,11 +1,15 @@
 ﻿using System.Collections.Generic;
 
 namespace ScriptCompiler.AST {
-    public class CodeBlockNode {
-        private List<StatementNode> _statements;
+    public class CodeBlockNode : ASTNode {
+        public readonly List<StatementNode> Statements;
 
         public CodeBlockNode(List<StatementNode> statements) {
-            _statements = statements;
+            Statements = statements;
+        }
+
+        public override List<ASTNode> Children() {
+            return new List<ASTNode>(Statements);
         }
     }
 }
