@@ -2,12 +2,19 @@
 
 namespace ScriptCompiler.AST {
     public class ProgramNode : ASTNode {
-        private readonly List<FunctionNode> _functionNodes;
-        private readonly List<StatementNode> _statementNodes;
+        public readonly List<FunctionNode> FunctionNodes;
+        public readonly List<StatementNode> StatementNodes;
         
         public ProgramNode(List<FunctionNode> functionNodes, List<StatementNode> statementNodes) {
-            _functionNodes = functionNodes;
-            _statementNodes = statementNodes;
+            FunctionNodes = functionNodes;
+            StatementNodes = statementNodes;
+        }
+
+        public override List<ASTNode> Children() {
+            var children = new List<ASTNode>();
+            children.AddRange(FunctionNodes);
+            children.AddRange(StatementNodes);
+            return children;
         }
     }
 }

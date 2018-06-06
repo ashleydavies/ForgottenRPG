@@ -1,11 +1,17 @@
-﻿namespace ScriptCompiler.AST {
+﻿using System.Collections.Generic;
+
+namespace ScriptCompiler.AST {
     public class FunctionNode : ASTNode {
-        private ExplicitTypeNode _typeNode;
-        private readonly CodeBlockNode _codeBlock;
+        public readonly ExplicitTypeNode TypeNode;
+        public readonly CodeBlockNode CodeBlock;
 
         public FunctionNode(ExplicitTypeNode typeNode, CodeBlockNode codeBlock) {
-            _typeNode = typeNode;
-            _codeBlock = codeBlock;
+            TypeNode = typeNode;
+            CodeBlock = codeBlock;
+        }
+
+        public override List<ASTNode> Children() {
+            return new List<ASTNode> { TypeNode, CodeBlock };
         }
     }
 }

@@ -9,6 +9,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "DataTypes", "DataTypes\Data
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptCompiler", "ScriptCompiler\ScriptCompiler.csproj", "{963A1360-B7EE-40F8-B650-21CCB43F4159}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptCompilerTest", "ScriptCompilerTest\ScriptCompilerTest.csproj", "{9BA21D75-A2F2-4D41-8FCA-E6ABB3A1298B}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		DataTypes\DataTypes.projitems*{e483291a-5eef-418b-9581-9f0976f40576}*SharedItemsImports = 13
@@ -37,6 +39,14 @@ Global
 		{963A1360-B7EE-40F8-B650-21CCB43F4159}.Release|Any CPU.Build.0 = Release|Any CPU
 		{963A1360-B7EE-40F8-B650-21CCB43F4159}.Release|x64.ActiveCfg = Release|Any CPU
 		{963A1360-B7EE-40F8-B650-21CCB43F4159}.Release|x64.Build.0 = Release|Any CPU
+		{9BA21D75-A2F2-4D41-8FCA-E6ABB3A1298B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BA21D75-A2F2-4D41-8FCA-E6ABB3A1298B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BA21D75-A2F2-4D41-8FCA-E6ABB3A1298B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9BA21D75-A2F2-4D41-8FCA-E6ABB3A1298B}.Debug|x64.Build.0 = Debug|Any CPU
+		{9BA21D75-A2F2-4D41-8FCA-E6ABB3A1298B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BA21D75-A2F2-4D41-8FCA-E6ABB3A1298B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BA21D75-A2F2-4D41-8FCA-E6ABB3A1298B}.Release|x64.ActiveCfg = Release|Any CPU
+		{9BA21D75-A2F2-4D41-8FCA-E6ABB3A1298B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
