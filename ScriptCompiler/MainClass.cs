@@ -17,7 +17,7 @@ namespace ScriptCompiler {
             }
             
             if (args[0] == "compile") {
-                new Parser(File.ReadAllText(fileName + ".sscript")).Parse();
+                Console.WriteLine(new Parser(File.ReadAllText(fileName + ".sscript")).Parse());
             } else if (args[0] == "assemble") {
                 List<string> compiled = new Assembler(File.ReadLines(fileName + ".shascr").ToList()).Compile();
 
