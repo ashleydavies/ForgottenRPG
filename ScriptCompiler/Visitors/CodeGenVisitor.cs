@@ -1,5 +1,7 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
+using System.Text;
 using ScriptCompiler.AST;
 
 namespace ScriptCompiler.Visitors {
@@ -10,8 +12,16 @@ namespace ScriptCompiler.Visitors {
 
         public string Visit(ProgramNode node) {
             List<String> programStrings = new StringLiteralCollectorVisitor().Visit(node);
-            programStrings.ForEach(x => Console.WriteLine(x));
-            return "Hello world";
+            
+            StringBuilder programBuilder = new StringBuilder();
+
+            programBuilder.AppendLine(".data");
+            for (int i = 0; i < programStrings.Count; i++) {
+                programBuilder.AppendLine($"STRING str_{i} {programStrings[i]}");
+            }
+            programBuilder.AppendLine(".text");
+
+            return programBuilder.ToString();
         }
     }
 }
