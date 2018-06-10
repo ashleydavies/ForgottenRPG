@@ -35,7 +35,14 @@ namespace ScriptCompiler {
         }
 
         public LexToken NextToken() {
-            while (HasMore() && IsWhitespace(PeekNextChar())) SkipChar();
+            while (HasMore() && (PeekNextChar() == '#' || IsWhitespace(PeekNextChar()))) {
+                if (PeekNextChar() == '#') {
+                    var line = _scanLine;
+                    while (_scanLine == line && HasMore()) SkipChar();
+                } else {
+                    SkipChar();
+                }
+            }
             
             if (!HasMore()) return null;
 
