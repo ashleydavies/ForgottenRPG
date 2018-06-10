@@ -61,6 +61,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Visitors\CodeGenVisitor.cs" />
     <Compile Include="Visitors\EverythingVisitor.cs" />
+    <Compile Include="Visitors\ExpressionGenVisitor.cs" />
     <Compile Include="Visitors\StringLiteralCollectorVisitor.cs" />
     <Compile Include="Visitors\Visitor.cs" />
   </ItemGroup>
