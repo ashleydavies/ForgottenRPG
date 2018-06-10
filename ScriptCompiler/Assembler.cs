@@ -42,6 +42,7 @@ namespace ScriptCompiler {
 
         private void Process() {
             foreach (string line in _lines) {
+                if (line.Length == 0) continue;
                 string[] components = line.Split(' ').Select(x => x.ToLower()).ToArray();
 
                 if (components.Length == 0) {
@@ -67,11 +68,16 @@ namespace ScriptCompiler {
         private void ProcessDataLine(string line, string[] components) {
             switch (components[0]) {
                 case "string":
+                    // Skip the STRING ____ to get the actual string
                     int spaceCount = 0;
                     string contents = new string(
-                        line.ToCharArray().SkipWhile(x => x != ' ' || ++spaceCount < 2).ToArray()
+                        line.ToCharArray().SkipWhile(x => {
+                            if (spaceCount >= 2) return false;
+                            if (x == ' ') spaceCount++;
+                            return true;
+                        }).ToArray()
                     );
-
+                    
                     contents = contents.Replace("\\n", "\n");
 
                     _userDataLookup[components[1]] = _userData.Count;
@@ -164,7 +170,7 @@ namespace ScriptCompiler {
                     _context = AssemblyContext.Data;
                     break;
                 default:
-                    Console.WriteLine($"Unknown context type {contextString}");
+                    Console.WriteLine($"Unknown context type '{contextString}'");
                     break;
             }
         }

@@ -32,7 +32,20 @@ namespace ScriptCompiler {
 
                 ScriptVM scriptVm = new ScriptVM(bytecode);
                 scriptVm.Execute();
-            } else {
+            } else if (args[0] == "execute") {
+                var compiled = new Parser(File.ReadAllText(fileName + ".sscript")).Parse();
+                Console.WriteLine("Compiled code:");
+                Console.WriteLine(compiled);
+
+                var assembled = new Assembler(compiled.Split(new []{ Environment.NewLine }, StringSplitOptions.None).ToList()).Compile();
+                string bytecodeString = string.Join(",", assembled);
+                
+                Console.WriteLine("Assembled code:");
+                Console.WriteLine(bytecodeString);
+
+                List<int> bytecode = bytecodeString.Split(',').Select(int.Parse).ToList();
+                new ScriptVM(bytecode).Execute();
+            }else {
                 Console.WriteLine($"Unexpected argument {args[0]}");
             }
         }
