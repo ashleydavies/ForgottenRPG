@@ -44,15 +44,18 @@ namespace ScriptCompiler {
         private StatementNode ParseStatementNode() {
             // TODO: Handle StatementNodes correctly instead of just discarding them
             if (PeekMatch<IdentifierToken>(t => t.Content == "print")) {
-                return ParsePrintStatementNode();
+                var node = ParsePrintStatementNode();
+                Expecting<SymbolToken>(t => t.Symbol == ";");
+                return node;
             }
 
             while (!(PeekToken() is SymbolToken s && s.Symbol == ";")) {
+
                 NextToken();
             }
 
             Expecting<SymbolToken>(t => t.Symbol == ";");
-            return new StatementNode();
+            throw new NotImplementedException();
         }
 
         private PrintStatementNode ParsePrintStatementNode() {
