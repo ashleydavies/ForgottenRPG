@@ -55,7 +55,9 @@ namespace ScriptCompiler {
                 // Parse function call statements
                 if (PeekToken() is SymbolToken s && s.Symbol == "(") {
                     Expecting<SymbolToken>(t => t.Symbol == "(");
+                    // TODO: Parameter lists
                     Expecting<SymbolToken>(t => t.Symbol == ")");
+                    Expecting<SymbolToken>(t => t.Symbol == ";");
                     
                     return new FunctionCallNode(identifierToken.Content);
                 }
