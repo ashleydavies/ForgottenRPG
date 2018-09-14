@@ -11,6 +11,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ScriptCompiler\ScriptCompiler.csproj" />
+    <ProjectReference Include="..\ScriptCompiler\ScriptCompiler.csproj" />
     <ProjectReference Include="..\ShaRPG\ShaRPG.csproj" />
   </ItemGroup>
 </Project>

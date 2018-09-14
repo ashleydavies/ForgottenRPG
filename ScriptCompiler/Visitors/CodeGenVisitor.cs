@@ -24,12 +24,26 @@ namespace ScriptCompiler.Visitors {
                 programBuilder.AppendLine($"STRING str_{i} {programStrings[i]}");
             }
             programBuilder.AppendLine(".text");
+            programBuilder.AppendLine(VisitStatementBlock(node.StatementNodes));
 
-            foreach (dynamic statementNode in node.StatementNodes) {
-                programBuilder.AppendLine(Visit(statementNode));
+            // Exit, don't fall into executing a function
+            programBuilder.AppendLine("JMP end");
+            
+            foreach (dynamic functionNode in node.FunctionNodes) {
+                programBuilder.AppendLine(this.Visit(functionNode));
             }
 
+            programBuilder.AppendLine("LABEL end");
+
             return programBuilder.ToString();
+        }
+
+        public string Visit(FunctionNode node) {
+            var functionBuilder = new StringBuilder();
+
+            functionBuilder.AppendLine(VisitStatementBlock(node.CodeBlock.Statements));
+
+            return functionBuilder.ToString();
         }
 
         public string Visit(PrintStatementNode node) {
@@ -42,6 +56,16 @@ namespace ScriptCompiler.Visitors {
 
             builder.AppendLine($"print {result}");
             return builder.ToString();
+        }
+
+        public string VisitStatementBlock(List<StatementNode> statements) {
+            var blockBuilder = new StringBuilder();
+            
+            foreach (dynamic statementNode in statements) {
+                blockBuilder.AppendLine(Visit(statementNode));
+            }
+
+            return blockBuilder.ToString();
         }
     }
 }
