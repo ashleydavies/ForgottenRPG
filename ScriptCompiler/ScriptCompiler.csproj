@@ -49,6 +49,7 @@
     <Compile Include="AST\CodeBlockNode.cs" />
     <Compile Include="AST\ExplicitTypeNode.cs" />
     <Compile Include="AST\ExpressionNode.cs" />
+    <Compile Include="AST\FunctionCallNode.cs" />
     <Compile Include="AST\FunctionNode.cs" />
     <Compile Include="AST\PrintStatementNode.cs" />
     <Compile Include="AST\ProgramNode.cs" />

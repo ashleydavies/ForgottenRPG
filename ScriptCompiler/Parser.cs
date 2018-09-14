@@ -42,15 +42,28 @@ namespace ScriptCompiler {
         }
 
         private StatementNode ParseStatementNode() {
-            // TODO: Handle StatementNodes correctly instead of just discarding them
             if (PeekMatch<IdentifierToken>(t => t.Content == "print")) {
                 var node = ParsePrintStatementNode();
                 Expecting<SymbolToken>(t => t.Symbol == ";");
                 return node;
             }
+            
+            // TODO: Add other types of statement e.g. identifier = value
+            if (PeekToken() is IdentifierToken) {
+                var identifierToken = Expecting<IdentifierToken>();
+                
+                // Parse function call statements
+                if (PeekToken() is SymbolToken s && s.Symbol == "(") {
+                    Expecting<SymbolToken>(t => t.Symbol == "(");
+                    Expecting<SymbolToken>(t => t.Symbol == ")");
+                    
+                    return new FunctionCallNode(identifierToken.Content);
+                }
+            }
 
+            // TODO: Handle StatementNodes correctly instead of just discarding them
             while (!(PeekToken() is SymbolToken s && s.Symbol == ";")) {
-
+                Console.WriteLine(PeekToken());
                 NextToken();
             }
 
