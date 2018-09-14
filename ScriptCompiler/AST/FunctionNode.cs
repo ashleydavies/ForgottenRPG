@@ -2,10 +2,12 @@
 
 namespace ScriptCompiler.AST {
     public class FunctionNode : ASTNode {
+        public readonly string FunctionName;
         public readonly ExplicitTypeNode TypeNode;
         public readonly CodeBlockNode CodeBlock;
 
-        public FunctionNode(ExplicitTypeNode typeNode, CodeBlockNode codeBlock) {
+        public FunctionNode(string functionName, ExplicitTypeNode typeNode, CodeBlockNode codeBlock) {
+            FunctionName = functionName;
             TypeNode = typeNode;
             CodeBlock = codeBlock;
         }
