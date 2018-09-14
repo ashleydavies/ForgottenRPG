@@ -72,7 +72,7 @@ namespace ScriptCompiler {
             Expecting<SymbolToken>(t => t.Symbol == "(");
             Expecting<SymbolToken>(t => t.Symbol == ")");
             var block = ParseCodeBlock();
-            return new FunctionNode(new ExplicitTypeNode(typeToken.Content), block);
+            return new FunctionNode(nameToken.Content, new ExplicitTypeNode(typeToken.Content), block);
         }
 
         private CodeBlockNode ParseCodeBlock() {
