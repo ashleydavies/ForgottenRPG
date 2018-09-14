@@ -1,4 +1,5 @@
 ﻿namespace ScriptCompiler.AST {
-    public abstract class ExpressionNode : ASTNode {
+    public abstract class ExpressionNode : StatementNode {
+        
     }
 }
