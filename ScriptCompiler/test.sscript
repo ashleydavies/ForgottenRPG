@@ -1,0 +1,15 @@
+print "Hello, world";
+
+function void testt() {
+    print "Test 2 called!";
+}
+
+function void test() {
+    print "Called a function";
+    testt();
+}
+
+test();
+print "And returned!";
+test();
+print "And returned again!";

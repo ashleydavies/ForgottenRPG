@@ -42,6 +42,7 @@ namespace ScriptCompiler {
 
         private void Process() {
             foreach (string line in _lines) {
+                if (line.Length == 0) continue;
                 string[] components = line.Split(' ').Select(x => x.ToLower()).ToArray();
 
                 if (components.Length == 0) {
@@ -67,11 +68,16 @@ namespace ScriptCompiler {
         private void ProcessDataLine(string line, string[] components) {
             switch (components[0]) {
                 case "string":
+                    // Skip the STRING ____ to get the actual string
                     int spaceCount = 0;
                     string contents = new string(
-                        line.ToCharArray().SkipWhile(x => x != ' ' || ++spaceCount < 2).ToArray()
+                        line.ToCharArray().SkipWhile(x => {
+                            if (spaceCount >= 2) return false;
+                            if (x == ' ') spaceCount++;
+                            return true;
+                        }).ToArray()
                     );
-
+                    
                     contents = contents.Replace("\\n", "\n");
 
                     _userDataLookup[components[1]] = _userData.Count;
@@ -115,8 +121,14 @@ namespace ScriptCompiler {
                     AddInstruction("RESOLVELABEL" + components[1]);
                     break;
                 case "mov":
-                    HandleStackLoad(components[2]);
-                    HandleStackSave(components[1]);
+                    HandleLoadToStack(components[2]);
+                    HandleSaveFromStack(components[1]);
+                    break;
+                case "push":
+                    HandleLoadToStack(components[1]);
+                    break;
+                case "pop":
+                    HandleSaveFromStack(components[1]);
                     break;
                 case "add":
                     ArithmeticOp(ScriptVM.Instruction.Add, components[1], components[2]);
@@ -131,22 +143,22 @@ namespace ScriptCompiler {
                     ArithmeticOp(ScriptVM.Instruction.Div, components[1], components[2]);
                     break;
                 case "inc":
-                    HandleStackLoad(components[1]);
+                    HandleLoadToStack(components[1]);
                     AddInstruction(ScriptVM.Instruction.Inc);
-                    HandleStackSave(components[1]);
+                    HandleSaveFromStack(components[1]);
                     break;
                 case "dec":
-                    HandleStackLoad(components[1]);
+                    HandleLoadToStack(components[1]);
                     AddInstruction(ScriptVM.Instruction.Dec);
-                    HandleStackSave(components[1]);
+                    HandleSaveFromStack(components[1]);
                     break;
                 case "cmp":
-                    HandleStackLoad(components[1]);
-                    HandleStackLoad(components[2]);
+                    HandleLoadToStack(components[1]);
+                    HandleLoadToStack(components[2]);
                     AddInstruction(ScriptVM.Instruction.Cmp);
                     break;
                 case "print":
-                    HandleStackLoad(_userDataLookup[components[1]].ToString());
+                    HandleLoadToStack(_userDataLookup[components[1]].ToString());
                     AddInstruction(ScriptVM.Instruction.Print);
                     break;
                 default:
@@ -164,7 +176,7 @@ namespace ScriptCompiler {
                     _context = AssemblyContext.Data;
                     break;
                 default:
-                    Console.WriteLine($"Unknown context type {contextString}");
+                    Console.WriteLine($"Unknown context type '{contextString}'");
                     break;
             }
         }
@@ -200,15 +212,15 @@ namespace ScriptCompiler {
         }
 
         private void ArithmeticOp(ScriptVM.Instruction instruction, string comp1, string comp2) {
-            HandleStackLoad(comp1);
-            HandleStackLoad(comp2);
+            HandleLoadToStack(comp1);
+            HandleLoadToStack(comp2);
             AddInstruction(instruction);
-            HandleStackSave(comp1);
+            HandleSaveFromStack(comp1);
         }
 
-        private void HandleStackSave(string source) {
+        private void HandleSaveFromStack(string source) {
             if (!source.StartsWith("r")) {
-                Console.WriteLine("Cannot push to a register; register reference should begin with r");
+                Console.WriteLine("Cannot push to a non-register; register reference should begin with r");
                 return;
             }
 
@@ -216,10 +228,13 @@ namespace ScriptCompiler {
             AddInstruction(GetRegister(source));
         }
 
-        private void HandleStackLoad(string source) {
+        private void HandleLoadToStack(string source) {
             if (source.StartsWith("r")) {
                 AddInstruction(ScriptVM.Instruction.RegisterToStack);
                 AddInstruction(GetRegister(source));
+            } else if (source.StartsWith("$")) {
+                AddInstruction(ScriptVM.Instruction.Literal);
+                AddInstruction("RESOLVELABEL" + source.Substring(1));
             } else {
                 AddInstruction(ScriptVM.Instruction.Literal);
                 AddInstruction(source);
@@ -231,7 +246,8 @@ namespace ScriptCompiler {
                 Console.WriteLine("Register reference should begin with r");
                 return "RFAIL";
             }
-
+            
+            // TODO lint to make sure it's a valid number
             return registerString.Substring(1);
         }
 
@@ -248,31 +264,5 @@ namespace ScriptCompiler {
             return ((int) instruction).ToString();
         }
         
-        public static void Main(string[] args) {
-            string fileName;
-
-            if (args.Length > 0) {
-                fileName = args[0];
-            } else {
-                Console.WriteLine("Enter the path to the file to compile.");
-                fileName = Console.ReadLine();
-            }
-
-            List<string> compiled = new Assembler(File.ReadLines(fileName + ".shascr").ToList()).Compile();
-
-            File.WriteAllLines($"{fileName}.shascrbyte", compiled);
-            Console.WriteLine("Completed output:");
-
-            string bytecodeString = string.Join(",", compiled);
-            
-            Console.WriteLine(bytecodeString);
-            
-            List<int> bytecode = bytecodeString.Split(',').Select(int.Parse).ToList();
-
-            ScriptVM scriptVm = new ScriptVM(bytecode);
-            scriptVm.Execute();
-
-            Console.ReadLine();
-        }
     }
 }
