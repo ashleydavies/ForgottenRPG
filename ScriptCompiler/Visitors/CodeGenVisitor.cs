@@ -8,6 +8,8 @@ using ScriptCompiler.AST;
 namespace ScriptCompiler.Visitors {
     public class CodeGenVisitor : Visitor<string> {
         public Dictionary<string, string> StringAliases = new Dictionary<string, string>();
+        private int freeRegister = 1;
+        private int returnLabelCount = 0;
         
         public override string Visit(ASTNode node) {
             throw new NotImplementedException(node.GetType().Name);
@@ -41,14 +43,29 @@ namespace ScriptCompiler.Visitors {
         public string Visit(FunctionNode node) {
             var functionBuilder = new StringBuilder();
 
+            functionBuilder.AppendLine($"LABEL func_{node.FunctionName}");
             functionBuilder.AppendLine(VisitStatementBlock(node.CodeBlock.Statements));
+            // AKA RET
+            functionBuilder.AppendLine($"POP r0");
 
             return functionBuilder.ToString();
         }
 
+        public string Visit(FunctionCallNode node) {
+            var functionCallBuilder = new StringBuilder();
+
+            // Save the address of where we should return to after the function ends
+            var returnLabelNo = returnLabelCount++;
+            functionCallBuilder.AppendLine($"PUSH $return_{returnLabelNo}");
+            functionCallBuilder.AppendLine($"JMP func_{node.FunctionName}");
+            functionCallBuilder.AppendLine($"LABEL return_{returnLabelNo}");
+
+            return functionCallBuilder.ToString();
+        }
+
         public string Visit(PrintStatementNode node) {
             var (commands, result) = new ExpressionGenVisitor(this).VisitDynamic(node.Expression);
-            
+           
             StringBuilder builder = new StringBuilder();
             foreach (var command in commands) {
                 builder.AppendLine(command);
@@ -66,6 +83,14 @@ namespace ScriptCompiler.Visitors {
             }
 
             return blockBuilder.ToString();
+        }
+
+        public string getFreeRegister() {
+            return $"r{freeRegister++}";
+        }
+
+        public void finishedWithRegister() {
+            freeRegister--;
         }
     }
 }

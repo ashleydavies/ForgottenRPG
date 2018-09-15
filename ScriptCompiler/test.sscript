@@ -1,7 +1,10 @@
 print "Hello, world";
- 
+
 function void test() {
     print "Called a function";
 }
 
 test();
+print "And returned!";
+test();
+print "And returned again!";

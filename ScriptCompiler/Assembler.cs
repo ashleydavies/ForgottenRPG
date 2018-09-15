@@ -121,8 +121,14 @@ namespace ScriptCompiler {
                     AddInstruction("RESOLVELABEL" + components[1]);
                     break;
                 case "mov":
-                    HandleStackLoad(components[2]);
-                    HandleStackSave(components[1]);
+                    HandleLoadToStack(components[2]);
+                    HandleSaveFromStack(components[1]);
+                    break;
+                case "push":
+                    HandleLoadToStack(components[1]);
+                    break;
+                case "pop":
+                    HandleSaveFromStack(components[1]);
                     break;
                 case "add":
                     ArithmeticOp(ScriptVM.Instruction.Add, components[1], components[2]);
@@ -137,22 +143,22 @@ namespace ScriptCompiler {
                     ArithmeticOp(ScriptVM.Instruction.Div, components[1], components[2]);
                     break;
                 case "inc":
-                    HandleStackLoad(components[1]);
+                    HandleLoadToStack(components[1]);
                     AddInstruction(ScriptVM.Instruction.Inc);
-                    HandleStackSave(components[1]);
+                    HandleSaveFromStack(components[1]);
                     break;
                 case "dec":
-                    HandleStackLoad(components[1]);
+                    HandleLoadToStack(components[1]);
                     AddInstruction(ScriptVM.Instruction.Dec);
-                    HandleStackSave(components[1]);
+                    HandleSaveFromStack(components[1]);
                     break;
                 case "cmp":
-                    HandleStackLoad(components[1]);
-                    HandleStackLoad(components[2]);
+                    HandleLoadToStack(components[1]);
+                    HandleLoadToStack(components[2]);
                     AddInstruction(ScriptVM.Instruction.Cmp);
                     break;
                 case "print":
-                    HandleStackLoad(_userDataLookup[components[1]].ToString());
+                    HandleLoadToStack(_userDataLookup[components[1]].ToString());
                     AddInstruction(ScriptVM.Instruction.Print);
                     break;
                 default:
@@ -206,15 +212,15 @@ namespace ScriptCompiler {
         }
 
         private void ArithmeticOp(ScriptVM.Instruction instruction, string comp1, string comp2) {
-            HandleStackLoad(comp1);
-            HandleStackLoad(comp2);
+            HandleLoadToStack(comp1);
+            HandleLoadToStack(comp2);
             AddInstruction(instruction);
-            HandleStackSave(comp1);
+            HandleSaveFromStack(comp1);
         }
 
-        private void HandleStackSave(string source) {
+        private void HandleSaveFromStack(string source) {
             if (!source.StartsWith("r")) {
-                Console.WriteLine("Cannot push to a register; register reference should begin with r");
+                Console.WriteLine("Cannot push to a non-register; register reference should begin with r");
                 return;
             }
 
@@ -222,10 +228,13 @@ namespace ScriptCompiler {
             AddInstruction(GetRegister(source));
         }
 
-        private void HandleStackLoad(string source) {
+        private void HandleLoadToStack(string source) {
             if (source.StartsWith("r")) {
                 AddInstruction(ScriptVM.Instruction.RegisterToStack);
                 AddInstruction(GetRegister(source));
+            } else if (source.StartsWith("$")) {
+                AddInstruction(ScriptVM.Instruction.Literal);
+                AddInstruction("RESOLVELABEL" + source.Substring(1));
             } else {
                 AddInstruction(ScriptVM.Instruction.Literal);
                 AddInstruction(source);
@@ -237,7 +246,8 @@ namespace ScriptCompiler {
                 Console.WriteLine("Register reference should begin with r");
                 return "RFAIL";
             }
-
+            
+            // TODO lint to make sure it's a valid number
             return registerString.Substring(1);
         }
 
