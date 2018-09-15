@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ScriptCompiler</RootNamespace>
     <AssemblyName>ScriptCompiler</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -44,7 +45,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assembler.cs" />
+    <Compile Include="AST\ASTNode.cs" />
+    <Compile Include="AST\CodeBlockNode.cs" />
+    <Compile Include="AST\ExplicitTypeNode.cs" />
+    <Compile Include="AST\ExpressionNode.cs" />
+    <Compile Include="AST\FunctionCallNode.cs" />
+    <Compile Include="AST\FunctionNode.cs" />
+    <Compile Include="AST\PrintStatementNode.cs" />
+    <Compile Include="AST\ProgramNode.cs" />
+    <Compile Include="AST\StatementNode.cs" />
+    <Compile Include="AST\StringLiteralNode.cs" />
+    <Compile Include="CompileException.cs" />
+    <Compile Include="Lexer.cs" />
+    <Compile Include="MainClass.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Visitors\CodeGenVisitor.cs" />
+    <Compile Include="Visitors\EverythingVisitor.cs" />
+    <Compile Include="Visitors\ExpressionGenVisitor.cs" />
+    <Compile Include="Visitors\StringLiteralCollectorVisitor.cs" />
+    <Compile Include="Visitors\Visitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -57,6 +77,11 @@
       <Project>{459717FD-C01D-4F93-88AA-D28F81FCFB4E}</Project>
       <Name>ShaRPG</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="test.sscript">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
