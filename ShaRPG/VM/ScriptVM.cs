@@ -105,6 +105,12 @@ namespace ShaRPG.VM {
                 case Instruction.Print:
                     Console.WriteLine(GetUserDataString(PopStack()));
                     break;
+                case Instruction.PrintInt:
+                    Console.WriteLine(PopStack());
+                    break;
+                default:
+                    Console.WriteLine("Unexpected instruction");
+                    break;
             }
         }
 
@@ -180,6 +186,7 @@ namespace ShaRPG.VM {
             JmpGTE,
             JmpLTE,
             Print,
+            PrintInt,
         }
 
         private class Flags {
