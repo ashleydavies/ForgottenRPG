@@ -37,18 +37,22 @@ namespace ScriptCompiler.Visitors {
         }
 
         public (List<string>, string) Visit(AdditionNode node) {
-            List<string> commands = new List<string>();
-            var (commandsL, resultL) = VisitDynamic(node.Left);
-            var (commandsR, resultR) = VisitDynamic(node.Right);
-            commands.AddRange(commandsL);
-            commands.AddRange(commandsR);
-            var register = _codeGenVisitor.GetRegister();
-            commands.Add($"MOV {register} {resultL}");
-            commands.Add($"ADD {register} {resultR}");
-            return (commands, register);
+            return VisitBinOpNode(node, "ADD");
+        }
+
+        public (List<string>, string) Visit(SubtractionNode node) {
+            return VisitBinOpNode(node, "SUB");
+        }
+
+        public (List<string>, string) Visit(MultiplicationNode node) {
+            return VisitBinOpNode(node, "MUL");
+        }
+
+        public (List<string>, string) Visit(DivisionNode node) {
+            return VisitBinOpNode(node, "DIV");
         }
         
-        public (List<string>, string) Visit(MultiplicationNode node) {
+        public (List<string>, string) VisitBinOpNode(BinaryOperatorNode node, string opCommand) {
             List<string> commands = new List<string>();
             var (commandsL, resultL) = VisitDynamic(node.Left);
             var (commandsR, resultR) = VisitDynamic(node.Right);
@@ -56,7 +60,7 @@ namespace ScriptCompiler.Visitors {
             commands.AddRange(commandsR);
             var register = _codeGenVisitor.GetRegister();
             commands.Add($"MOV {register} {resultL}");
-            commands.Add($"MUL {register} {resultR}");
+            commands.Add($"{opCommand} {register} {resultR}");
             return (commands, register);
         }
     }

@@ -136,8 +136,12 @@ namespace ScriptCompiler.Parsing {
             switch (binOp.Symbol) {
                     case "+":
                         return new AdditionNode(leftSide, ParseExpressionPrecedence(Precedence.TERM));
+                    case "-":
+                        return new SubtractionNode(leftSide, ParseExpressionPrecedence(Precedence.TERM));
                     case "*":
                         return new MultiplicationNode(leftSide, ParseExpressionPrecedence(Precedence.FACTOR));
+                    case "/":
+                        return new DivisionNode(leftSide, ParseExpressionPrecedence(Precedence.FACTOR));
             }
             
             throw new NotImplementedException();
@@ -148,7 +152,7 @@ namespace ScriptCompiler.Parsing {
         }
 
         private InfixParseRule GetMatchingInfixRule(LexToken token, Precedence precedence) {
-            return _infixExpressionParseTable.FindAll(rule => rule.Precedence >= precedence)
+            return _infixExpressionParseTable.FindAll(rule => rule.Precedence > precedence)
                 .FindAll(rule => rule.Predicate(token)).FirstOrDefault();
         }
 
