@@ -42,7 +42,9 @@ namespace ShaRPG.VM {
                     SetFlags(PeekStack());
                     break;
                 case Instruction.Sub:
-                    PushStack(PopStack() - PopStack());
+                    b = PopStack();
+                    a = PopStack();
+                    PushStack(a - b);
                     SetFlags(PeekStack());
                     break;
                 case Instruction.Mul:
@@ -50,8 +52,8 @@ namespace ShaRPG.VM {
                     SetFlags(PeekStack());
                     break;
                 case Instruction.Div:
-                    a = PopStack();
                     b = PopStack();
+                    a = PopStack();
                     PushStack(a / b);
                     SetFlags(PeekStack());
                     break;

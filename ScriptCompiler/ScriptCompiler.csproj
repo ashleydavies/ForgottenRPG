@@ -49,6 +49,7 @@
     <Compile Include="AST\ASTNode.cs" />
     <Compile Include="AST\BinaryOperatorNode.cs" />
     <Compile Include="AST\CodeBlockNode.cs" />
+    <Compile Include="AST\DivisionNode.cs" />
     <Compile Include="AST\ExplicitTypeNode.cs" />
     <Compile Include="AST\ExpressionNode.cs" />
     <Compile Include="AST\FunctionCallNode.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="AST\ProgramNode.cs" />
     <Compile Include="AST\StatementNode.cs" />
     <Compile Include="AST\StringLiteralNode.cs" />
+    <Compile Include="AST\SubtractionNode.cs" />
     <Compile Include="CompileException.cs" />
     <Compile Include="MainClass.cs" />
     <Compile Include="Parsing\Lexer.cs" />
