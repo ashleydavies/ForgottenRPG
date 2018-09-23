@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace ScriptCompiler {
+namespace ScriptCompiler.Parsing {
     public class Lexer {
         private static readonly char[] StringDelimeters = {'\'', '"'};
 
@@ -60,6 +61,10 @@ namespace ScriptCompiler {
                 return LexSymbol();
             }
 
+            if (IsNumber(next)) {
+                return LexNumber();
+            }
+
             throw new Exception();
         }
 
@@ -99,6 +104,12 @@ namespace ScriptCompiler {
                                    symbol);
         }
 
+        private LexToken LexNumber() {
+            return new IntegerToken(_scanLine,
+                                    _scanPosition,
+                                    int.Parse(TakeUntil(c => !IsNumber(c)).str));
+        }
+
         private (string str, bool terminated) TakeUntil(Predicate<char> condition) {
             if (!HasMore()) return ("", true);
 
@@ -129,6 +140,10 @@ namespace ScriptCompiler {
 
         private bool IsSymbol(char first) {
             return Symbols.Contains(first);
+        }
+
+        private bool IsNumber(char first) {
+            return char.IsNumber(first);
         }
 
         private void UnpopChar(char unpop) {
@@ -195,6 +210,18 @@ namespace ScriptCompiler {
 
         protected override string StringRepresentation() {
             return Content;
+        }
+    }
+
+    public class IntegerToken : LexToken {
+        public readonly int Content;
+
+        public IntegerToken(int line, int position, int content) : base(line, position) {
+            Content = content;
+        }
+
+        protected override string StringRepresentation() {
+            return Content.ToString();
         }
     }
 

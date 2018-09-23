@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Text;
 using ScriptCompiler.AST;
+using ScriptCompiler.Types;
 
 namespace ScriptCompiler.Visitors {
-    public class CodeGenVisitor : Visitor<string> {
+    public class CodeGenVisitor : Visitor<string>, IRegisterAllocator {
         public Dictionary<string, string> StringAliases = new Dictionary<string, string>();
         private int freeRegister = 1;
         private int returnLabelCount = 0;
@@ -70,8 +71,16 @@ namespace ScriptCompiler.Visitors {
             foreach (var command in commands) {
                 builder.AppendLine(command);
             }
+            
+            // There are different print instructions depending on the type of the thing we are printing
+            var type = new TypeDeterminationVisitor().VisitDynamic(node.Expression);
 
-            builder.AppendLine($"print {result}");
+            if (type == SType.String) {
+                builder.AppendLine($"PRINT {result}");
+            } else if (type == SType.Integer) {
+                builder.AppendLine($"PRINTINT {result}");
+            }
+
             return builder.ToString();
         }
 
@@ -85,12 +94,12 @@ namespace ScriptCompiler.Visitors {
             return blockBuilder.ToString();
         }
 
-        public string getFreeRegister() {
+        public string GetRegister() {
             return $"r{freeRegister++}";
         }
 
-        public void finishedWithRegister() {
-            freeRegister--;
+        public void FreeRegister() {
+            throw new NotImplementedException();
         }
     }
 }

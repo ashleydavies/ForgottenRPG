@@ -1,18 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Data;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Net.Security;
 using System.Runtime.Remoting.Messaging;
 using ScriptCompiler.AST;
 using ScriptCompiler.Visitors;
 
-namespace ScriptCompiler {
+namespace ScriptCompiler.Parsing {
     public class Parser {
+        private class InfixParseRule {
+            public readonly Predicate<LexToken> Predicate;
+            public readonly Func<LexToken, ExpressionNode, ExpressionNode> Rule;
+            public readonly Precedence Precedence;
+            
+            public InfixParseRule(Predicate<LexToken> predicate, Func<LexToken, ExpressionNode, ExpressionNode> rule, Precedence precedence) {
+                Predicate = predicate;
+                Rule = rule;
+                Precedence = precedence;
+            }
+        }
+
+        private class PrefixParseRule {
+            public readonly Predicate<LexToken> Predicate;
+            public readonly Func<LexToken, ExpressionNode> Rule;
+            
+            public PrefixParseRule(Predicate<LexToken> predicate, Func<LexToken, ExpressionNode> rule) {
+                Predicate = predicate;
+                Rule = rule;
+            }
+        }
+        
         private readonly string _contents;
         private Lexer _lexer;
         private LexToken _cachedToken;
 
+        private readonly List<PrefixParseRule> _prefixExpressionParseTable;
+        private readonly List<InfixParseRule>
+            _infixExpressionParseTable;
+
         public Parser(string contents) {
             _contents = contents;
+
+            _prefixExpressionParseTable = new List<PrefixParseRule> {
+                new PrefixParseRule(t => t is IntegerToken, t => new IntegerLiteralNode(((IntegerToken) t).Content)),
+                new PrefixParseRule(t => t is StringToken, t => new StringLiteralNode(((StringToken) t).Content)),
+                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == "(", _ => ParseGrouping()),
+            };
+
+            _infixExpressionParseTable = new List<InfixParseRule> {
+                new InfixParseRule(t => t is SymbolToken s && new List<string> {"-", "+"}.Contains(s.Symbol),
+                                   (t, left) => ParseBinaryExpressionNode(left, t as SymbolToken), Precedence.TERM),
+                new InfixParseRule(t => t is SymbolToken s && new List<string> {"*", "/"}.Contains(s.Symbol),
+                                   (t, left) => ParseBinaryExpressionNode(left, t as SymbolToken), Precedence.FACTOR),
+            };
         }
 
         public string Parse() {
@@ -73,10 +115,52 @@ namespace ScriptCompiler {
             throw new NotImplementedException();
         }
 
+        private ExpressionNode ParseExpression() {
+            return ParseExpressionPrecedence(Precedence.ASSIGNMENT);
+        }
+
+        private ExpressionNode ParseExpressionPrecedence(Precedence precedence) {
+            var token = NextToken();
+            var expression = GetMatchingPrefixRule(token).Rule(token);
+
+            token = PeekToken();
+            while (GetMatchingInfixRule(token, precedence) != null) {
+                expression = GetMatchingInfixRule(token, precedence).Rule(NextToken(), expression);
+                token = PeekToken();
+            }
+
+            return expression;
+        }
+
+        private ExpressionNode ParseBinaryExpressionNode(ExpressionNode leftSide, SymbolToken binOp) {
+            switch (binOp.Symbol) {
+                    case "+":
+                        return new AdditionNode(leftSide, ParseExpressionPrecedence(Precedence.TERM));
+                    case "*":
+                        return new MultiplicationNode(leftSide, ParseExpressionPrecedence(Precedence.FACTOR));
+            }
+            
+            throw new NotImplementedException();
+        }
+
+        private PrefixParseRule GetMatchingPrefixRule(LexToken token) {
+            return _prefixExpressionParseTable.FindAll(rule => rule.Predicate(token)).FirstOrDefault();
+        }
+
+        private InfixParseRule GetMatchingInfixRule(LexToken token, Precedence precedence) {
+            return _infixExpressionParseTable.FindAll(rule => rule.Precedence >= precedence)
+                .FindAll(rule => rule.Predicate(token)).FirstOrDefault();
+        }
+
+        private ExpressionNode ParseGrouping() {
+            var expr = ParseExpression();
+            Expecting<SymbolToken>(s => s.Symbol == ")");
+            return expr;
+        }
+
         private PrintStatementNode ParsePrintStatementNode() {
             Expecting<IdentifierToken>(t => t.Content == "print");
-            string result = Expecting<StringToken>().Content;
-            return new PrintStatementNode(new StringLiteralNode(result));
+            return new PrintStatementNode(ParseExpression());
         }
 
         private FunctionNode ParseFunctionNode() {

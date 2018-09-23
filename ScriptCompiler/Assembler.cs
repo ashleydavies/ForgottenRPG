@@ -158,11 +158,14 @@ namespace ScriptCompiler {
                     AddInstruction(ScriptVM.Instruction.Cmp);
                     break;
                 case "print":
-                    HandleLoadToStack(_userDataLookup[components[1]].ToString());
+                    // Remove "!" from ref
+                    // TODO: Unify all stack loading
+                    HandleLoadToStack(_userDataLookup[components[1].Substring(1)].ToString());
                     AddInstruction(ScriptVM.Instruction.Print);
                     break;
-                default:
-                    Console.WriteLine("Malformed instruction: " + line);
+                case "printint":
+                    HandleLoadToStack(components[1]);
+                    AddInstruction(ScriptVM.Instruction.PrintInt);
                     break;
             }
         }
