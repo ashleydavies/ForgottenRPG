@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Security;
-using System.Runtime.Remoting.Messaging;
 using ScriptCompiler.AST;
 using ScriptCompiler.Visitors;
 
