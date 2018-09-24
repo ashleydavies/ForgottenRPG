@@ -12,7 +12,7 @@ namespace ScriptCompilerTest {
             var result = new StringLiteralCollectorVisitor().Visit(
                 new ProgramNode(
                     new List<FunctionNode> {
-                        new FunctionNode(new ExplicitTypeNode("void"), new CodeBlockNode(
+                        new FunctionNode("test", new ExplicitTypeNode("void"), new CodeBlockNode(
                             new List<StatementNode> {
                                 new PrintStatementNode(new StringLiteralNode("Hello, world!"))
                             }))
@@ -22,7 +22,7 @@ namespace ScriptCompilerTest {
                 )
             );
 
-            Assert.Collection(result, s => Assert.Equal(s, "Hello, world!"), s => Assert.Equal(s, "Hello, world! Two"));
+            Assert.Collection(result, s => Assert.Equal("Hello, world!", s), s => Assert.Equal("Hello, world! Two", s));
         }
     }
 }

@@ -1,106 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{963A1360-B7EE-40F8-B650-21CCB43F4159}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ScriptCompiler</RootNamespace>
-    <AssemblyName>ScriptCompiler</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <LangVersion>7.2</LangVersion>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <LangVersion>7.1</LangVersion>
+    <StartupObject>ScriptCompiler.MainClass</StartupObject>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\ShaRPG\ShaRPG.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Assembler.cs" />
-    <Compile Include="AST\AdditionNode.cs" />
-    <Compile Include="AST\ASTNode.cs" />
-    <Compile Include="AST\BinaryOperatorNode.cs" />
-    <Compile Include="AST\CodeBlockNode.cs" />
-    <Compile Include="AST\DivisionNode.cs" />
-    <Compile Include="AST\ExplicitTypeNode.cs" />
-    <Compile Include="AST\ExpressionNode.cs" />
-    <Compile Include="AST\FunctionCallNode.cs" />
-    <Compile Include="AST\FunctionNode.cs" />
-    <Compile Include="AST\IntegerLiteralNode.cs" />
-    <Compile Include="AST\LiteralNode.cs" />
-    <Compile Include="AST\MultiplicationNode.cs" />
-    <Compile Include="AST\NumericLiteralNode.cs" />
-    <Compile Include="AST\PrintStatementNode.cs" />
-    <Compile Include="AST\ProgramNode.cs" />
-    <Compile Include="AST\StatementNode.cs" />
-    <Compile Include="AST\StringLiteralNode.cs" />
-    <Compile Include="AST\SubtractionNode.cs" />
-    <Compile Include="CompileException.cs" />
-    <Compile Include="MainClass.cs" />
-    <Compile Include="Parsing\Lexer.cs" />
-    <Compile Include="Parsing\Parser.cs" />
-    <Compile Include="Parsing\Precedence.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Types\SType.cs" />
-    <Compile Include="Visitors\CodeGenVisitor.cs" />
-    <Compile Include="Visitors\EverythingVisitor.cs" />
-    <Compile Include="Visitors\ExpressionGenVisitor.cs" />
-    <Compile Include="Visitors\IRegisterAllocator.cs" />
-    <Compile Include="Visitors\StringLiteralCollectorVisitor.cs" />
-    <Compile Include="Visitors\TypeDeterminationVisitor.cs" />
-    <Compile Include="Visitors\Visitor.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-    <None Include="beta.shascr">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ShaRPG\ShaRPG.csproj">
-      <Project>{459717FD-C01D-4F93-88AA-D28F81FCFB4E}</Project>
-      <Name>ShaRPG</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="test.sscript">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
