@@ -39,6 +39,12 @@ namespace ScriptCompilerTests {
             Assert.Equal(_output, new List<string> {"1", "2", "3"});
         }
 
+        [Fact]
+        public void CanDoNestedFunctionCalls() {
+            ExecuteCode("function void test() { print '2'; test2(); } print '1'; test(); print '4'; function void test2() { print '3'; }");
+            Assert.Equal(_output, new List<string> {"1", "2", "3", "4"});
+        }
+
         private void ExecuteCode(string code) {
             var compiled = new Parser(code).Parse();
             var assembled =
