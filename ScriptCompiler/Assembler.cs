@@ -11,7 +11,7 @@ namespace ScriptCompiler {
         Text
     }
     
-    internal class Assembler {
+    public class Assembler {
         private int _instructionId;
         private List<string> _lines;
         private List<string> _instructions;

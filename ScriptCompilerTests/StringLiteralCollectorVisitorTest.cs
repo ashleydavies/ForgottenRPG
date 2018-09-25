@@ -5,7 +5,7 @@ using ScriptCompiler.AST;
 using ScriptCompiler.Visitors;
 using Xunit;
 
-namespace ScriptCompilerTest {
+namespace ScriptCompilerTests {
     public class StringLiteralCollectorVisitorTest {
         [Fact]
         public void ExtractsCorrectString() {
