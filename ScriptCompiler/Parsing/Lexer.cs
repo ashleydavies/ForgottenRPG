@@ -131,7 +131,7 @@ namespace ScriptCompiler.Parsing {
         }
 
         private bool IsIdentifierCharacter(char content) {
-            return IsIdentifierStart(content) || Regex.IsMatch(content.ToString(), @"_");
+            return char.IsLetterOrDigit(content) || Regex.IsMatch(content.ToString(), @"_");
         }
 
         private bool IsStringDelimeter(char first) {
