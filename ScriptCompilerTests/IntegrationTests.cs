@@ -11,15 +11,37 @@ namespace ScriptCompilerTests {
         private readonly List<string> _output = new List<string>();
         [Fact]
         public void CanPrintHelloWorld() {
-            var compiled = new Parser("print 'Hello, world!';").Parse();
-            var assembled = new Assembler(compiled.Split(new []{ Environment.NewLine }, StringSplitOptions.None).ToList()).Compile();
+            ExecuteCode("print 'Hello, world!';");
+            Assert.Equal(_output, new List<string> {"Hello, world!"});
+        }
+
+        [Fact]
+        public void CanPrintIntegers() {
+            ExecuteCode("print 5;");
+            Assert.Equal(_output, new List<string> {"5"});
+        }
+
+        [Fact]
+        public void CanDoSimpleExpressions() {
+            ExecuteCode("print 5 + 5; print 5 + 10; print 5 - 5; print 0 - 5; print 3 * 2; print 6 / 2;");
+            Assert.Equal(_output, new List<string> {"10", "15", "0", "-5", "6", "3"});
+        }
+
+        [Fact]
+        public void RespectsPrecedenceOfTermsAndFactors() {
+            ExecuteCode("print 5 + 2 * 6 / 3 - 4 + 8 * (2 + 1) / (3 + 1 - 1);");
+            Assert.Equal(_output, new List<string> {"13"});
+        }
+
+        private void ExecuteCode(string code) {
+            var compiled = new Parser(code).Parse();
+            var assembled =
+                new Assembler(compiled.Split(new[] {Environment.NewLine}, StringSplitOptions.None).ToList()).Compile();
             var bytecodeString = string.Join(",", assembled);
             List<int> bytecode = bytecodeString.Split(',').Select(int.Parse).ToList();
             var vm = new ScriptVM(bytecode);
             vm.PrintMethod = str => _output.Add(str);
             vm.Execute();
-            
-            Assert.Equal(_output, new List<string> {"Hello, world!"});
         }
     }
 }
