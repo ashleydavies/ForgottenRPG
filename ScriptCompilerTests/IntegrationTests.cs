@@ -33,6 +33,12 @@ namespace ScriptCompilerTests {
             Assert.Equal(_output, new List<string> {"13"});
         }
 
+        [Fact]
+        public void CanCallFunctionsCorrectly() {
+            ExecuteCode("function void test() { print '2'; } print '1'; test(); print '3';");
+            Assert.Equal(_output, new List<string> {"1", "2", "3"});
+        }
+
         private void ExecuteCode(string code) {
             var compiled = new Parser(code).Parse();
             var assembled =
