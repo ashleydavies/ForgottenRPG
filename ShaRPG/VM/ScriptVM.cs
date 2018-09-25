@@ -13,6 +13,7 @@ namespace ShaRPG.VM {
         private readonly Dictionary<int, int> _registers;
         private readonly Flags _flagRegister;
         private readonly Stack<int> _stack;
+        public Action<string> PrintMethod { get; set; } = Console.WriteLine;
 
         public ScriptVM(List<int> bytes) {
             _bytes = bytes;
@@ -105,13 +106,13 @@ namespace ShaRPG.VM {
                     PushStack(_registers[PopByte()]);
                     break;
                 case Instruction.Print:
-                    Console.WriteLine(GetUserDataString(PopStack()));
+                    PrintMethod(GetUserDataString(PopStack()));
                     break;
                 case Instruction.PrintInt:
-                    Console.WriteLine(PopStack());
+                    PrintMethod(PopStack().ToString());
                     break;
                 default:
-                    Console.WriteLine("Unexpected instruction");
+                    PrintMethod("Unexpected instruction");
                     break;
             }
         }
