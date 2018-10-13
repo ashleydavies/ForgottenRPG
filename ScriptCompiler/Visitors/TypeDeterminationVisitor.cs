@@ -13,11 +13,11 @@ namespace ScriptCompiler.Visitors {
         }
 
         public SType Visit(IntegerLiteralNode _) {
-            return SType.Integer;
+            return SType.SInteger;
         }
 
         public SType Visit(StringLiteralNode _) {
-            return SType.String;
+            return SType.SString;
         }
 
         public SType Visit(BinaryOperatorNode _) {

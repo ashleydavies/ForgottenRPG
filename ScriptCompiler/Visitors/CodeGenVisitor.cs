@@ -75,9 +75,9 @@ namespace ScriptCompiler.Visitors {
             // There are different print instructions depending on the type of the thing we are printing
             var type = new TypeDeterminationVisitor().VisitDynamic(node.Expression);
 
-            if (type == SType.String) {
+            if (type == SType.SString) {
                 builder.AppendLine($"PRINT {result}");
-            } else if (type == SType.Integer) {
+            } else if (type == SType.SInteger) {
                 builder.AppendLine($"PRINTINT {result}");
             }
 
