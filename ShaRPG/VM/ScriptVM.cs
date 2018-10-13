@@ -31,6 +31,14 @@ namespace ShaRPG.VM {
             }
         }
 
+        // TODO: Migrate fully from stack to register machine for performance improvements.
+        // The whole VM was originally intended to be a full stack machine, but the higher level
+        //   form is compiled more trivially into a register machine, and has more capacity for optimisation.
+        // Currently, the pseudo-assembly language is emulating a register machine by exclusively using registers and
+        //   pushing and popping before each operation, which is very inefficient.
+        // Not to mention horrendously confusing, since there is also the higher level stack stored in `_memory`.
+        //
+        // ¯\_(ツ)_/¯
         private void ExecuteInstruction() {
             int a, b;
             switch (PopInstruction()) {
