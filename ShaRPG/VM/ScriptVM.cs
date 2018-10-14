@@ -13,7 +13,7 @@ namespace ShaRPG.VM {
         private readonly Dictionary<int, int> _registers;
         private readonly Flags _flagRegister;
         private readonly Stack<int> _stack;
-        private readonly int[] _memory;
+        private readonly Dictionary<int, IMemoryPage> _memory;
         public Action<string> PrintMethod { get; set; } = Console.WriteLine;
 
         public ScriptVM(List<int> bytes) {
