@@ -44,6 +44,51 @@ The following show the completed parts of / technical information about each mai
  * Inventory
    * You can view your inventory with a GUI
    * You can move items around in your inventory
+   
+## In development
+
+Currently, I am working on a higher-level scripting language for the engine, primarily for fun rather than because it will be more helpful than actually implementing important game features.
+
+You can see the progress in ScriptCompiler/, ShaRPG/VM/ and ScriptCompilerTests/ for CI (the first CI in the project!)
+
+A snippet of code that currently works, compiling into the assembly and then being assembled into the byte code, is:
+
+~~~
+print "Hello, world";
+
+function void testt() {
+    print "Test 2 called!";
+}
+
+function void test() {
+    print "Called a function";
+    print 5;
+    testt();
+}
+
+print 5;
+test();
+print "And returned!";
+test();
+print "And returned again!";
+print 5 + 2 * 6 / 3 - 4 + 8 * (2 + 1) / (3 + 1 - 1);
+~~~
+
+As you can see, it's currently a fairly bare-bones primitive language. It also currently lacks variables, since the only stack in play is a stack machine for expressions.
+
+I am hoping to move away from the stack machine to a register machine architecture for the VM, and that has already happened at a higher level (the assembly code assumes a register machine), but
+the assembler currently manipulates this into code for the underlying stack machine VM, which works for now.
+
+Current development is focussing on adding the heap and stack, which will enable variables and function parameters.
+
+After this, I hope to flesh out the typing and try to make functions first class types and enable user type definitions.
+
+Also on the agenda is a built-in library which is compiled with your scripts depending on which bits of it you use; it's likely this will be through some kind of C-style #include syntax.
+
+The hope is that this scripting language can enable very flexible dialog, map behaviour, and AI behaviour, while also allowing specialised built-ins and syntax which would be trickier with
+a typical dynamic scripting language I could plug and play.
+
+Also, I find it much more fun to do this from scratch than set up bindings for Lua/Python/Ruby/your favourite scripting language here.
 
 ## Upcoming / planned
 
