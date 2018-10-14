@@ -1,6 +1,6 @@
 ﻿namespace ShaRPG.VM {
     public class MemoryPage : IMemoryPage {
-        public static const int PageSize = 1024 * 4;
+        public const int PageSize = 1024 * 4;
         
         private int[] _memory = new int[PageSize];
         
