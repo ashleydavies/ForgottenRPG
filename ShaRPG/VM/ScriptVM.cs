@@ -7,6 +7,7 @@ using System.Linq;
 #endregion
 
 namespace ShaRPG.VM {
+    // Bytecode VM for a small language. 32-bit integers are the smallest atomic unit.
     public class ScriptVM {
         private const int InstructionRegister = 0;
         private readonly List<int> _bytes;
@@ -18,6 +19,8 @@ namespace ShaRPG.VM {
 
         public ScriptVM(List<int> bytes) {
             _bytes = bytes;
+            // Copy the bytes to memory
+            
             _registers = new Dictionary<int, int> {
                 [InstructionRegister] = bytes[0]
             };
