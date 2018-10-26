@@ -97,9 +97,5 @@ namespace ScriptCompiler.Visitors {
         public string GetRegister() {
             return $"r{freeRegister++}";
         }
-
-        public void FreeRegister() {
-            throw new NotImplementedException();
-        }
     }
 }

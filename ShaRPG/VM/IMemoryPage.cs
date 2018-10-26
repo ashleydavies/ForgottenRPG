@@ -1,6 +1,6 @@
 ﻿namespace ShaRPG.VM {
     public interface IMemoryPage {
-        int readAddress(int offset);
-        void writeAddress(int offset, int value);
+        int ReadAddress(int offset);
+        void WriteAddress(int offset, int value);
     }
 }
