@@ -1,5 +1,5 @@
 ﻿namespace ScriptCompiler.Visitors {
     public interface IRegisterAllocator {
-        string GetRegister();
+        Register GetRegister();
     }
 }
