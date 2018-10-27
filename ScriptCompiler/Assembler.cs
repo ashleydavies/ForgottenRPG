@@ -16,7 +16,9 @@ namespace ScriptCompiler {
         private List<string> _lines;
         private List<string> _instructions;
         private List<string> _userData;
-        private Dictionary<string, int> _userDataLookup;
+        // Hardcoded constant strings etc begin at index 1, as index 0 contains a pointer to the start of executable code
+        private int _userDataNextIndex = 1;
+        private Dictionary<string, int> _userDataIndexes;
         private AssemblyContext _context = AssemblyContext.Null;
         private readonly Dictionary<string, string> _labels;
 
@@ -25,7 +27,7 @@ namespace ScriptCompiler {
             _instructionId = 0;
             _instructions = new List<string>();
             _userData = new List<string>();
-            _userDataLookup = new Dictionary<string, int>();
+            _userDataIndexes = new Dictionary<string, int>();
             _labels = new Dictionary<string, string>();
         }
 
@@ -80,7 +82,9 @@ namespace ScriptCompiler {
                     
                     contents = contents.Replace("\\n", "\n");
 
-                    _userDataLookup[components[1]] = _userData.Count;
+                    _userDataIndexes[components[1]] = _userDataNextIndex;
+                    // Bump the next index to include this string and an initial length integer which precedes all arrays
+                    _userDataNextIndex += contents.Length + 1;
                     _userData.Add(contents);
                     break;
             }
@@ -158,9 +162,7 @@ namespace ScriptCompiler {
                     AddInstruction(ScriptVM.Instruction.Cmp);
                     break;
                 case "print":
-                    // Remove "!" from ref
-                    // TODO: Unify all stack loading
-                    HandleLoadToStack(_userDataLookup[components[1].Substring(1)].ToString());
+                    HandleLoadToStack(components[1]);
                     AddInstruction(ScriptVM.Instruction.Print);
                     break;
                 case "printint":
@@ -199,13 +201,6 @@ namespace ScriptCompiler {
                 newInstructions.Add(string.Join(",", userData.ToCharArray().Select(Convert.ToInt32)));
             }
             
-            // Now add lookup table to beginning. We need to skip #pointers as index will be offset by the table
-            userDataPointers = userDataPointers.Select(x => x + userDataPointers.Count).ToList();
-            for (int i = 0; i < userDataPointers.Count; i++) {
-                codeOffset++;
-                newInstructions.Insert(i, userDataPointers[i].ToString());                    
-            }
-            
             newInstructions.Insert(0, codeOffset.ToString());
             newInstructions.AddRange(_instructions);
             
@@ -238,6 +233,9 @@ namespace ScriptCompiler {
             } else if (source.StartsWith("$")) {
                 AddInstruction(ScriptVM.Instruction.Literal);
                 AddInstruction("RESOLVELABEL" + source.Substring(1));
+            } else if (source.StartsWith("!")) {
+                AddInstruction(ScriptVM.Instruction.Literal);
+                AddInstruction(_userDataIndexes[source.Substring(1)].ToString());
             } else {
                 AddInstruction(ScriptVM.Instruction.Literal);
                 AddInstruction(source);
