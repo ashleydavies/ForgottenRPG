@@ -2,7 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Net.NetworkInformation;
+using OpenTK.Audio.OpenAL;
 
 #endregion
 
@@ -14,12 +17,28 @@ namespace ShaRPG.VM {
         private readonly Dictionary<int, int> _registers;
         private readonly Flags _flagRegister;
         private readonly Stack<int> _stack;
-        private readonly Dictionary<int, IMemoryPage> _memory;
+        private readonly Dictionary<int, IMemoryPage> _memory = new Dictionary<int, IMemoryPage>();
         public Action<string> PrintMethod { get; set; } = Console.WriteLine;
 
         public ScriptVM(List<int> bytes) {
             _bytes = bytes;
             // Copy the bytes to memory
+            List<MemoryPage> instructionPages = new List<MemoryPage>();
+            for (int i = 0; i < bytes.Count; i++) {
+                int page   = i / MemoryPage.PageSize;
+                int offset = i % MemoryPage.PageSize;
+
+                if (!_memory.ContainsKey(page)) {
+                    var memoryPage = new MemoryPage();
+                    _memory[page] = memoryPage;
+                    instructionPages.Add(memoryPage);
+                }
+                
+                _memory[page].WriteAddress(offset, bytes[i]);
+            }
+            
+            // Lock the pages for writing so programs can't overwrite instruction data
+            instructionPages.ForEach(x => x.Lock());
             
             _registers = new Dictionary<int, int> {
                 [InstructionRegister] = bytes[0]
@@ -44,11 +63,11 @@ namespace ShaRPG.VM {
         // ¯\_(ツ)_/¯
         private void ExecuteInstruction() {
             int a, b;
-            switch (PopInstruction()) {
+            switch (ReadInstruction()) {
                 case Instruction.NULL:
                     break;
                 case Instruction.Literal:
-                    PushStack(PopByte());
+                    PushStack(ReadInstructionByte());
                     break;
                 case Instruction.Add:
                     PushStack(PopStack() + PopStack());
@@ -111,14 +130,14 @@ namespace ShaRPG.VM {
                     Jump(_flagRegister.LT);
                     break;
                 case Instruction.StackToRegister:
-                    _registers[PopByte()] = PopStack();
+                    _registers[ReadInstructionByte()] = PopStack();
                     break;
                 case Instruction.RegisterToStack:
-                    if (!_registers.ContainsKey(PeekByte())) _registers[PeekByte()] = 0;
-                    PushStack(_registers[PopByte()]);
+                    if (!_registers.ContainsKey(PeekInstructionByte())) _registers[PeekInstructionByte()] = 0;
+                    PushStack(_registers[ReadInstructionByte()]);
                     break;
                 case Instruction.Print:
-                    PrintMethod(GetUserDataString(PopStack()));
+                    PrintMethod(StringFromMemory(PopStack()));
                     break;
                 case Instruction.PrintInt:
                     PrintMethod(PopStack().ToString());
@@ -129,15 +148,20 @@ namespace ShaRPG.VM {
             }
         }
 
-        private string GetUserDataString(int userDataId) {
+        private string StringFromMemory(int userDataId) {
             // Add one as the first byte is the initial instruction register
-            int pos = _bytes[userDataId + 1];
-            int len = _bytes[pos];
-            return new string(_bytes.GetRange(pos + 1, len).Select(Convert.ToChar).ToArray());
+            int len = ReadMemory(userDataId);
+            
+            char[] userString = new char[len];
+            for (int i = 0; i < len; i++) {
+                userString[i] = Convert.ToChar(ReadMemory(userDataId + 1 + i));
+            }
+            
+            return new string(userString);
         }
 
         private void Jump(bool doJump) {
-            int instructionPointer = PopByte();
+            int instructionPointer = ReadInstructionByte();
             if (doJump) {
                 _registers[InstructionRegister] = instructionPointer;
             }
@@ -165,19 +189,35 @@ namespace ShaRPG.VM {
             }
         }
 
-        private Instruction PopInstruction() => (Instruction) PopByte();
         private void IncrementIr() => _registers[InstructionRegister] += 1;
+        private Instruction ReadInstruction() => (Instruction) ReadInstructionByte();
 
-        private int PopByte() {
-            var data = _bytes[_registers[InstructionRegister]];
+        private int ReadInstructionByte() {
+            var data = ReadMemory(_registers[InstructionRegister]);
             IncrementIr();
             return data;
         }
 
-        private int PeekByte() => _bytes[_registers[InstructionRegister]];
+        private int PeekInstructionByte() => ReadMemory(_registers[InstructionRegister]);
         private void PushStack(int data) => _stack.Push(data);
         private int PeekStack() => _stack.Peek();
         private int PopStack() => _stack.Pop();
+
+        private int ReadMemory(int index) {
+            var (page, offset) = GetPageAndOffset(index);
+            if (!_memory.ContainsKey(page)) _memory[page] = new MemoryPage();
+            return _memory[page].ReadAddress(offset);
+        }
+
+        private void WriteMemory(int index, int value) {
+            var (page, offset) = GetPageAndOffset(index);
+            if (!_memory.ContainsKey(page)) _memory[page] = new MemoryPage();
+            _memory[page].WriteAddress(offset, value);
+        }
+
+        private (int, int) GetPageAndOffset(int memIndex) {
+            return (memIndex / MemoryPage.PageSize, memIndex % MemoryPage.PageSize);
+        }
 
         public enum Instruction {
             NULL,
