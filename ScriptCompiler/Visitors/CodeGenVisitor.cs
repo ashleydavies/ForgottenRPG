@@ -9,9 +9,10 @@ using ScriptCompiler.Types;
 namespace ScriptCompiler.Visitors {
     public class CodeGenVisitor : Visitor<string>, IRegisterAllocator {
         public Dictionary<string, string> StringAliases = new Dictionary<string, string>();
-        private int freeRegister = 1;
-        private int returnLabelCount = 0;
-        
+        private int _returnLabelCount = 0;
+        // The instruction register is always 'occupied'
+        private List<bool> _occupiedRegisters = new List<bool>() { true };
+
         public override string Visit(ASTNode node) {
             throw new NotImplementedException(node.GetType().Name);
         }
@@ -56,7 +57,7 @@ namespace ScriptCompiler.Visitors {
             var functionCallBuilder = new StringBuilder();
 
             // Save the address of where we should return to after the function ends
-            var returnLabelNo = returnLabelCount++;
+            var returnLabelNo = _returnLabelCount++;
             functionCallBuilder.AppendLine($"PUSH $return_{returnLabelNo}");
             functionCallBuilder.AppendLine($"JMP func_{node.FunctionName}");
             functionCallBuilder.AppendLine($"LABEL return_{returnLabelNo}");
@@ -65,20 +66,23 @@ namespace ScriptCompiler.Visitors {
         }
 
         public string Visit(PrintStatementNode node) {
-            var (commands, result) = new ExpressionGenVisitor(this).VisitDynamic(node.Expression);
-           
-            StringBuilder builder = new StringBuilder();
-            foreach (var command in commands) {
-                builder.AppendLine(command);
-            }
-            
-            // There are different print instructions depending on the type of the thing we are printing
-            var type = new TypeDeterminationVisitor().VisitDynamic(node.Expression);
+            var (commands, register) = new ExpressionGenVisitor(this).VisitDynamic(node.Expression);
 
-            if (type == SType.SString) {
-                builder.AppendLine($"PRINT {result}");
-            } else if (type == SType.SInteger) {
-                builder.AppendLine($"PRINTINT {result}");
+            StringBuilder builder = new StringBuilder();
+            
+            using (register) {
+                foreach (var command in commands) {
+                    builder.AppendLine(command);
+                }
+
+                // There are different print instructions depending on the type of the thing we are printing
+                var type = new TypeDeterminationVisitor().VisitDynamic(node.Expression);
+
+                if (type == SType.SString) {
+                    builder.AppendLine($"PRINT {register}");
+                } else if (type == SType.SInteger) {
+                    builder.AppendLine($"PRINTINT {register}");
+                }
             }
 
             return builder.ToString();
@@ -94,8 +98,17 @@ namespace ScriptCompiler.Visitors {
             return blockBuilder.ToString();
         }
 
-        public string GetRegister() {
-            return $"r{freeRegister++}";
+        public Register GetRegister() {
+            for (int i = 0; i < _occupiedRegisters.Count; i++) {
+                if (_occupiedRegisters[i] == false) {
+                    _occupiedRegisters[i] = true;
+                    return new Register(i, () => _occupiedRegisters[i] = false);
+                }
+            }
+
+            int idx = _occupiedRegisters.Count;
+            _occupiedRegisters.Add(true);
+            return new Register(idx, () => _occupiedRegisters[idx] = false);
         }
     }
 }
