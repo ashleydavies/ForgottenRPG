@@ -13,8 +13,9 @@ using ScriptCompiler.Types;
 
 namespace ScriptCompiler.Visitors {
     public class CodeGenVisitor : Visitor<string>, IRegisterAllocator {
-        public Dictionary<string, string> StringLiteralAliases = new Dictionary<string, string>();
-        private StackFrame _stackFrame;
+        public StackFrame StackFrame { get; private set; }
+        public readonly Dictionary<string, string> StringLiteralAliases = new Dictionary<string, string>();
+
         private int _returnLabelCount = 0;
         // The instruction and stack pointer registers are always 'occupied'
         private readonly List<bool> _occupiedRegisters = new List<bool> { true, true };
@@ -25,7 +26,7 @@ namespace ScriptCompiler.Visitors {
         /// </summary>
         public string Visit(ProgramNode node) {
             // Set up the initial stack frame
-            _stackFrame = new StackFrame(new Dictionary<string, (SType, int)>());
+            StackFrame = new StackFrame(new Dictionary<string, (SType, int)>());
             List<string> programStrings = new StringLiteralCollectorVisitor().Visit(node);
             
             StringBuilder programBuilder = new StringBuilder();
@@ -76,7 +77,7 @@ namespace ScriptCompiler.Visitors {
         public string Visit(DeclarationStatementNode node) {
             var declarationBuilder = new StringBuilder();
 
-            if (_stackFrame.ExistsLocalScope(node.Identifier)) {
+            if (StackFrame.ExistsLocalScope(node.Identifier)) {
                 // TODO: Add line and col numbers (as well as other debug info) to all nodes, and report correctly here
                 throw new CompileException($"Attempt to redefine identifier {node.Identifier}", 0, 0);
             }
@@ -86,7 +87,7 @@ namespace ScriptCompiler.Visitors {
                 throw new CompileException($"Unable to discern type from {node.TypeString}", 0, 0);
             }
             
-            _stackFrame.AddIdentifier(type, node.Identifier);
+            StackFrame.AddIdentifier(type, node.Identifier);
             // Adjust stack pointer
             declarationBuilder.AppendLine($"ADD r1 {type.Length}");
             
@@ -94,6 +95,7 @@ namespace ScriptCompiler.Visitors {
             if (node.InitialValue != null) {
                 var (commands, resultReg) = new ExpressionGenVisitor(this).VisitDynamic(node.InitialValue);
                 commands.ForEach(s => declarationBuilder.AppendLine(s));
+                // TODO: Remove duplication with the ExpressionGenVisitor VariableAccessNode handler
                 using (resultReg) {
                     // Put the memory location of our variable into a free register
                     using (var locationReg = GetRegister()) {
@@ -101,7 +103,7 @@ namespace ScriptCompiler.Visitors {
                         declarationBuilder.AppendLine($"MOV {locationReg} r1");
                         
                         // reg = Stack - offset to variable
-                        var offset = _stackFrame.Lookup(node.Identifier).position;
+                        var offset = StackFrame.Lookup(node.Identifier).position;
                         declarationBuilder.AppendLine($"ADD {locationReg} {offset}");
                         
                         // Write to memory
@@ -124,7 +126,7 @@ namespace ScriptCompiler.Visitors {
                 }
 
                 // There are different print instructions depending on the type of the thing we are printing
-                var type = new TypeDeterminationVisitor().VisitDynamic(node.Expression);
+                var type = new TypeDeterminationVisitor(this).VisitDynamic(node.Expression);
 
                 if (type == SType.SString) {
                     builder.AppendLine($"PRINT {register}");

@@ -40,6 +40,23 @@ namespace ScriptCompiler.Visitors {
             return (commands, register);
         }
 
+        public (List<string>, Register) Visit(VariableAccessNode node) {
+            List<string> instructions = new List<string>();
+            var register = _codeGenVisitor.GetRegister();
+            
+            // reg = Stack
+            instructions.Add($"MOV {register} r1");
+            
+            // reg = Stack - offset to variable
+            var offset = _codeGenVisitor.StackFrame.Lookup(node.Identifier).position;
+            instructions.Add($"ADD {register} {offset}");
+            
+            // Read from memory into the same register as we are using
+            instructions.Add($"MEMREAD {register} {register}");
+            
+            return (instructions, register);
+        }
+
         public (List<string>, Register) Visit(IntegerLiteralNode node) {
             var register = _codeGenVisitor.GetRegister();
             return (new List<string>() { $"MOV {register} {node.value}" }, register);

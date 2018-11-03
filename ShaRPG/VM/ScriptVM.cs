@@ -151,6 +151,11 @@ namespace ShaRPG.VM {
                     Console.WriteLine($"Writing mem[{pos}]={val}");
                     WriteMemory(pos, val);
                     break;
+                case Instruction.MemRead:
+                    var loc = PopStack();
+                    Console.WriteLine($"Reading mem[{loc}]");
+                    _stack.Push(ReadMemory(loc));
+                    break;
                 default:
                     PrintMethod("Unexpected instruction");
                     break;

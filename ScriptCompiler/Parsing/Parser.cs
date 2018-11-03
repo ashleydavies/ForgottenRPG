@@ -48,6 +48,7 @@ namespace ScriptCompiler.Parsing {
             _prefixExpressionParseTable = new List<PrefixParseRule> {
                 new PrefixParseRule(t => t is IntegerToken, t => new IntegerLiteralNode(((IntegerToken) t).Content)),
                 new PrefixParseRule(t => t is StringToken, t => new StringLiteralNode(((StringToken) t).Content)),
+                new PrefixParseRule(t => t is IdentifierToken, t => new VariableAccessNode(((IdentifierToken) t).Content)),
                 new PrefixParseRule(t => t is SymbolToken s && s.Symbol == "(", _ => ParseGrouping()),
             };
 
