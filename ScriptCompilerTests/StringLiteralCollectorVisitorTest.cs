@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using ScriptCompiler;
 using ScriptCompiler.AST;
+using ScriptCompiler.AST.Statements;
+using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.Visitors;
 using Xunit;
 

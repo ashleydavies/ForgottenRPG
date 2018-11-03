@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ScriptCompiler.AST.Statements;
 
 namespace ScriptCompiler.AST {
     public class ProgramNode : ASTNode {

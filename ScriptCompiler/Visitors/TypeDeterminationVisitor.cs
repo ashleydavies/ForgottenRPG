@@ -1,5 +1,6 @@
 ﻿using System;
 using ScriptCompiler.AST;
+using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.Types;
 
 namespace ScriptCompiler.Visitors {
