@@ -148,12 +148,10 @@ namespace ShaRPG.VM {
                 case Instruction.MemWrite:
                     var val = PopStack();
                     var pos = PopStack();
-                    Console.WriteLine($"Writing mem[{pos}]={val}");
                     WriteMemory(pos, val);
                     break;
                 case Instruction.MemRead:
                     var loc = PopStack();
-                    Console.WriteLine($"Reading mem[{loc}]");
                     _stack.Push(ReadMemory(loc));
                     break;
                 default:
