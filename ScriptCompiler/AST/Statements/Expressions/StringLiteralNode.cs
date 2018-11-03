@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ScriptCompiler.AST {
+﻿namespace ScriptCompiler.AST.Statements.Expressions {
     public class StringLiteralNode : LiteralNode {
         public readonly string String;
 

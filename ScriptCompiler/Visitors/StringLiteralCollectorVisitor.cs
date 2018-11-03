@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ScriptCompiler.AST;
+using ScriptCompiler.AST.Statements.Expressions;
 
 namespace ScriptCompiler.Visitors {
     public class StringLiteralCollectorVisitor : EverythingVisitor<List<string>> {

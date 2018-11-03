@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Runtime.ConstrainedExecution;
 
-namespace ScriptCompiler {
+namespace ScriptCompiler.CompileUtil {
     public class Register : IDisposable {
         public readonly int Number;
         private readonly Action _dispose;
