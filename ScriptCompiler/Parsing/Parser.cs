@@ -5,6 +5,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Security;
 using ScriptCompiler.AST;
+using ScriptCompiler.AST.Statements;
+using ScriptCompiler.AST.Statements.Expressions;
+using ScriptCompiler.AST.Statements.Expressions.Arithmetic;
 using ScriptCompiler.Visitors;
 
 namespace ScriptCompiler.Parsing {
@@ -45,6 +48,7 @@ namespace ScriptCompiler.Parsing {
             _prefixExpressionParseTable = new List<PrefixParseRule> {
                 new PrefixParseRule(t => t is IntegerToken, t => new IntegerLiteralNode(((IntegerToken) t).Content)),
                 new PrefixParseRule(t => t is StringToken, t => new StringLiteralNode(((StringToken) t).Content)),
+                new PrefixParseRule(t => t is IdentifierToken, t => new VariableAccessNode(((IdentifierToken) t).Content)),
                 new PrefixParseRule(t => t is SymbolToken s && s.Symbol == "(", _ => ParseGrouping()),
             };
 
@@ -89,18 +93,38 @@ namespace ScriptCompiler.Parsing {
                 return node;
             }
             
-            // TODO: Add other types of statement e.g. identifier = value
+            // TODO: Add other types of statement
             if (PeekToken() is IdentifierToken) {
                 var identifierToken = Expecting<IdentifierToken>();
-                
+
                 // Parse function call statements
-                if (PeekToken() is SymbolToken s && s.Symbol == "(") {
-                    Expecting<SymbolToken>(t => t.Symbol == "(");
-                    // TODO: Parameter lists
-                    Expecting<SymbolToken>(t => t.Symbol == ")");
-                    Expecting<SymbolToken>(t => t.Symbol == ";");
-                    
-                    return new FunctionCallNode(identifierToken.Content);
+                switch (PeekToken()) {
+                    // Function call
+                    case SymbolToken s when s.Symbol == "(":
+                        Expecting<SymbolToken>(t => t.Symbol == "(");
+                        // TODO: Parameter lists
+                        Expecting<SymbolToken>(t => t.Symbol == ")");
+                        Expecting<SymbolToken>(t => t.Symbol == ";");
+
+                        return new FunctionCallNode(identifierToken.Content);
+                    // Variable declaration
+                    case IdentifierToken _:
+                        // We assume that identifierToken is now a type
+                        string variableType = identifierToken.Content;
+                        var variableIdentifier = Expecting<IdentifierToken>().Content;
+                        
+                        // If we have a default value, set it up
+                        if (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "=")) {
+                            ExpressionNode initialVal = ParseExpression();
+                            Expecting<SymbolToken>(t => t.Symbol == ";");
+                            return new DeclarationStatementNode(variableType, variableIdentifier, initialVal);
+                        }
+
+                        Expecting<SymbolToken>(t => t.Symbol == ";");
+                        return new DeclarationStatementNode(variableType, variableIdentifier);
+                    // Variable assignment
+                    case SymbolToken s when s.Symbol == "=":
+                        throw new NotImplementedException("Variable assignment without declaration isn't supported yet");
                 }
             }
 
@@ -195,15 +219,28 @@ namespace ScriptCompiler.Parsing {
 
             if (token is T tToken) {
                 if (predicate != null && !predicate(tToken)) {
-                    token.Throw($"Token '{token}' did not satisfy expected condition");
+                    throw token.CreateException($"Token '{token}' did not satisfy expected condition");
                 }
 
                 return tToken;
-            } else {
-                token.Throw($"Unexpected token '{token}' (expecting {typeof(T)})");
             }
 
-            return null;
+            throw token.CreateException($"Unexpected token '{token}' (expecting {typeof(T)})");
+        }
+
+        /// <summary>
+        /// Similar to PeekMatch, but skips the token if the check was successful. This is useful for syntax which
+        /// exists only for redirecting parsing, but has no importance of its own - for example, all that matters about
+        /// an equals sign in an assignment is that it is matched; the matched value of "=" is no longer useful after
+        /// the conditional has succeeded.
+        /// </summary>
+        private bool PeekIgnoreMatch<T>(Func<T, bool> predicate) where T : class {
+            if (PeekMatch<T>(predicate)) {
+                NextToken();
+                return true;
+            }
+
+            return false;
         }
 
         private bool PeekMatch<T>(Func<T, bool> predicate) where T : class {

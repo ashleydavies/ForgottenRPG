@@ -1,12 +1,12 @@
 ﻿namespace ScriptCompiler.Types {
-    public class ArrayType : SType {
+    public class ReferenceType : SType {
         public readonly SType ContainedType;
         
-        public ArrayType(SType containedType) {
+        public ReferenceType(SType containedType) {
             ContainedType = containedType;
         }
 
-        protected bool Equals(ArrayType other) {
+        protected bool Equals(ReferenceType other) {
             return Equals(ContainedType, other.ContainedType);
         }
 
@@ -14,7 +14,7 @@
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((ArrayType) obj);
+            return Equals((ReferenceType) obj);
         }
 
         public override int GetHashCode() {

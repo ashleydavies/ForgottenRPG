@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using ScriptCompiler.AST.Statements;
+using ScriptCompiler.AST.Statements.Expressions;
 
 namespace ScriptCompiler.AST {
     public class PrintStatementNode : StatementNode {
