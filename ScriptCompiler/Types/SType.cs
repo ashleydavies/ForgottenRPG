@@ -18,5 +18,21 @@
         public override int GetHashCode() {
             throw new System.NotImplementedException();
         }
+
+        /// <summary>
+        /// Returns a type from a type string (e.g. from 'int x = 5;'), returning SNoType if no type could be decided on
+        /// </summary>
+        public static SType FromTypeString(string nodeTypeString) {
+            switch (nodeTypeString) {
+                case "int":
+                    return SInteger;
+                case "char":
+                    return SChar;
+                case "string":
+                    return SString;
+            }
+
+            return SNoType;
+        }
     }
 }

@@ -169,6 +169,16 @@ namespace ScriptCompiler {
                     HandleLoadToStack(components[1]);
                     AddInstruction(ScriptVM.Instruction.PrintInt);
                     break;
+                case "memwrite":
+                    HandleLoadToStack(components[1]);
+                    HandleLoadToStack(components[2]);
+                    AddInstruction(ScriptVM.Instruction.MemWrite);
+                    break;
+                case "memread":
+                    HandleLoadToStack(components[1]);
+                    HandleLoadToStack(components[2]);
+                    AddInstruction(ScriptVM.Instruction.MemRead);
+                    break;
             }
         }
 

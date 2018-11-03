@@ -13,6 +13,7 @@ namespace ShaRPG.VM {
     // Bytecode VM for a small language. 32-bit integers are the smallest atomic unit.
     public class ScriptVM {
         private const int InstructionRegister = 0;
+        private const int StackPointerRegister = 1;
         private readonly List<int> _bytes;
         private readonly Dictionary<int, int> _registers;
         private readonly Flags _flagRegister;
@@ -41,8 +42,10 @@ namespace ShaRPG.VM {
             instructionPages.ForEach(x => x.Lock());
             
             _registers = new Dictionary<int, int> {
-                [InstructionRegister] = bytes[0]
+                [InstructionRegister] = bytes[0],
+                [StackPointerRegister] = instructionPages.Count * MemoryPage.PageSize
             };
+            
             _flagRegister = new Flags();
             _stack = new Stack<int>();
         }
@@ -141,6 +144,12 @@ namespace ShaRPG.VM {
                     break;
                 case Instruction.PrintInt:
                     PrintMethod(PopStack().ToString());
+                    break;
+                case Instruction.MemWrite:
+                    var val = PopStack();
+                    var pos = PopStack();
+                    Console.WriteLine($"Writing mem[{pos}]={val}");
+                    WriteMemory(pos, val);
                     break;
                 default:
                     PrintMethod("Unexpected instruction");
@@ -242,6 +251,8 @@ namespace ShaRPG.VM {
             JmpLTE,
             Print,
             PrintInt,
+            MemWrite,
+            MemRead,
         }
 
         private class Flags {
