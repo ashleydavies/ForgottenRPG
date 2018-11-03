@@ -71,6 +71,14 @@ namespace ScriptCompiler.Visitors {
             return functionCallBuilder.ToString();
         }
 
+        public string Visit(DeclarationStatementNode node) {
+            var declarationBuilder = new StringBuilder();
+
+
+
+            return declarationBuilder.ToString();
+        }
+
         public string Visit(PrintStatementNode node) {
             var (commands, register) = new ExpressionGenVisitor(this).VisitDynamic(node.Expression);
 

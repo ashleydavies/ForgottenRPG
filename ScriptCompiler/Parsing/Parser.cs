@@ -108,7 +108,6 @@ namespace ScriptCompiler.Parsing {
                         return new FunctionCallNode(identifierToken.Content);
                     // Variable declaration
                     case IdentifierToken _:
-                        Console.WriteLine("Declaration! :)");
                         // We assume that identifierToken is now a type
                         string variableType = identifierToken.Content;
                         var variableIdentifier = Expecting<IdentifierToken>().Content;

@@ -23,12 +23,16 @@ namespace ScriptCompiler.CompileUtil {
             Length = 0;
         }
 
+        public bool ExistsLocalScope(string identifier) {
+            return _variableTable.ContainsKey(identifier);
+        }
+        
         /// <summary>
         /// Gets the offset of a given identifier from the top of the stack, along with the type, providing it exists.
         /// Otherwise, returns a NoType type, with undefined behaviour for the offset in this case.
         /// </summary>
         public (SType, int) Lookup(string identifier) {
-            if (_variableTable.ContainsKey(identifier)) {
+            if (ExistsLocalScope(identifier)) {
                 var (type, pos) = _variableTable[identifier];
                 return (type, -Length + pos);
             }
