@@ -1,4 +1,5 @@
-﻿using ScriptCompiler.AST.Statements.Expressions;
+﻿using System.Collections.Generic;
+using ScriptCompiler.AST.Statements.Expressions;
 
 namespace ScriptCompiler.AST.Statements {
     public class DeclarationStatementNode : StatementNode {
@@ -12,6 +13,11 @@ namespace ScriptCompiler.AST.Statements {
             TypeString = typeString;
             Identifier = identifier;
             InitialValue = initialValue;
+        }
+
+        public override List<ASTNode> Children() {
+            if (InitialValue == null) return new List<ASTNode>();
+            return new List<ASTNode> { InitialValue };
         }
     }
 }
