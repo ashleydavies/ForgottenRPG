@@ -1,4 +1,4 @@
-﻿namespace ScriptCompiler.AST {
+﻿namespace ScriptCompiler.AST.Statements.Expressions {
     public class IntegerLiteralNode : NumericLiteralNode {
         public readonly int value;
 

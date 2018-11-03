@@ -4,33 +4,39 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Text;
 using ScriptCompiler.AST;
+using ScriptCompiler.AST.Statements;
+using ScriptCompiler.AST.Statements.Expressions;
+using ScriptCompiler.CompileUtil;
 using ScriptCompiler.Types;
 
 namespace ScriptCompiler.Visitors {
     public class CodeGenVisitor : Visitor<string>, IRegisterAllocator {
-        public Dictionary<string, string> StringAliases = new Dictionary<string, string>();
+        public Dictionary<string, string> StringLiteralAliases = new Dictionary<string, string>();
+        private StackFrame _stackFrame;
         private int _returnLabelCount = 0;
-        // The instruction register is always 'occupied'
-        private List<bool> _occupiedRegisters = new List<bool>() { true };
+        // The instruction and stack pointer registers are always 'occupied'
+        private readonly List<bool> _occupiedRegisters = new List<bool> { true, true };
 
-        public override string Visit(ASTNode node) {
-            throw new NotImplementedException(node.GetType().Name);
-        }
-
+        
+        /// <summary>
+        /// Main entry method - sets up private parameters and generates code for a full program
+        /// </summary>
         public string Visit(ProgramNode node) {
+            // Set up the initial stack frame
+            _stackFrame = new StackFrame(new Dictionary<string, (SType, int)>());
             List<string> programStrings = new StringLiteralCollectorVisitor().Visit(node);
             
             StringBuilder programBuilder = new StringBuilder();
 
             programBuilder.AppendLine(".data");
             for (int i = 0; i < programStrings.Count; i++) {
-                StringAliases[programStrings[i]] = $"str_{i}";
+                StringLiteralAliases[programStrings[i]] = $"str_{i}";
                 programBuilder.AppendLine($"STRING str_{i} {programStrings[i]}");
             }
             programBuilder.AppendLine(".text");
             programBuilder.AppendLine(VisitStatementBlock(node.StatementNodes));
 
-            // Exit, don't fall into executing a function
+            // Exit, don't fall into a random function
             programBuilder.AppendLine("JMP end");
             
             foreach (dynamic functionNode in node.FunctionNodes) {
@@ -109,6 +115,10 @@ namespace ScriptCompiler.Visitors {
             int idx = _occupiedRegisters.Count;
             _occupiedRegisters.Add(true);
             return new Register(idx, () => _occupiedRegisters[idx] = false);
+        }
+
+        public override string Visit(ASTNode node) {
+            throw new NotImplementedException(node.GetType().Name);
         }
     }
 }

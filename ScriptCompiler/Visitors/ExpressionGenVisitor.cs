@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Text;
 using ScriptCompiler.AST;
+using ScriptCompiler.AST.Statements.Expressions;
+using ScriptCompiler.AST.Statements.Expressions.Arithmetic;
+using ScriptCompiler.CompileUtil;
 
 namespace ScriptCompiler.Visitors {
     // TODO: Abstraction over string
@@ -25,14 +28,14 @@ namespace ScriptCompiler.Visitors {
 
         public (List<string>, Register) Visit(StringLiteralNode node) {
             // TODO: node.Throw()
-            if (!_codeGenVisitor.StringAliases.ContainsKey(node.String)) {
+            if (!_codeGenVisitor.StringLiteralAliases.ContainsKey(node.String)) {
                 throw new ArgumentException();
             }
 
             List<string> commands = new List<string>();
             // Put a pointer to the string into a register
             var register = _codeGenVisitor.GetRegister();
-            commands.Add($"MOV {register} !{_codeGenVisitor.StringAliases[node.String]}");
+            commands.Add($"MOV {register} !{_codeGenVisitor.StringLiteralAliases[node.String]}");
             
             return (commands, register);
         }

@@ -194,8 +194,8 @@ namespace ScriptCompiler.Parsing {
             return $"{this.GetType().Name}<{StringRepresentation()}> [{_line}:{_position}]";
         }
 
-        public void Throw(string message) {
-            throw new CompileException(message, _line, _position);
+        public CompileException CreateException(string message) {
+            return new CompileException(message, _line, _position);
         }
 
         protected abstract string StringRepresentation();

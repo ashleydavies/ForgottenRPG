@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 
-namespace ScriptCompiler.AST {
+namespace ScriptCompiler.AST.Statements {
     public abstract class StatementNode : ASTNode {
         public override List<ASTNode> Children() {
             return new List<ASTNode>();
