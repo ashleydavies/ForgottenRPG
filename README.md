@@ -1,4 +1,4 @@
-# ShaRPG [![Build Status](https://travis-ci.com/ashleydavies/ShaRPG.svg?branch=develop)](https://travis-ci.com/ashleydavies/ShaRPG)
+# ShaRPG [![Build Status](https://travis-ci.com/ashleydavies/Sharpg.svg?branch=develop)](https://travis-ci.com/ashleydavies/Sharpg)
 ShaRPG, or Sharp RPG, is an excellent example of bad puns, and a total re-write of my [unfinished] Java RPG engine, but in C#.
 
 It is not compatible with the data, as many of the XML formats have changed.
