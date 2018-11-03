@@ -45,6 +45,30 @@ namespace ScriptCompilerTests {
             Assert.Equal(_output, new List<string> {"1", "2", "3", "4"});
         }
 
+        [Fact]
+        public void CanPrintVariables() {
+            ExecuteCode("int x = 5; print x;");
+            Assert.Equal(_output, new List<string> {"5"});
+        }
+
+        [Fact]
+        public void CanPrintStringVariables() {
+            ExecuteCode("string x = 'hello'; print x;");
+            Assert.Equal(_output, new List<string> {"hello"});
+        }
+
+        [Fact]
+        public void AccessesCorrectVariable() {
+            ExecuteCode("int x = 5; int y = 6; int z = 8; string bob = 'hello'; print y;");
+            Assert.Equal(_output, new List<string> {"6"});
+        }
+
+        [Fact]
+        public void CanAccessMultipleVariables() {
+            ExecuteCode("int x = 5; int y = 6; int z = 8; string bob = 'hello'; print y + z * x;");
+            Assert.Equal(_output, new List<string> {"46"});
+        }
+        
         private void ExecuteCode(string code) {
             var compiled = new Parser(code).Parse();
             var assembled =
