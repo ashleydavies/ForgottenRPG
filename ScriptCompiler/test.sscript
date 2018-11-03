@@ -1,6 +1,8 @@
 int x = 5;
 int y;
 int z = 6;
+string bob = "hey";
+print bob;
 print x + z + y;
 print "Hello, world";
 
