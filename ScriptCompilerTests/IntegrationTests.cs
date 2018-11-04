@@ -68,6 +68,24 @@ namespace ScriptCompilerTests {
             ExecuteCode("int x = 5; int y = 6; int z = 8; string bob = 'hello'; print y + z * x;");
             Assert.Equal(_output, new List<string> {"46"});
         }
+
+        [Fact]
+        public void CanCallFunctionsWithParameters() {
+            ExecuteCode("function void a(int b) { print b; } a(5);");
+            Assert.Equal(_output, new List<string> {"5"});
+        }
+
+        [Fact]
+        public void CanCallFunctionsWithManyParameters() {
+            ExecuteCode("function void a(int b, string c, int d) { print b * d; print c; } a(10, 'hello', 5);");
+            Assert.Equal(_output, new List<string> {"50", "hello"});
+        }
+
+        [Fact]
+        public void CanCallFunctionsWithManyStackVariables() {
+            ExecuteCode("int z; function void a(int b, string c, int d) { print b * d; print c; } int m = 5; int b; string c; a(10, 'hello', 5);");
+            Assert.Equal(_output, new List<string> {"50", "hello"});
+        }
         
         private void ExecuteCode(string code) {
             var compiled = new Parser(code).Parse();
