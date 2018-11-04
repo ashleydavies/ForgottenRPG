@@ -104,6 +104,7 @@ namespace ScriptCompiler.Parsing {
                         List<ExpressionNode> @params = new List<ExpressionNode>();
                         Expecting<SymbolToken>(t => t.Symbol == "(");
                         
+                        // If we have parameters, parse them
                         while (!PeekMatch<SymbolToken>(t => t.Symbol == ")")) {
                             // Parse parameter expression and include it in the list
                             @params.Add(ParseExpression());
@@ -202,11 +203,22 @@ namespace ScriptCompiler.Parsing {
             Expecting<IdentifierToken>(t => t.Content == "function");
             var typeToken = Expecting<IdentifierToken>();
             var nameToken = Expecting<IdentifierToken>();
-            // TODO: Parse argument lists
             Expecting<SymbolToken>(t => t.Symbol == "(");
+
+            List<(string type, string name)> paramDefinitions = new List<(string type, string name)>();
+            
+            while (!PeekMatch<SymbolToken>(t => t.Symbol == ")")) {
+                // Parse parameter expression and include it in the list
+                var paramType = Expecting<IdentifierToken>();
+                var paramName = Expecting<IdentifierToken>();
+                paramDefinitions.Add((paramType.Content, paramName.Content));
+                if (PeekIgnoreMatch<SymbolToken>(t => t.Symbol == ",")) continue;
+                break;
+            }
+            
             Expecting<SymbolToken>(t => t.Symbol == ")");
             var block = ParseCodeBlock();
-            return new FunctionNode(nameToken.Content, new ExplicitTypeNode(typeToken.Content), block);
+            return new FunctionNode(nameToken.Content, new ExplicitTypeNode(typeToken.Content), block, paramDefinitions);
         }
 
         private CodeBlockNode ParseCodeBlock() {
@@ -243,7 +255,7 @@ namespace ScriptCompiler.Parsing {
         /// the conditional has succeeded.
         /// </summary>
         private bool PeekIgnoreMatch<T>(Func<T, bool> predicate) where T : class {
-            if (PeekMatch<T>(predicate)) {
+            if (PeekMatch(predicate)) {
                 NextToken();
                 return true;
             }
