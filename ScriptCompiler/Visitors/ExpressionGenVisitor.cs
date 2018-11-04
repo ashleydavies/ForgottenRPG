@@ -50,7 +50,7 @@ namespace ScriptCompiler.Visitors {
             
             // reg = Stack - offset to variable
             var (type, offset) = _codeGenVisitor.StackFrame.Lookup(node.Identifier);
-            if (type != SType.SNoType) {
+            if (type == SType.SNoType) {
                 // TODO: Line, col
                 throw new CompileException($"Unexpected variable {node.Identifier}", 0, 0);
             }
