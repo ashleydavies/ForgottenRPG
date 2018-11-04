@@ -101,12 +101,20 @@ namespace ScriptCompiler.Parsing {
                 switch (PeekToken()) {
                     // Function call
                     case SymbolToken s when s.Symbol == "(":
+                        List<ExpressionNode> @params = new List<ExpressionNode>();
                         Expecting<SymbolToken>(t => t.Symbol == "(");
-                        // TODO: Parameter lists
+                        
+                        while (!PeekMatch<SymbolToken>(t => t.Symbol == ")")) {
+                            // Parse parameter expression and include it in the list
+                            @params.Add(ParseExpression());
+                            if (PeekIgnoreMatch<SymbolToken>(t => t.Symbol == ",")) continue;
+                            break;
+                        }
+                        
                         Expecting<SymbolToken>(t => t.Symbol == ")");
                         Expecting<SymbolToken>(t => t.Symbol == ";");
 
-                        return new FunctionCallNode(identifierToken.Content);
+                        return new FunctionCallNode(identifierToken.Content, @params);
                     // Variable declaration
                     case IdentifierToken _:
                         // We assume that identifierToken is now a type
