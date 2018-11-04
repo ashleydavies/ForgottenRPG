@@ -36,7 +36,7 @@
   </object>
  </objectgroup>
  <objectgroup name="Items">
-  <object id="23" name="iron_longsword" x="293" y="240">
+  <object id="23" name="iron_longsword" x="1000" y="200">
    <properties>
     <property name="quantity" type="int" value="1"/>
    </properties>

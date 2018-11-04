@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -43,10 +44,9 @@ namespace ShaRPG.GameState {
                     _inventoryItemContainers[pos] = new SpriteContainer(inventory.ItemStack(pos) != null
                                                                             ? inventory.ItemStack(pos).Item.Texture
                                                                             : new Sprite());
-                    _guiWindow.AddComponent(new FixedContainer(
-                                                xPosition + TileSize / 2 - ItemManager.SpriteSizeX / 2,
-                                                yPosition + TileSize / 2 - ItemManager.SpriteSizeY / 2,
-                                                _inventoryItemContainers[pos]));
+                    _guiWindow.AddComponent(new FixedContainer(xPosition + TileSize / 2 - ItemManager.SpriteSizeX / 2,
+                                                               yPosition + TileSize / 2 - ItemManager.SpriteSizeY / 2,
+                                                               _inventoryItemContainers[pos]));
                 }
             }
 
@@ -62,10 +62,9 @@ namespace ShaRPG.GameState {
                     _guiWindow.AddComponent(new FixedContainer(xPosition, yPosition, slotContainer));
 
                     _nearbyItemContainers[pos] = new SpriteContainer(new Sprite());
-                    _guiWindow.AddComponent(new FixedContainer(
-                                                xPosition + TileSize / 2 - ItemManager.SpriteSizeX / 2,
-                                                yPosition + TileSize / 2 - ItemManager.SpriteSizeY / 2,
-                                                _nearbyItemContainers[pos]));
+                    _guiWindow.AddComponent(new FixedContainer(xPosition + TileSize / 2 - ItemManager.SpriteSizeX / 2,
+                                                               yPosition + TileSize / 2 - ItemManager.SpriteSizeY / 2,
+                                                               _nearbyItemContainers[pos]));
                 }
             }
 
@@ -77,20 +76,27 @@ namespace ShaRPG.GameState {
 
             ItemStack inSlot = _inventory.ItemStack(pos);
 
+            // If there is nothing in the slot and they are not holding an item, we have nothing to do
             if (inSlot == null && _heldItemStack == null) {
                 return;
             }
 
-            if (inSlot == null) {
+            // Otherwise, handle the cases of dropping into an empty slot, dropping into an occupied slot, or collecting
+            //  from an occupied slot.
+            if (_heldItemStack != null && inSlot == null) {
                 _inventory.InsertToSlot(pos, _heldItemStack);
-                _inventoryItemContainers[pos].Sprite = _heldItemStack.Item.Texture;
                 _heldItemStack = null;
                 Game.ShowMouse();
-            } else {
+            } else if (_heldItemStack != null) {
+                var previouslyHeldItem = _heldItemStack;
                 _heldItemStack = _inventory.RemoveFromSlot(pos);
-                _inventoryItemContainers[pos].Sprite = new Sprite();
+                _inventory.InsertToSlot(pos, previouslyHeldItem);
+            } else if (inSlot != null) {
+                _heldItemStack = _inventory.RemoveFromSlot(pos);
                 Game.HideMouse();
             }
+
+            _inventoryItemContainers[pos].Sprite = _inventory.ItemStack(pos)?.Item?.Texture ?? new Sprite();
         }
 
         private void NearbySlotClicked(int pos) {
