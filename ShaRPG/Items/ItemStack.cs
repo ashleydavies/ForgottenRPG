@@ -1,4 +1,6 @@
-﻿namespace ShaRPG.Items {
+﻿using System;
+
+namespace ShaRPG.Items {
     public class ItemStack {
         public readonly IItem Item;
         public int Count { get; private set; }
