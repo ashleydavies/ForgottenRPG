@@ -6,6 +6,7 @@ using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.AST.Statements.Expressions.Arithmetic;
 using ScriptCompiler.CompileUtil;
+using ScriptCompiler.Types;
 
 namespace ScriptCompiler.Visitors {
     // TODO: Abstraction over string
@@ -48,7 +49,11 @@ namespace ScriptCompiler.Visitors {
             instructions.Add($"MOV {register} r1");
             
             // reg = Stack - offset to variable
-            var offset = _codeGenVisitor.StackFrame.Lookup(node.Identifier).position;
+            var (type, offset) = _codeGenVisitor.StackFrame.Lookup(node.Identifier);
+            if (type == SType.SNoType) {
+                // TODO: Line, col
+                throw new CompileException($"Unexpected variable {node.Identifier}", 0, 0);
+            }
             instructions.Add($"ADD {register} {offset}");
             
             // Read from memory into the same register as we are using
