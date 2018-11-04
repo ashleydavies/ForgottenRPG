@@ -17,11 +17,14 @@ namespace ShaRPG.Entity {
         private readonly Dictionary<int, GameEntity> _entities;
         private int _nextId;
         private int _playerId;
+        private bool _fightMode;
+        private Queue<GameEntity> _fightQueue;
 
         public EntityManager(StateGame gameState) {
             _gameState = gameState;
             _nextId = 0;
             _playerId = -1;
+            _fightMode = false;
             _entities = new Dictionary<int, GameEntity>();
         }
 
@@ -69,6 +72,31 @@ namespace ShaRPG.Entity {
                     // Only one entity can be clicked - return once we found it
                     return;
                 }
+            }
+        }
+
+        public void ToggleFightMode() {
+            _fightMode = !_fightMode;
+
+            if (_fightMode) {
+                SetupFightMode();
+            }
+        }
+
+        private void SetupFightMode() {
+            // Set up the fight queue; the player always goes at the front
+            _fightQueue = new Queue<GameEntity>();
+            _fightQueue.Enqueue(_entities[_playerId]);
+            
+            foreach (var kvp in _entities) {
+                int id = kvp.Key;
+                GameEntity entity = kvp.Value;
+                
+                entity.SendMessage<CombatStartMessage>(new CombatStartMessage());
+                
+                if (id == _playerId) continue;
+                
+                _fightQueue.Enqueue(entity);
             }
         }
     }

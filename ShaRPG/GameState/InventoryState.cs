@@ -102,7 +102,6 @@ namespace ShaRPG.GameState {
         private void NearbySlotClicked(int pos) {
             ServiceLocator.LogService.Log(LogType.Information, $"Clicked nearby slot {pos}");
 
-
             if (_heldItemStack != null) {
                 _positionalItemStorage.DropItem(_playerPosition, _heldItemStack);
                 _heldItemStack = null;
