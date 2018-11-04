@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -14,13 +15,12 @@ namespace ScriptCompiler.CompileUtil {
         private readonly StackFrame _parent;
         private readonly Dictionary<string, (SType, int)> _variableTable;
 
-        public StackFrame(StackFrame parent, Dictionary<string, (SType, int)> variableTable) : this(variableTable) {
+        public StackFrame(StackFrame parent) : this() {
             _parent = parent;
         }
 
-        public StackFrame(Dictionary<string, (SType, int)> parent) {
+        public StackFrame() {
             _variableTable = new Dictionary<string, (SType, int)>();
-            Length = 0;
         }
 
         public bool ExistsLocalScope(string identifier) {

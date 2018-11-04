@@ -3,15 +3,15 @@
 namespace ScriptCompiler.AST.Statements.Expressions {
     public class FunctionCallNode : ExpressionNode {
         public readonly string FunctionName;
-        public readonly List<ExpressionNode> Params;
+        public readonly List<ExpressionNode> Args;
 
-        public FunctionCallNode(string functionName, List<ExpressionNode> @params) {
+        public FunctionCallNode(string functionName, List<ExpressionNode> args) {
             FunctionName = functionName;
-            Params = @params;
+            Args = args;
         }
 
         public override List<ASTNode> Children() {
-            return new List<ASTNode>(Params);
+            return new List<ASTNode>(Args);
         }
     }
 }
