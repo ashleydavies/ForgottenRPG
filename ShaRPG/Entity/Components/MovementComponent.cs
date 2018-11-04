@@ -2,7 +2,7 @@
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Entity.Components {
-    public class MovementComponent : AbstractComponent, IMessageHandler<MoveMessage> {
+    public class MovementComponent : AbstractComponent, IMessageHandler<MoveMessage>, IMessageHandler<CombatStartMessage> {
         public GameCoordinate RenderOffset => (GameCoordinate) (_previousPosition - _entity.Position)
                                               * PositionLerpFraction;
 
@@ -36,6 +36,15 @@ namespace ShaRPG.Entity.Components {
 
         public void Message(MoveMessage message) {
             _targetPosition = message.DesiredPosition;
+        }
+
+        public void Message(CombatStartMessage message) {
+            // End movement
+            if (!_targetPosition.Equals(_entity.Position)) {
+                _entity.Position = _pathCreator.GetPath(_entity.Position, _targetPosition)?[0] ?? _entity.Position;
+                _targetPosition = _entity.Position;
+                _positionLerpTime = 0.0f;
+            }
         }
     }
 }

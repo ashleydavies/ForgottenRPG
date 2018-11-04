@@ -21,7 +21,8 @@ namespace ShaRPG.GameState {
         private readonly EntityManager _entityManager;
         private readonly ItemManager _itemManager;
         private readonly ClickManager _clickManager = new ClickManager();
-        private readonly Dictionary<Keyboard.Key, Action<float>> _keyMappings;
+        private readonly Dictionary<Keyboard.Key, (bool repeat, Action<float> action)> _keyMappings;
+        private readonly Dictionary<Keyboard.Key, bool> _lastTime = new Dictionary<Keyboard.Key, bool>();
         private readonly FpsCounter _fpsCounter = new FpsCounter();
         private readonly ITextureStore _textureStore;
         private Vector2f _gameCenter;
@@ -42,19 +43,21 @@ namespace ShaRPG.GameState {
             _clickManager.Register(ClickPriority.Entity, _entityManager);
             _clickManager.Register(ClickPriority.Map, _map);
 
-            _keyMappings = new Dictionary<Keyboard.Key, Action<float>> {
+            _keyMappings = new Dictionary<Keyboard.Key, (bool, Action<float>)> {
                 {
-                    Keyboard.Key.Up, delta => _gameCenter = new Vector2f(_gameCenter.X, _gameCenter.Y - 300 * delta)
+                    Keyboard.Key.Up, (true, delta => _gameCenter = new Vector2f(_gameCenter.X, _gameCenter.Y - 300 * delta))
                 }, {
-                    Keyboard.Key.Down, delta => _gameCenter = new Vector2f(_gameCenter.X, _gameCenter.Y + 300 * delta)
+                    Keyboard.Key.Down, (true, delta => _gameCenter = new Vector2f(_gameCenter.X, _gameCenter.Y + 300 * delta))
                 }, {
-                    Keyboard.Key.Left, delta => _gameCenter = new Vector2f(_gameCenter.X - 300 * delta, _gameCenter.Y)
+                    Keyboard.Key.Left, (true, delta => _gameCenter = new Vector2f(_gameCenter.X - 300 * delta, _gameCenter.Y))
                 }, {
-                    Keyboard.Key.Right, delta => _gameCenter = new Vector2f(_gameCenter.X + 300 * delta, _gameCenter.Y)
+                    Keyboard.Key.Right, (true, delta => _gameCenter = new Vector2f(_gameCenter.X + 300 * delta, _gameCenter.Y))
                 }, {
-                    Keyboard.Key.X, delta => throw new EndGameException()
+                    Keyboard.Key.F, (false, _ => _entityManager.ToggleFightMode())
                 }, {
-                    Keyboard.Key.Tab, delta => OpenInventory()
+                    Keyboard.Key.X, (false, _ => throw new EndGameException())
+                }, {
+                    Keyboard.Key.Tab, (false, _ => OpenInventory())
                 }
             };
 
@@ -68,9 +71,12 @@ namespace ShaRPG.GameState {
 
         public override void Update(float delta) {
             foreach (Keyboard.Key key in _keyMappings.Keys) {
-                if (Keyboard.IsKeyPressed(key)) {
-                    _keyMappings[key](delta);
+                var pressed = Keyboard.IsKeyPressed(key);
+                if (pressed && (_keyMappings[key].repeat || _lastTime.ContainsKey(key) && !_lastTime[key])) {
+                    _keyMappings[key].action(delta);
                 }
+
+                _lastTime[key] = pressed;
             }
 
             _map.Update(delta);
