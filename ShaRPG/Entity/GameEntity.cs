@@ -14,10 +14,11 @@ namespace ShaRPG.Entity {
         private readonly Sprite _sprite;
         private readonly List<IComponent> _components = new List<IComponent>();
         private GameCoordinate RenderPosition => (GameCoordinate) Position + RenderOffset;
-        private GameCoordinate RenderOffset => new GameCoordinate(- _sprite.TextureRect.Width / 2,
+
+        private GameCoordinate RenderOffset => new GameCoordinate(-_sprite.TextureRect.Width / 2,
                                                                   -_sprite.TextureRect.Height + MapTile.Height / 2)
                                                + GetComponent<MovementComponent>()?.RenderOffset;
-        
+
         public GameEntity(IEntityIdAssigner idAssigner, string name, TileCoordinate position, Sprite sprite) {
             Name = name;
             Position = position;
@@ -41,7 +42,7 @@ namespace ShaRPG.Entity {
             renderSurface.Draw(_sprite);
         }
 
-        public void SendMessage<T>(T message) where T: IComponentMessage {
+        public void SendMessage<T>(T message) where T : IComponentMessage {
             _components.OfType<IMessageHandler<T>>().ToList().ForEach(x => x.Message(message));
         }
 

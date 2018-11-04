@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -77,16 +78,25 @@ namespace ShaRPG.GameState {
 
             ItemStack inSlot = _inventory.ItemStack(pos);
 
+            // If there is nothing in the slot and they are not holding an item, we have nothing to do
             if (inSlot == null && _heldItemStack == null) {
                 return;
             }
 
-            if (inSlot == null) {
-                _inventory.InsertToSlot(pos, _heldItemStack);
-                _inventoryItemContainers[pos].Sprite = _heldItemStack.Item.Texture;
-                _heldItemStack = null;
-                Game.ShowMouse();
-            } else {
+            // Otherwise, if the slot is empty then place it in the slot, or swap if it already has an item
+            if (_heldItemStack != null) {
+                if (inSlot == null) {
+                   _inventory.InsertToSlot(pos, _heldItemStack);
+                    _inventoryItemContainers[pos].Sprite = _heldItemStack.Item.Texture;
+                    _heldItemStack = null;
+                    Game.ShowMouse();
+                } else {
+                    var previouslyHeldItem = _heldItemStack;
+                    _heldItemStack = _inventory.RemoveFromSlot(pos);
+                    _inventory.InsertToSlot(pos, previouslyHeldItem);
+                    _inventoryItemContainers[pos].Sprite = previouslyHeldItem.Item.Texture;
+                }
+            } else if (inSlot != null) {
                 _heldItemStack = _inventory.RemoveFromSlot(pos);
                 _inventoryItemContainers[pos].Sprite = new Sprite();
                 Game.HideMouse();
