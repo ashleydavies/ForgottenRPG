@@ -52,12 +52,18 @@ namespace ScriptCompiler.Visitors {
         }
 
         public string Visit(FunctionNode node) {
+            // Set up the stack frame for the function parameters
+            node.ParameterDefinitions.ForEach(p => StackFrame.Pushed(SType.FromTypeString(p.type)));
+            
             var functionBuilder = new StringBuilder();
-
+            
             functionBuilder.AppendLine($"LABEL func_{node.FunctionName}");
             functionBuilder.AppendLine(VisitStatementBlock(node.CodeBlock.Statements));
+            
             // AKA RET
             functionBuilder.AppendLine($"POP r0");
+
+            node.ParameterDefinitions.ForEach(p => StackFrame.Popped(SType.FromTypeString(p.type)));
 
             return functionBuilder.ToString();
         }

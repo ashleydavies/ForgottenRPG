@@ -10,10 +10,11 @@ function void testt() {
     print "Test 2 called!";
 }
 
-function void test(int x, int y) {
+function void test(int m, int n) {
     print "Called a function";
+    print m;
     print 5;
-    print y;
+    print n;
     testt();
 }
 
