@@ -103,7 +103,11 @@ namespace ShaRPG.GameState {
         }
 
         public GameCoordinate TranslateCoordinates(ScreenCoordinate coordinates) {
-            return coordinates.AsGameCoordinate(_renderOffset);
+            // Get the coordinates into the game scaling system
+            coordinates -= new ScreenCoordinate(_windowSize / 2);
+            coordinates /= _scale;
+            coordinates += new ScreenCoordinate(_windowSize / 2);
+            return coordinates.AsGameCoordinate(_renderOffset, _scale);
         }
 
         public void StartDialog(Dialog dialog) {
