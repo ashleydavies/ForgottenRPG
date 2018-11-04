@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
@@ -26,7 +29,7 @@ namespace ScriptCompiler.Visitors {
         /// </summary>
         public string Visit(ProgramNode node) {
             // Set up the initial stack frame
-            StackFrame = new StackFrame(new Dictionary<string, (SType, int)>());
+            StackFrame = new StackFrame();
             List<string> programStrings = new StringLiteralCollectorVisitor().Visit(node);
             
             StringBuilder programBuilder = new StringBuilder();
@@ -53,7 +56,12 @@ namespace ScriptCompiler.Visitors {
 
         public string Visit(FunctionNode node) {
             // Set up the stack frame for the function parameters
-            node.ParameterDefinitions.ForEach(p => StackFrame.Pushed(SType.FromTypeString(p.type)));
+            StackFrame = new StackFrame(null);
+            node.ParameterDefinitions.ForEach(p => StackFrame.AddIdentifier(SType.FromTypeString(p.type), p.name));
+            
+            // TODO: Uncomment when the instruction pointer is stored on the memory stack and not the stack machine
+            // 'Push' the instruction pointer, which is the same length as an integer
+            //StackFrame.Pushed(SType.SInteger);
             
             var functionBuilder = new StringBuilder();
             
@@ -64,7 +72,6 @@ namespace ScriptCompiler.Visitors {
             functionBuilder.AppendLine($"POP r0");
 
             node.ParameterDefinitions.ForEach(p => StackFrame.Popped(SType.FromTypeString(p.type)));
-
             return functionBuilder.ToString();
         }
 
@@ -74,8 +81,27 @@ namespace ScriptCompiler.Visitors {
             // Save the address of where we should return to after the function ends
             var returnLabelNo = _returnLabelCount++;
             functionCallBuilder.AppendLine($"PUSH $return_{returnLabelNo}");
+            
+            // Push each of the parameters
+            foreach (var arg in node.Args) {
+                var (argCommands, argReg) = new ExpressionGenVisitor(this).VisitDynamic(arg);
+                // All arguments are one word big
+                StackFrame.Pushed(SType.SInteger);
+                argCommands.ForEach(c => functionCallBuilder.AppendLine(c));
+                using (argReg) {
+                    // Push the argument onto the stack for the function to use
+                    functionCallBuilder.AppendLine($"MEMWRITE r1 {argReg}");
+                    // Shift the stack up
+                    functionCallBuilder.AppendLine($"ADD r1 1");
+                }
+            }
+            
             functionCallBuilder.AppendLine($"JMP func_{node.FunctionName}");
             functionCallBuilder.AppendLine($"LABEL return_{returnLabelNo}");
+            
+            // Fix the stack
+            foreach (var arg in node.Args) StackFrame.Popped(SType.SInteger);
+            functionCallBuilder.AppendLine($"SUB r1 {node.Args.Count}");
 
             return functionCallBuilder.ToString();
         }
