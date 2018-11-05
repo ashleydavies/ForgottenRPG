@@ -14,7 +14,13 @@ namespace ShaRPG.GUI {
             get => null;
             set => throw new NotImplementedException();
         }
-        public ScreenCoordinate ScreenPosition => new ScreenCoordinate(Position);
+
+        // TODO: Sort out the coordinate mess we have going on here...
+        public ScreenCoordinate ScreenPosition {
+            get => new ScreenCoordinate(Position);
+            set => _center = new Vector2i(value.X, value.Y) + _size / 2;
+        }
+
         public int Width => _size.X;
         public int Height => _size.Y;
 
@@ -22,7 +28,7 @@ namespace ShaRPG.GUI {
         private const int BgTSize = 60;
         private Sprite _backgroundSprite;
         private Vector2i Position => _center - _size / 2;
-        private readonly Vector2i _center;
+        private Vector2i _center;
         private readonly Vector2i _size;
         private readonly List<IGuiComponent> _components = new List<IGuiComponent>();
         private RenderTexture _renderSurface;

@@ -12,6 +12,10 @@ using ShaRPG.Util.Coordinate;
 namespace ShaRPG.GameState {
     public partial class InventoryState : AbstractGameState {
         private readonly GuiWindow _guiWindow;
+        private readonly GuiWindow _tooltipWindow;
+        private readonly TextContainer _tooltipTitle;
+        private readonly SpriteContainer _tooltipSprite;
+        private readonly TextContainer _tooltipText;
         private readonly Inventory _inventory;
         private static readonly Vector2i Size = new Vector2i(WindowSizeX, WindowSizeY);
         private readonly SpriteContainer[] _inventoryItemContainers = new SpriteContainer[Inventory.MaxSize];
@@ -69,6 +73,24 @@ namespace ShaRPG.GameState {
             }
 
             UpdateNearbyItemSprites();
+            
+            _tooltipWindow = new GuiWindow(textureStore, new Vector2i(0, 0), new Vector2i(60 * 5, 60 * 3));
+            {
+                _tooltipTitle = new TextContainer("Title", 32);
+                _tooltipSprite = new SpriteContainer(new Sprite());
+                _tooltipText = new TextContainer("Hello, world", 18);
+                
+                var tooltipSplitBottom = new ColumnContainer(ColumnContainer.Side.Left, 80);
+                tooltipSplitBottom.SetLeftComponent(_tooltipSprite);
+                tooltipSplitBottom.SetRightComponent(_tooltipText);
+                
+                var tooltipSplit = new VerticalFlowContainer();
+                tooltipSplit.AddComponent(_tooltipTitle);
+                tooltipSplit.AddComponent(new PaddingContainer(8, null));
+                tooltipSplit.AddComponent(tooltipSplitBottom);
+                
+                _tooltipWindow.AddComponent(new PaddingContainer(8, tooltipSplit));
+            }
         }
 
         private void SlotClicked(int pos) {
@@ -138,10 +160,33 @@ namespace ShaRPG.GameState {
 
         public override void Render(RenderTarget renderSurface) {
             _guiWindow.Render(renderSurface);
+
+
+            for (var i = 0; i < _inventoryItemContainers.Length; i++) {
+                TryRenderTooltip(renderSurface, _inventoryItemContainers[i], _inventory.ItemStack(i));
+            }
+
+            for (var i = 0; i < _nearbyItemContainers.Length; i++) {
+                if (NearbyItems.Count <= i) break;
+                TryRenderTooltip(renderSurface, _nearbyItemContainers[i], NearbyItems[i]);
+            }
+
             if (_heldItemStack != null) {
                 renderSurface.Draw(new Sprite(_heldItemStack.Item.Texture) {
                     Position = Game.MousePosition - new ScreenCoordinate(ItemManager.SpriteSize) / 2
                 });
+            }
+        }
+
+        private void TryRenderTooltip(RenderTarget renderSurface, SpriteContainer slot, ItemStack itemStack) {
+            if (slot.IsMouseOver(new ScreenCoordinate(Mouse.GetPosition()))) {
+                _tooltipTitle.Contents = itemStack.Item.DisplayName;
+                _tooltipText.Contents = itemStack.Item.Description;
+                // TODO: Can this be converted to a render matrix in SpriteContainer or something?
+                _tooltipSprite.Sprite = new Sprite(itemStack.Item.Texture) { Scale = new Vector2f(2, 2) };
+
+                _tooltipWindow.ScreenPosition = new ScreenCoordinate(Mouse.GetPosition() + new Vector2i(32, 32));
+                _tooltipWindow.Render(renderSurface);
             }
         }
 
