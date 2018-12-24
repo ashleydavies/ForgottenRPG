@@ -46,9 +46,13 @@ namespace ShaRPG.Entity {
         public void Update(float delta) {
             if (_fightMode) {
                 // The queue should never be empty as it should at least contain the player
-                var gameEntity = _combatQueue.Dequeue();
+                var gameEntity = _combatQueue.Peek();
                 gameEntity.Update(delta);
-                _combatQueue.Enqueue(gameEntity);
+                
+                if (gameEntity.GetComponent<CombatManagementComponent>().Ap <= 0) {
+                    gameEntity.SendMessage(new TurnEndedMessage());
+                    _combatQueue.Enqueue(_combatQueue.Dequeue());   
+                }
                 return;
             }
             

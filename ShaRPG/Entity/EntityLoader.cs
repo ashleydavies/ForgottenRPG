@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -43,6 +44,7 @@ namespace ShaRPG.Entity {
             XElement dialogElem = entityInformation.Elements("Dialog").FirstOrDefault();
             GameEntity entity = new GameEntity(_idAssigner, name, position, _textureStore.GetNewSprite(spriteName));
             entity.AddComponent(new HealthComponent(entity, health));
+            entity.AddComponent(new CombatManagementComponent(entity, 8));
             entity.AddComponent(new MovementComponent(entity, map));
             entity.AddComponent(new InventoryComponent(entity));
             if (path.Count > 0) entity.AddComponent(new PathFollowingComponent(entity, path));

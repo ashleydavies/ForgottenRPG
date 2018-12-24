@@ -32,6 +32,8 @@ namespace ShaRPG.GameState {
 
         public StateGame(Game game, Vector2f size, ITextureStore textureStore, MapTileStore mapTileStore,
                          ItemManager itemManager) : base(game) {
+            _windowSize = size;
+            _textureStore = textureStore;
             _itemManager = itemManager;
             _entityManager = new EntityManager(this);
             _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, textureStore);
@@ -87,9 +89,9 @@ namespace ShaRPG.GameState {
         }
 
         public override void Render(RenderTarget renderSurface) {
-            // TODO: Don't hard-code this fix
+            // TODO: Don't hard-code this
             if (renderSurface.Size.X > 2000) {
-                _scale = 2;
+                _scale = 1.5f;
             }
 
             renderSurface.WithView(new View(_gameCenter, _windowSize / _scale), () => {
@@ -108,7 +110,7 @@ namespace ShaRPG.GameState {
         }
 
         public void MovePlayer(TileCoordinate destination) {
-            _player.SendMessage(new MoveMessage(destination));
+            _player.SendMessage(new DestinationMessage(destination));
         }
 
         public void ExitGame() {

@@ -1,8 +1,10 @@
-﻿using ShaRPG.Map;
+﻿using System;
+using ShaRPG.Map;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Entity.Components {
-    public class MovementComponent : AbstractComponent, IMessageHandler<MoveMessage>, IMessageHandler<CombatStartMessage> {
+    public class MovementComponent : AbstractComponent, IMessageHandler<DestinationMessage>,
+                                     IMessageHandler<CombatStartMessage>, IMessageHandler<TurnEndedMessage> {
         public GameCoordinate RenderOffset => (GameCoordinate) (_previousPosition - _entity.Position)
                                               * PositionLerpFraction;
 
@@ -29,15 +31,16 @@ namespace ShaRPG.Entity.Components {
                     _previousPosition = _entity.Position;
                     _entity.Position = _pathCreator.GetPath(_entity.Position, _targetPosition)?[0] ?? _entity.Position;
                     _positionLerpTime = TotalPositionLerpTime;
+                    SendMessage(new MoveMessage(_previousPosition, _entity.Position));
                 } else {
                     _positionLerpTime -= delta;
                 }
             }
-            
+
             if (_positionLerpTime < 0) _positionLerpTime = 0.0f;
         }
 
-        public void Message(MoveMessage message) {
+        public void Message(DestinationMessage message) {
             _targetPosition = message.DesiredPosition;
         }
 
@@ -48,6 +51,11 @@ namespace ShaRPG.Entity.Components {
                 _targetPosition = _entity.Position;
                 _positionLerpTime = 0.0f;
             }
+        }
+
+        // TODO: Determine why entities continue walking for one tile after finishing movement in combat mode
+        public void Message(TurnEndedMessage message) {
+            _targetPosition = _entity.Position;
         }
     }
 }
