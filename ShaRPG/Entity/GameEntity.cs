@@ -31,6 +31,7 @@ namespace ShaRPG.Entity {
         public void AddComponent(IComponent component) => _components.Add(component);
         public void AddComponents(params IComponent[] components) => components.ToList().ForEach(AddComponent);
         public T GetComponent<T>() where T : class, IComponent => _components.OfType<T>().FirstOrDefault();
+        public List<IComponent> GetComponents() => _components;
 
         public void Update(float delta) {
             _components.ForEach(x => x.Update(delta));
