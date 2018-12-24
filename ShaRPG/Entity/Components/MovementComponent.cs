@@ -16,6 +16,9 @@ namespace ShaRPG.Entity.Components {
 
 
         public MovementComponent(GameEntity entity, IPathCreator pathCreator) : base(entity) {
+            // An entity cannot move if it does not know how to handle its movement in combat mode (importantly, this
+            //   does not imply that it can fight.)
+            Dependency<CombatManagementComponent>();
             _pathCreator = pathCreator;
             _targetPosition = _previousPosition = entity.Position;
         }
@@ -39,7 +42,7 @@ namespace ShaRPG.Entity.Components {
         }
 
         public void Message(CombatStartMessage message) {
-            // End movement
+            // End movement lerping
             if (!_targetPosition.Equals(_entity.Position)) {
                 _entity.Position = _pathCreator.GetPath(_entity.Position, _targetPosition)?[0] ?? _entity.Position;
                 _targetPosition = _entity.Position;
