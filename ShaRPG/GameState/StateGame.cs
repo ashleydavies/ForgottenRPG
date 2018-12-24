@@ -32,8 +32,6 @@ namespace ShaRPG.GameState {
 
         public StateGame(Game game, Vector2f size, ITextureStore textureStore, MapTileStore mapTileStore,
                          ItemManager itemManager) : base(game) {
-            _windowSize = size;
-            _textureStore = textureStore;
             _itemManager = itemManager;
             _entityManager = new EntityManager(this);
             _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, textureStore);
@@ -45,13 +43,17 @@ namespace ShaRPG.GameState {
 
             _keyMappings = new Dictionary<Keyboard.Key, (bool, Action<float>)> {
                 {
-                    Keyboard.Key.Up, (true, delta => _gameCenter = new Vector2f(_gameCenter.X, _gameCenter.Y - 300 * delta))
+                    Keyboard.Key.Up,
+                    (true, delta => _gameCenter = new Vector2f(_gameCenter.X, _gameCenter.Y - 300 * delta))
                 }, {
-                    Keyboard.Key.Down, (true, delta => _gameCenter = new Vector2f(_gameCenter.X, _gameCenter.Y + 300 * delta))
+                    Keyboard.Key.Down,
+                    (true, delta => _gameCenter = new Vector2f(_gameCenter.X, _gameCenter.Y + 300 * delta))
                 }, {
-                    Keyboard.Key.Left, (true, delta => _gameCenter = new Vector2f(_gameCenter.X - 300 * delta, _gameCenter.Y))
+                    Keyboard.Key.Left,
+                    (true, delta => _gameCenter = new Vector2f(_gameCenter.X - 300 * delta, _gameCenter.Y))
                 }, {
-                    Keyboard.Key.Right, (true, delta => _gameCenter = new Vector2f(_gameCenter.X + 300 * delta, _gameCenter.Y))
+                    Keyboard.Key.Right,
+                    (true, delta => _gameCenter = new Vector2f(_gameCenter.X + 300 * delta, _gameCenter.Y))
                 }, {
                     Keyboard.Key.F, (false, _ => _entityManager.ToggleFightMode())
                 }, {
@@ -85,6 +87,11 @@ namespace ShaRPG.GameState {
         }
 
         public override void Render(RenderTarget renderSurface) {
+            // TODO: Don't hard-code this fix
+            if (renderSurface.Size.X > 2000) {
+                _scale = 2;
+            }
+
             renderSurface.WithView(new View(_gameCenter, _windowSize / _scale), () => {
                 _map.Render(renderSurface);
                 _entityManager.Render(renderSurface);

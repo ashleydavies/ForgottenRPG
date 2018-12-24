@@ -18,7 +18,7 @@ namespace ShaRPG.Entity {
         private int _nextId;
         private int _playerId;
         private bool _fightMode;
-        private Queue<GameEntity> _fightQueue;
+        private Queue<GameEntity> _combatQueue;
 
         public EntityManager(StateGame gameState) {
             _gameState = gameState;
@@ -44,6 +44,14 @@ namespace ShaRPG.Entity {
         }
 
         public void Update(float delta) {
+            if (_fightMode) {
+                // The queue should never be empty as it should at least contain the player
+                var gameEntity = _combatQueue.Dequeue();
+                gameEntity.Update(delta);
+                _combatQueue.Enqueue(gameEntity);
+                return;
+            }
+            
             foreach (GameEntity e in _entities.Values) {
                 e.Update(delta);
             }
@@ -79,24 +87,24 @@ namespace ShaRPG.Entity {
             _fightMode = !_fightMode;
 
             if (_fightMode) {
-                SetupFightMode();
+                SetupCombatMode();
             }
         }
 
-        private void SetupFightMode() {
+        private void SetupCombatMode() {
             // Set up the fight queue; the player always goes at the front
-            _fightQueue = new Queue<GameEntity>();
-            _fightQueue.Enqueue(_entities[_playerId]);
+            _combatQueue = new Queue<GameEntity>();
+            _combatQueue.Enqueue(_entities[_playerId]);
             
             foreach (var kvp in _entities) {
                 int id = kvp.Key;
                 GameEntity entity = kvp.Value;
                 
-                entity.SendMessage<CombatStartMessage>(new CombatStartMessage());
+                entity.SendMessage(new CombatStartMessage());
                 
                 if (id == _playerId) continue;
                 
-                _fightQueue.Enqueue(entity);
+                _combatQueue.Enqueue(entity);
             }
         }
     }
