@@ -6,31 +6,25 @@ namespace ShaRPG.Entity.Components {
     /// Mainly, it maintains the current and max AP of the entity and allows other components to query the current AP
     ///   and make changes to it (e.g. the move component decreases it each step).
     /// </summary>
-    public class CombatManagementComponent : AbstractComponent, IMessageHandler<CombatStartMessage>,
-                                             IMessageHandler<TurnEndedMessage>, IMessageHandler<MoveMessage> {
+    public class CombatManagementComponent : AbstractComponent,
+                                             IMessageHandler<TurnStartedMessage>, IMessageHandler<MovedMessage> {
         public int MaxAp { get; }
         public int Ap { get; private set; }
 
         public CombatManagementComponent(GameEntity entity, int ap) : base(entity) {
-            MaxAp = Ap = ap;
+            MaxAp = ap;
+            Ap = 0;
         }
 
-        public void Message(CombatStartMessage message) {
-            ResetAp();
-        }
-
-        public void Message(TurnEndedMessage message) {
-            ResetAp();
-        }
-
-        public void Message(MoveMessage message) {
+        public void Message(MovedMessage message) {
             Ap--;
         }
-
-        private void ResetAp() {
+        
+        // At the start of the turn, we get maximum AP
+        public void Message(TurnStartedMessage message) {
             Ap = MaxAp;
         }
-
+        
         public override void Update(float delta) { }
     }
 }

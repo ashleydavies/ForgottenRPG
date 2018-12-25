@@ -12,12 +12,12 @@ using ShaRPG.Util.Coordinate;
 namespace ShaRPG.Entity {
     public class EntityLoader {
         private readonly string _directory;
-        private readonly IEntityIdAssigner _idAssigner;
+        private readonly EntityManager _entityManager;
         private readonly ITextureStore _textureStore;
 
-        public EntityLoader(string directory, IEntityIdAssigner idAssigner, ITextureStore textureStore) {
+        public EntityLoader(string directory, EntityManager entityManager, ITextureStore textureStore) {
             _directory = directory;
-            _idAssigner = idAssigner;
+            _entityManager = entityManager;
             _textureStore = textureStore;
         }
 
@@ -42,7 +42,7 @@ namespace ShaRPG.Entity {
             }
 
             XElement dialogElem = entityInformation.Elements("Dialog").FirstOrDefault();
-            GameEntity entity = new GameEntity(_idAssigner, name, position, _textureStore.GetNewSprite(spriteName));
+            GameEntity entity = new GameEntity(_entityManager, name, position, _textureStore.GetNewSprite(spriteName));
             entity.AddComponent(new HealthComponent(entity, health));
             entity.AddComponent(new CombatManagementComponent(entity, 8));
             entity.AddComponent(new MovementComponent(entity, map));

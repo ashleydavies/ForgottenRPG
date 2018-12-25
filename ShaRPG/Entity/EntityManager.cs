@@ -8,7 +8,8 @@ using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Entity {
-    internal class EntityManager : IEntityIdAssigner, IClickObserver {
+    public class EntityManager : IClickObserver {
+        public bool FightMode { get; private set; }
         public GameEntity Player => _playerId >= 0
                                         ? _entities[_playerId]
                                         : throw new EntityException("Unable to determine player - ID not set");
@@ -17,14 +18,13 @@ namespace ShaRPG.Entity {
         private readonly Dictionary<int, GameEntity> _entities;
         private int _nextId;
         private int _playerId;
-        private bool _fightMode;
         private Queue<GameEntity> _combatQueue;
 
         public EntityManager(StateGame gameState) {
             _gameState = gameState;
             _nextId = 0;
             _playerId = -1;
-            _fightMode = false;
+            FightMode = false;
             _entities = new Dictionary<int, GameEntity>();
         }
 
@@ -44,16 +44,13 @@ namespace ShaRPG.Entity {
         }
 
         public void Update(float delta) {
-            if (_fightMode) {
-                // The queue should never be empty as it should at least contain the player
-                var gameEntity = _combatQueue.Peek();
-                gameEntity.Update(delta);
+            // The queue should never be empty as it should at least contain the player
+            if (FightMode && _combatQueue.Peek().ActionBlocked()) {
+                var gameEntity = _combatQueue.Dequeue();
                 
-                if (gameEntity.GetComponent<CombatManagementComponent>().Ap <= 0) {
-                    gameEntity.SendMessage(new TurnEndedMessage());
-                    _combatQueue.Enqueue(_combatQueue.Dequeue());   
-                }
-                return;
+                gameEntity.SendMessage(new TurnEndedMessage());
+                _combatQueue.Enqueue(gameEntity);   
+                _combatQueue.Peek().SendMessage(new TurnStartedMessage());
             }
             
             foreach (GameEntity e in _entities.Values) {
@@ -88,9 +85,9 @@ namespace ShaRPG.Entity {
         }
 
         public void ToggleFightMode() {
-            _fightMode = !_fightMode;
+            FightMode = !FightMode;
 
-            if (_fightMode) {
+            if (FightMode) {
                 SetupCombatMode();
             }
         }
@@ -110,6 +107,9 @@ namespace ShaRPG.Entity {
                 
                 _combatQueue.Enqueue(entity);
             }
+            
+            // Start the turn for the first entity in the queue
+            _combatQueue.Peek().SendMessage(new TurnStartedMessage());
         }
     }
 }
