@@ -11,19 +11,24 @@ namespace ShaRPG.Entity {
         public string Name { get; }
         public int Id { get; }
         public TileCoordinate Position { get; set; }
+        public bool ActionBlocked() => _manager.FightMode && GetComponent<CombatManagementComponent>().Ap <= 0;
+        
         private readonly Sprite _sprite;
         private readonly List<IComponent> _components = new List<IComponent>();
+        private EntityManager _manager;
+
         private GameCoordinate RenderPosition => (GameCoordinate) Position + RenderOffset;
 
         private GameCoordinate RenderOffset => new GameCoordinate(-_sprite.TextureRect.Width / 2,
                                                                   -_sprite.TextureRect.Height + MapTile.Height / 2)
                                                + GetComponent<MovementComponent>()?.RenderOffset;
 
-        public GameEntity(IEntityIdAssigner idAssigner, string name, TileCoordinate position, Sprite sprite) {
+        public GameEntity(EntityManager manager, string name, TileCoordinate position, Sprite sprite) {
             Name = name;
             Position = position;
             _sprite = sprite;
-            Id = idAssigner.GetNextId(this);
+            _manager = manager;
+            Id = manager.GetNextId(this);
 
             ServiceLocator.LogService.Log(LogType.Information, $"Entity {name} spawned at {Position}");
         }
