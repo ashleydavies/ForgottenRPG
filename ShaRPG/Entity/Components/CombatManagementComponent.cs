@@ -7,7 +7,8 @@ namespace ShaRPG.Entity.Components {
     ///   and make changes to it (e.g. the move component decreases it each step).
     /// </summary>
     public class CombatManagementComponent : AbstractComponent,
-                                             IMessageHandler<TurnStartedMessage>, IMessageHandler<MovedMessage> {
+                                             IMessageHandler<TurnStartedMessage>, IMessageHandler<MovedMessage>,
+    IMessageHandler<SkipTurnMessage> {
         public int MaxAp { get; }
         public int Ap { get; private set; }
 
@@ -23,6 +24,11 @@ namespace ShaRPG.Entity.Components {
         // At the start of the turn, we get maximum AP
         public void Message(TurnStartedMessage message) {
             Ap = MaxAp;
+        }
+        
+        // If we want to skip a turn, just set AP to zero and it will get naturally handled in the next update
+        public void Message(SkipTurnMessage message) {
+            Ap = 0;
         }
         
         public override void Update(float delta) { }

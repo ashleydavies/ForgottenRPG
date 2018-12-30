@@ -111,5 +111,10 @@ namespace ShaRPG.Entity {
             // Start the turn for the first entity in the queue
             _combatQueue.Peek().SendMessage(new TurnStartedMessage());
         }
+
+        public void TrySkipTurn() {
+            if (!FightMode || _combatQueue.Peek() != Player) return;
+            Player.SendMessage(new SkipTurnMessage());
+        }
     }
 }
