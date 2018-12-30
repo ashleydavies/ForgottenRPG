@@ -35,9 +35,8 @@ namespace ShaRPG.Entity {
             string avatar = entityInformation?.Attribute("avatar")?.Value;
             string healthString = entityInformation?.Attribute("maxHealth")?.Value;
             string spriteName = entityInformation?.Element("EntityTextureInformation")?.Attribute("name")?.Value;
-            int health;
 
-            if (spriteName == null || name == null || avatar == null || !int.TryParse(healthString, out health)) {
+            if (spriteName == null || name == null || avatar == null || !int.TryParse(healthString, out var health)) {
                 throw new EntityException($"Unable to load entity {fileName}");
             }
 

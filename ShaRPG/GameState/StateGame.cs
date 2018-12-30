@@ -62,6 +62,8 @@ namespace ShaRPG.GameState {
                     Keyboard.Key.X, (false, _ => throw new EndGameException())
                 }, {
                     Keyboard.Key.Tab, (false, _ => OpenInventory())
+                }, {
+                    Keyboard.Key.Space, (false, _ => _entityManager.TrySkipTurn())
                 }
             };
 
@@ -91,7 +93,7 @@ namespace ShaRPG.GameState {
         public override void Render(RenderTarget renderSurface) {
             // TODO: Don't hard-code this
             if (renderSurface.Size.X > 2000) {
-                _scale = 1.5f;
+                //_scale = 1.5f;
             }
 
             renderSurface.WithView(new View(_gameCenter, _windowSize / _scale), () => {
