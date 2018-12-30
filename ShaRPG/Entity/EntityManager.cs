@@ -97,10 +97,7 @@ namespace ShaRPG.Entity {
             _combatQueue = new Queue<GameEntity>();
             _combatQueue.Enqueue(_entities[_playerId]);
             
-            foreach (var kvp in _entities) {
-                int id = kvp.Key;
-                GameEntity entity = kvp.Value;
-                
+            foreach (var (id, entity) in _entities) {
                 entity.SendMessage(new CombatStartMessage());
                 
                 if (id == _playerId) continue;
