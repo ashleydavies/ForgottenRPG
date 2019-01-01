@@ -65,9 +65,8 @@ namespace ShaRPG.Entity {
         }
 
         public bool IsMouseOver(ScreenCoordinate coordinates) {
-            return _entities.Values.Aggregate(
-                false,
-                (over, e) => over | e.MouseOver(_gameState.TranslateCoordinates(coordinates))
+            return _entities.Values.Any(
+                e => e.MouseOver(_gameState.TranslateCoordinates(coordinates))
             );
         }
 
@@ -84,7 +83,10 @@ namespace ShaRPG.Entity {
             }
         }
 
-        public void ToggleFightMode() {
+        // We can only toggle fight mode if the player is in control
+        public void TryToggleFightMode() {
+            if (FightMode && _combatQueue.Peek() != Player) return;
+            
             FightMode = !FightMode;
 
             if (FightMode) {
