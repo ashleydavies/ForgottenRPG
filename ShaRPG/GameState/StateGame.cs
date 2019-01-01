@@ -57,7 +57,7 @@ namespace ShaRPG.GameState {
                     Keyboard.Key.Right,
                     (true, delta => _gameCenter = new Vector2f(_gameCenter.X + 300 * delta, _gameCenter.Y))
                 }, {
-                    Keyboard.Key.F, (false, _ => _entityManager.ToggleFightMode())
+                    Keyboard.Key.F, (false, _ => _entityManager.TryToggleFightMode())
                 }, {
                     Keyboard.Key.X, (false, _ => throw new EndGameException())
                 }, {
