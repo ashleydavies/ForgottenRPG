@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net.Security;
+using System.Reflection.Metadata;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
@@ -42,6 +44,10 @@ namespace ScriptCompiler.Parsing {
         private readonly List<InfixParseRule>
             _infixExpressionParseTable;
 
+        public static Parser FromFile(string filename) {
+            return new Parser(File.ReadAllText(filename + ".sscript"));
+        }
+
         public Parser(string contents) {
             _contents = contents;
 
@@ -60,22 +66,33 @@ namespace ScriptCompiler.Parsing {
             };
         }
 
-        public string Parse() {
+        public string Compile() {
+            return new CodeGenVisitor().Visit(Parse());
+        }
+
+        public ProgramNode Parse() {
             _lexer = new Lexer(_contents);
-            dynamic ast = ParseProgram();
-            return new CodeGenVisitor().Visit(ast);
+            return ParseProgram();
         }
 
         private ProgramNode ParseProgram() {
             var functions = new List<FunctionNode>();
             var statements = new List<StatementNode>();
+            var imports = new List<ImportNode>();
+            
+            var importProcessing = true;
 
             while (_cachedToken != null || _lexer.HasMore() && PeekToken() != null) {
                 var token = PeekToken();
 
+                importProcessing = importProcessing && (token is IdentifierToken exToken && exToken.Content == "import");
+
                 switch (token) {
                     case IdentifierToken itok when itok.Content == "func":
                         functions.Add(ParseFunctionNode());
+                        break;
+                    case IdentifierToken itok when itok.Content == "import" && importProcessing:
+                        imports.Add(ParseImportStatementNode());
                         break;
                     default:
                         statements.Add(ParseStatementNode());
@@ -83,7 +100,7 @@ namespace ScriptCompiler.Parsing {
                 }
             }
 
-            return new ProgramNode(functions, statements);
+            return new ProgramNode(imports, functions, statements);
         }
 
         private StatementNode ParseStatementNode() {
@@ -199,6 +216,11 @@ namespace ScriptCompiler.Parsing {
             return new PrintStatementNode(ParseExpression());
         }
 
+        private ImportNode ParseImportStatementNode() {
+            Expecting<IdentifierToken>(t => t.Content == "import");
+            return new ImportNode(Expecting<StringToken>().Content);
+        }
+
         private FunctionNode ParseFunctionNode() {
             Expecting<IdentifierToken>(t => t.Content == "func");
             var typeToken = Expecting<IdentifierToken>();
@@ -237,15 +259,14 @@ namespace ScriptCompiler.Parsing {
         private T Expecting<T>(Func<T, bool> predicate = null) where T : class {
             LexToken token = NextToken();
 
-            if (token is T tToken) {
-                if (predicate != null && !predicate(tToken)) {
-                    throw token.CreateException($"Token '{token}' did not satisfy expected condition");
-                }
-
-                return tToken;
+            if (!(token is T tToken))
+                throw token.CreateException($"Unexpected token '{token}' (expecting {typeof(T)})");
+            
+            if (predicate != null && !predicate(tToken)) {
+                throw token.CreateException($"Token '{token}' did not satisfy expected condition");
             }
 
-            throw token.CreateException($"Unexpected token '{token}' (expecting {typeof(T)})");
+            return tToken;
         }
 
         /// <summary>
