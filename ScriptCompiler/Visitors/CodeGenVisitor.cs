@@ -3,15 +3,18 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.Design;
+using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Text;
 using System.Threading;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.CompileUtil;
+using ScriptCompiler.Parsing;
 using ScriptCompiler.Types;
 
 namespace ScriptCompiler.Visitors {
@@ -30,7 +33,9 @@ namespace ScriptCompiler.Visitors {
         public string Visit(ProgramNode node) {
             // Set up the initial stack frame
             StackFrame = new StackFrame();
+            List<ProgramNode> importedFiles = node.ImportNodes.Select(f => Parser.FromFile(f.FileName).Parse()).ToList();
             List<string> programStrings = new StringLiteralCollectorVisitor().Visit(node);
+            importedFiles.ForEach(p => programStrings.AddRange(new StringLiteralCollectorVisitor().Visit(p)));
             
             StringBuilder programBuilder = new StringBuilder();
 
@@ -46,6 +51,14 @@ namespace ScriptCompiler.Visitors {
             
             foreach (dynamic functionNode in node.FunctionNodes) {
                 programBuilder.AppendLine(this.Visit(functionNode));
+            }
+
+            foreach (ImportNode importNode in node.ImportNodes) {
+                Console.WriteLine($"Importing #{importNode.FileName}");
+                var functionNodes = Parser.FromFile(importNode.FileName).Parse().FunctionNodes;
+                foreach (dynamic functionNode in functionNodes) {
+                    programBuilder.AppendLine(Visit(functionNode));
+                }
             }
 
             programBuilder.AppendLine("LABEL end");
