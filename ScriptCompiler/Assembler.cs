@@ -43,6 +43,13 @@ namespace ScriptCompiler {
         }
 
         private void Process() {
+            // Remove comments
+            for (int i = 0; i < _lines.Count; i++) {
+                if (_lines[i].Contains('#')) {
+                    _lines[i] = _lines[i].Substring(0, _lines[i].IndexOf('#')).Trim();
+                }
+            }
+            
             foreach (string line in _lines) {
                 if (line.Length == 0) continue;
                 string[] components = line.Split(' ').Select(x => x.ToLower()).ToArray();

@@ -44,11 +44,10 @@ namespace ScriptCompiler.Visitors {
                 StringLiteralAliases[programStrings[i]] = $"str_{i}";
                 programBuilder.AppendLine($"STRING str_{i} {programStrings[i]}");
             }
-            programBuilder.AppendLine(".text");
+            programBuilder.AppendLine(Comment(".text", "Begin code"));
             programBuilder.AppendLine(VisitStatementBlock(node.StatementNodes));
-
             // Exit, don't fall into a random function
-            programBuilder.AppendLine("JMP end");
+            programBuilder.AppendLine(Comment("JMP end", "Standard termination"));
             
             foreach (dynamic functionNode in node.FunctionNodes) {
                 programBuilder.AppendLine(this.Visit(functionNode));
@@ -66,7 +65,7 @@ namespace ScriptCompiler.Visitors {
 
             return programBuilder.ToString();
         }
-
+        
         public string Visit(FunctionNode node) {
             // Set up the stack frame for the function parameters
             StackFrame = new StackFrame(null);
@@ -173,9 +172,9 @@ namespace ScriptCompiler.Visitors {
                 // There are different print instructions depending on the type of the thing we are printing
                 var type = new TypeDeterminationVisitor(this).VisitDynamic(node.Expression);
 
-                if (type == SType.SString) {
+                if (ReferenceEquals(type, SType.SString)) {
                     builder.AppendLine($"PRINT {register}");
-                } else if (type == SType.SInteger) {
+                } else if (ReferenceEquals(type, SType.SInteger)) {
                     builder.AppendLine($"PRINTINT {register}");
                 }
             }
@@ -208,6 +207,10 @@ namespace ScriptCompiler.Visitors {
 
         public override string Visit(ASTNode node) {
             throw new NotImplementedException(node.GetType().Name);
+        }
+
+        public static string Comment(string test, string comment) {
+            return test.PadRight(40) + "# " + comment;
         }
     }
 }
