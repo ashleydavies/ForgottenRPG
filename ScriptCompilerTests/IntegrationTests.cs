@@ -88,7 +88,7 @@ namespace ScriptCompilerTests {
         }
         
         private void ExecuteCode(string code) {
-            var compiled = new Parser(code).Parse();
+            var compiled = new Parser(code).Compile();
             var assembled =
                 new Assembler(compiled.Split(new[] {Environment.NewLine}, StringSplitOptions.None).ToList()).Compile();
             var bytecodeString = string.Join(",", assembled);

@@ -18,7 +18,7 @@ namespace ScriptCompiler {
             }
             
             if (args[0] == "compile") {
-                Console.WriteLine(new Parser(File.ReadAllText(fileName + ".sscript")).Parse());
+                Console.WriteLine(Parser.FromFile(fileName).Compile());
             } else if (args[0] == "assemble") {
                 List<string> compiled = new Assembler(File.ReadLines(fileName + ".shascr").ToList()).Compile();
 
@@ -34,7 +34,7 @@ namespace ScriptCompiler {
                 ScriptVM scriptVm = new ScriptVM(bytecode);
                 scriptVm.Execute();
             } else if (args[0] == "execute") {
-                var compiled = new Parser(File.ReadAllText(fileName + ".sscript")).Parse();
+                var compiled = Parser.FromFile(fileName).Compile();
                 Console.WriteLine("Compiled code:");
                 Console.WriteLine(compiled);
 

@@ -13,6 +13,7 @@ namespace ScriptCompilerTests {
         public void ExtractsCorrectString() {
             var result = new StringLiteralCollectorVisitor().Visit(
                 new ProgramNode(
+                    new List<ImportNode>(),
                     new List<FunctionNode> {
                         new FunctionNode("test", new ExplicitTypeNode("void"), new CodeBlockNode(
                             new List<StatementNode> {
