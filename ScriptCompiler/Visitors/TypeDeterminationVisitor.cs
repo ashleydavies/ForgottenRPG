@@ -36,7 +36,7 @@ namespace ScriptCompiler.Visitors {
             var typeL = VisitDynamic(_.Left);
             var typeR = VisitDynamic(_.Right);
 
-            if (typeL == typeR) {
+            if (ReferenceEquals(typeL, typeR)) {
                 return typeL;
             }
             
