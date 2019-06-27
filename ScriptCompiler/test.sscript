@@ -1,10 +1,10 @@
-function void recursionTest(string a) {
+func void recursionTest(string a) {
     print "Test 2 called!";
     print a;
 }
 
-function void testingFunction(int a, string b, int c, string d) {
-    print "Called the testing function";
+func void testingFunction(int a, string b, int c, string d) {
+    print "Called the testing func";
     recursionTest(b);
     print a + c;
     print d;

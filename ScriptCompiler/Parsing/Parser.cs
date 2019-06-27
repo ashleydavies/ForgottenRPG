@@ -74,7 +74,7 @@ namespace ScriptCompiler.Parsing {
                 var token = PeekToken();
 
                 switch (token) {
-                    case IdentifierToken itok when itok.Content == "function":
+                    case IdentifierToken itok when itok.Content == "func":
                         functions.Add(ParseFunctionNode());
                         break;
                     default:
@@ -200,7 +200,7 @@ namespace ScriptCompiler.Parsing {
         }
 
         private FunctionNode ParseFunctionNode() {
-            Expecting<IdentifierToken>(t => t.Content == "function");
+            Expecting<IdentifierToken>(t => t.Content == "func");
             var typeToken = Expecting<IdentifierToken>();
             var nameToken = Expecting<IdentifierToken>();
             Expecting<SymbolToken>(t => t.Symbol == "(");
