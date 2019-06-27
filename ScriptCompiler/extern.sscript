@@ -1,0 +1,4 @@
+func void externFunction(string a) {
+    print "Extern function called!";
+    print a;
+}
