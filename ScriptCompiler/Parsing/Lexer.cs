@@ -232,6 +232,10 @@ namespace ScriptCompiler.Parsing {
             Content = content;
         }
 
+        public void Deconstruct(out string content) {
+            content = Content;
+        }
+
         protected override string StringRepresentation() {
             return Content;
         }

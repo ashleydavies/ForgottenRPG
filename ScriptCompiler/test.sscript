@@ -30,7 +30,15 @@ func void testingFunction(int a, string b, int c, string d) {
     print d;
 }
 
-int x = 5;
+func void getFive() {
+    return 5;
+}
+
+int x = getFive();
+x = 10;
+print "x is now: ";
+print x;
+x = 5;
 int y;
 int z = 6;
 string bob = "String stored in a variable";

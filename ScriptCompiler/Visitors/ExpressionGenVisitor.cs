@@ -13,7 +13,7 @@ namespace ScriptCompiler.Visitors {
     // TODO: Abstraction over string
     // Returns <commands>, <result register/location>
     public class ExpressionGenVisitor : Visitor<(List<string>, Register)> {
-        private static int _returnLabelCount = 0;
+        private static int _returnLabelCount;
         private readonly CodeGenVisitor _codeGenVisitor;
         
         // Set to false when the address of a value is desired rather than its value; signals generation to
@@ -109,11 +109,8 @@ namespace ScriptCompiler.Visitors {
                 throw new CompileException($"Unexpected type {structType}; expected struct.", 0, 0);
             }
 
-            var fieldType = structType.TypeOfField(node.Field);
-
             // Disable direct access to get the address of the struct rather than the first word
             bool reenable = _directAccess;
-            
             _directAccess = false;
             var (commands, result) = VisitDynamic(node.Left);
             _directAccess = reenable;
