@@ -3,12 +3,19 @@ import "extern"
 struct Player {
     int health;
     int mana;
+    Skills skills;
+}
+
+struct Skills {
+    int fortitude;
+    int agility;
 }
 
 func void printHealth(string o) {
     print o;
     Player player;
     print player.health;
+    print player.skills.fortitude;
 }
 
 func void recursionTest(string a) {
