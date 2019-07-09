@@ -15,6 +15,10 @@ namespace ScriptCompiler.Visitors {
     public class ExpressionGenVisitor : Visitor<(List<string>, Register)> {
         private static int _returnLabelCount = 0;
         private readonly CodeGenVisitor _codeGenVisitor;
+        
+        // Set to false when the address of a value is desired rather than its value; signals generation to
+        //   skip the final read from memory step (e.g. for struct access)
+        private bool _directAccess = true;
 
         public ExpressionGenVisitor(CodeGenVisitor codeGenVisitor) {
             _codeGenVisitor = codeGenVisitor;
@@ -91,9 +95,8 @@ namespace ScriptCompiler.Visitors {
             instructions.Add($"ADD {register} {offset}");
             
             // Read from memory into the same register as we are using
-            if (type.Length == 1) {
+            if (_directAccess)
                 instructions.Add($"MEMREAD {register} {register}");
-            }
             
             return (instructions, register);
         }
@@ -106,7 +109,15 @@ namespace ScriptCompiler.Visitors {
                 throw new CompileException($"Unexpected type {structType}; expected struct.", 0, 0);
             }
 
+            var fieldType = structType.TypeOfField(node.Field);
+
+            // Disable direct access to get the address of the struct rather than the first word
+            bool reenable = _directAccess;
+            
+            _directAccess = false;
             var (commands, result) = VisitDynamic(node.Left);
+            _directAccess = reenable;
+            
             instructions.AddRange(commands);
 
             if (structType.Length == 1) {
@@ -114,7 +125,8 @@ namespace ScriptCompiler.Visitors {
             } else {
                 Console.WriteLine($"Accessing {node.Field}");
                 instructions.Add($"ADD {result} {structType.OffsetOfField(node.Field)}");
-                instructions.Add($"MEMREAD {result} {result}");
+                if (_directAccess)
+                    instructions.Add($"MEMREAD {result} {result}");
             }
             
             return (instructions, result);
