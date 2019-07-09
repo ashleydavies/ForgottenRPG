@@ -1,12 +1,18 @@
-﻿namespace ScriptCompiler.Types {
+﻿using System.Collections.Generic;
+
+namespace ScriptCompiler.Types {
     public class SType {
         public static readonly SType SNoType = new SType();
         public static readonly SType SInteger = new SType();
         public static readonly SType SChar = new SType();
         public static readonly SType SString = new ReferenceType(SChar);
 
+        public readonly int Length;
+
         // Most types are one (32 bit) word long
-        public readonly int Length = 1;
+        public SType(int length = 1) {
+            Length = length;
+        }
         
         // Do reference equality on basic types; more complicated types will do more complicated forms of equality
         public override bool Equals(object obj) {
@@ -22,7 +28,7 @@
         /// <summary>
         /// Returns a type from a type string (e.g. from 'int x = 5;'), returning SNoType if no type could be decided on
         /// </summary>
-        public static SType FromTypeString(string nodeTypeString) {
+        public static SType FromTypeString(string nodeTypeString, UserTypeRepository utr) {
             switch (nodeTypeString) {
                 case "int":
                     return SInteger;
@@ -30,6 +36,8 @@
                     return SChar;
                 case "string":
                     return SString;
+                case string _ when utr.ExistsType(nodeTypeString):
+                    return utr[nodeTypeString];
             }
 
             return SNoType;

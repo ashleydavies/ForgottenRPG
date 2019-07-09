@@ -1,5 +1,16 @@
 import "extern"
 
+struct Player {
+    int health;
+    int mana;
+}
+
+func void printHealth(string o) {
+    print o;
+    Player player;
+    print player.health;
+}
+
 func void recursionTest(string a) {
     print "Test 2 called!";
     print a;
@@ -22,5 +33,7 @@ testingFunction(x, "Prints during recursion", z + 5, bob);
 
 externFunction("Printed by externFunction");
 externFunction("Alternative string");
+
+printHealth("Wow");
 
 print x + 2 * z / 3 - 4 + 8 * (2 + 1) / (3 + 1 - 1);

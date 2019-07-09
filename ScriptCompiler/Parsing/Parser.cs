@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Net.Security;
-using System.Reflection.Metadata;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
@@ -63,6 +59,10 @@ namespace ScriptCompiler.Parsing {
                                    (t, left) => ParseBinaryExpressionNode(left, t as SymbolToken), Precedence.TERM),
                 new InfixParseRule(t => t is SymbolToken s && new List<string> {"*", "/"}.Contains(s.Symbol),
                                    (t, left) => ParseBinaryExpressionNode(left, t as SymbolToken), Precedence.FACTOR),
+                new InfixParseRule(t => t is SymbolToken s && s.Symbol == ".",
+                                        (t, left) => new StructAccessNode(left,
+                                            Expecting<IdentifierToken>().Content),
+                                        Precedence.CALL),
             };
         }
 
@@ -76,10 +76,10 @@ namespace ScriptCompiler.Parsing {
         }
 
         private ProgramNode ParseProgram() {
+            var structs = new List<StructNode>();
             var functions = new List<FunctionNode>();
             var statements = new List<StatementNode>();
             var imports = new List<ImportNode>();
-            
             var importProcessing = true;
 
             while (_cachedToken != null || _lexer.HasMore() && PeekToken() != null) {
@@ -94,13 +94,16 @@ namespace ScriptCompiler.Parsing {
                     case IdentifierToken itok when itok.Content == "import" && importProcessing:
                         imports.Add(ParseImportStatementNode());
                         break;
+                    case IdentifierToken itok when itok.Content == "struct":
+                        structs.Add(ParseStructNode());
+                        break;
                     default:
                         statements.Add(ParseStatementNode());
                         break;
                 }
             }
 
-            return new ProgramNode(imports, functions, statements);
+            return new ProgramNode(imports, structs, functions, statements);
         }
 
         private StatementNode ParseStatementNode() {
@@ -135,19 +138,7 @@ namespace ScriptCompiler.Parsing {
                         return new FunctionCallNode(identifierToken.Content, @params);
                     // Variable declaration
                     case IdentifierToken _:
-                        // We assume that identifierToken is now a type
-                        string variableType = identifierToken.Content;
-                        var variableIdentifier = Expecting<IdentifierToken>().Content;
-                        
-                        // If we have a default value, set it up
-                        if (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "=")) {
-                            ExpressionNode initialVal = ParseExpression();
-                            Expecting<SymbolToken>(t => t.Symbol == ";");
-                            return new DeclarationStatementNode(variableType, variableIdentifier, initialVal);
-                        }
-
-                        Expecting<SymbolToken>(t => t.Symbol == ";");
-                        return new DeclarationStatementNode(variableType, variableIdentifier);
+                        return ParseDeclarationStatementNode(identifierToken);
                     // Variable assignment
                     case SymbolToken s when s.Symbol == "=":
                         throw new NotImplementedException("Variable assignment without declaration isn't supported yet");
@@ -162,6 +153,21 @@ namespace ScriptCompiler.Parsing {
 
             Expecting<SymbolToken>(t => t.Symbol == ";");
             throw new NotImplementedException();
+        }
+
+        private DeclarationStatementNode ParseDeclarationStatementNode(IdentifierToken typeIdentifierToken) {
+            var typeNode = new ExplicitTypeNode(typeIdentifierToken.Content);
+            var variableIdentifier = Expecting<IdentifierToken>().Content;
+
+            // If we have a default value, set it up
+            if (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "=")) {
+                ExpressionNode initialVal = ParseExpression();
+                Expecting<SymbolToken>(t => t.Symbol == ";");
+                return new DeclarationStatementNode(typeNode, variableIdentifier, initialVal);
+            }
+
+            Expecting<SymbolToken>(t => t.Symbol == ";");
+            return new DeclarationStatementNode(typeNode, variableIdentifier);
         }
 
         private ExpressionNode ParseExpression() {
@@ -214,6 +220,22 @@ namespace ScriptCompiler.Parsing {
         private PrintStatementNode ParsePrintStatementNode() {
             Expecting<IdentifierToken>(t => t.Content == "print");
             return new PrintStatementNode(ParseExpression());
+        }
+
+        private StructNode ParseStructNode() {
+            Expecting<IdentifierToken>(t => t.Content == "struct");
+            var nameToken = Expecting<IdentifierToken>();
+            Expecting<SymbolToken>(t => t.Symbol == "{");
+            
+            List<DeclarationStatementNode> declarations = new List<DeclarationStatementNode>();
+
+            while (!PeekMatch<SymbolToken>(t => t.Symbol == "}")) {
+                declarations.Add(ParseDeclarationStatementNode(Expecting<IdentifierToken>()));
+            }
+            
+            Expecting<SymbolToken>(t => t.Symbol == "}");
+            
+            return new StructNode(nameToken.Content, declarations);
         }
 
         private ImportNode ParseImportStatementNode() {

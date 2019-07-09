@@ -32,6 +32,15 @@ namespace ScriptCompiler.Visitors {
             return SType.SString;
         }
 
+        public SType Visit(StructAccessNode node) {
+            SType userType = Visit(node.Left as dynamic);
+            if (userType is UserType uT) {
+                return uT.TypeOfField(node.Field);
+            }
+
+            throw new CompileException($"Unexpected type {userType} in struct access", 0, 0);
+        }
+
         public SType Visit(BinaryOperatorNode _) {
             var typeL = VisitDynamic(_.Left);
             var typeR = VisitDynamic(_.Right);
