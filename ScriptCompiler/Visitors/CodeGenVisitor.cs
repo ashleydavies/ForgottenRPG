@@ -109,15 +109,22 @@ namespace ScriptCompiler.Visitors {
             //StackFrame.Pushed(SType.SInteger);
 
             var functionBuilder = new StringBuilder();
+            
+            StackFrame = new StackFrame(StackFrame);
 
             functionBuilder.AppendLine(Comment($"LABEL func_{node.FunctionName}",
                 $"Entry point of {node.FunctionName}"));
             functionBuilder.AppendLine(VisitStatementBlock(node.CodeBlock.Statements));
+            
+            var (stackFrame, length) = StackFrame.Purge();
+            StackFrame = stackFrame;
+            functionBuilder.AppendLine($"SUB r1 {length}");
+
+            node.ParameterDefinitions.ForEach(p => StackFrame.Popped(SType.FromTypeString(p.type, UserTypeRepository)));
 
             // AKA RET
             functionBuilder.AppendLine(Comment($"POP r0", $"Return from {node.FunctionName}"));
-
-            node.ParameterDefinitions.ForEach(p => StackFrame.Popped(SType.FromTypeString(p.type, UserTypeRepository)));
+            
             return functionBuilder.ToString();
         }
 
