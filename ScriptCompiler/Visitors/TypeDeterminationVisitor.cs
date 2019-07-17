@@ -19,6 +19,10 @@ namespace ScriptCompiler.Visitors {
             return this.Visit(node as dynamic);
         }
 
+        public SType Visit(FunctionCallNode node) {
+            return _codeGenVisitor.FTRepo.ReturnType(node.FunctionName);
+        }
+
         public SType Visit(VariableAccessNode node) {
             var (type, _) = _codeGenVisitor.StackFrame.Lookup(node.Identifier);
             return type;
@@ -30,6 +34,15 @@ namespace ScriptCompiler.Visitors {
 
         public SType Visit(StringLiteralNode _) {
             return SType.SString;
+        }
+
+        public SType Visit(StructAccessNode node) {
+            SType userType = Visit(node.Left as dynamic);
+            if (userType is UserType uT) {
+                return uT.TypeOfField(node.Field);
+            }
+
+            throw new CompileException($"Unexpected type {userType} in struct access", 0, 0);
         }
 
         public SType Visit(BinaryOperatorNode _) {

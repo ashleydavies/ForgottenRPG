@@ -1,13 +1,7 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.ComponentModel.Design;
-using System.Data.Common;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
 using System.Text;
 using System.Threading;
 using ScriptCompiler.AST;
@@ -19,24 +13,39 @@ using ScriptCompiler.Types;
 
 namespace ScriptCompiler.Visitors {
     public class CodeGenVisitor : Visitor<string>, IRegisterAllocator {
+        public const string MagicReturnIdentifier = "!RETURN_VALUE";
+        
         public StackFrame StackFrame { get; private set; }
         public readonly Dictionary<string, string> StringLiteralAliases = new Dictionary<string, string>();
+        public readonly UserTypeRepository UTRepo = new UserTypeRepository();
+        public readonly FunctionTypeRepository FTRepo = new FunctionTypeRepository();
 
-        private int _returnLabelCount = 0;
         // The instruction and stack pointer registers are always 'occupied'
         private readonly List<bool> _occupiedRegisters = new List<bool> { true, true };
 
-        
+
         /// <summary>
         /// Main entry method - sets up private parameters and generates code for a full program
         /// </summary>
         public string Visit(ProgramNode node) {
             // Set up the initial stack frame
             StackFrame = new StackFrame();
-            List<ProgramNode> importedFiles = node.ImportNodes.Select(f => Parser.FromFile(f.FileName).Parse()).ToList();
+            List<ProgramNode> importedFiles =
+                node.ImportNodes.Select(f => Parser.FromFile(f.FileName).Parse()).ToList();
             List<string> programStrings = new StringLiteralCollectorVisitor().Visit(node);
             importedFiles.ForEach(p => programStrings.AddRange(new StringLiteralCollectorVisitor().Visit(p)));
+
+            InitialiseUTRepo(node, importedFiles);
+
+            List<FunctionNode> allFunctions = new List<FunctionNode>();
+            allFunctions.AddRange(node.FunctionNodes);
+            allFunctions.AddRange(importedFiles.SelectMany(n => n.FunctionNodes));
             
+            allFunctions.ForEach(f =>
+                FTRepo.Register(f.FunctionName, f.TypeNode.GetSType(UTRepo),
+                    f.ParameterDefinitions.Select(p => SType.FromTypeString(p.type, UTRepo)).ToList()));
+
+
             StringBuilder programBuilder = new StringBuilder();
 
             programBuilder.AppendLine(".data");
@@ -44,78 +53,108 @@ namespace ScriptCompiler.Visitors {
                 StringLiteralAliases[programStrings[i]] = $"str_{i}";
                 programBuilder.AppendLine($"STRING str_{i} {programStrings[i]}");
             }
+
             programBuilder.AppendLine(Comment(".text", "Begin code"));
             programBuilder.AppendLine(VisitStatementBlock(node.StatementNodes));
-            // Exit, don't fall into a random function
+            // Exit, or we'll fall into a random function or terminate
             programBuilder.AppendLine(Comment("JMP end", "Standard termination"));
-            
-            foreach (dynamic functionNode in node.FunctionNodes) {
-                programBuilder.AppendLine(this.Visit(functionNode));
-            }
 
-            foreach (ImportNode importNode in node.ImportNodes) {
-                Console.WriteLine($"Importing #{importNode.FileName}");
-                var functionNodes = Parser.FromFile(importNode.FileName).Parse().FunctionNodes;
-                foreach (dynamic functionNode in functionNodes) {
-                    programBuilder.AppendLine(Visit(functionNode));
-                }
-            }
+            allFunctions.ForEach(f => programBuilder.AppendLine(Visit(f)));
 
             programBuilder.AppendLine("LABEL end");
 
             return programBuilder.ToString();
         }
-        
+
+        private void InitialiseUTRepo(ProgramNode node, List<ProgramNode> importedFiles) {
+            Dictionary<string, StructNode> userTypeNodeMapping = new Dictionary<string, StructNode>();
+            // TODO: Validation of no repeat names etc.
+            foreach (StructNode structNode in node.StructNodes) {
+                userTypeNodeMapping.Add(structNode.StructName, structNode);
+            }
+
+            foreach (StructNode structNode in importedFiles.SelectMany(f => f.StructNodes)) {
+                userTypeNodeMapping.Add(structNode.StructName, structNode);
+            }
+
+            List<string> userTypesToProcess = new List<string>(userTypeNodeMapping.Keys);
+            while (userTypesToProcess.Count > 0) {
+                string userType = userTypesToProcess[0];
+
+                Queue<string> dependencies = new Queue<string>();
+                dependencies.Enqueue(userType);
+                while (dependencies.Count != 0) {
+                    string next = dependencies.Dequeue();
+                    bool deps = false;
+
+                    var structNode = userTypeNodeMapping[next];
+                    foreach (DeclarationStatementNode declNode in structNode.DeclarationNodes) {
+                        if (ReferenceEquals(declNode.TypeNode.GetSType(UTRepo), SType.SNoType)) {
+                            dependencies.Enqueue(declNode.TypeNode.TypeString);
+                            deps = true;
+                        }
+                    }
+
+                    if (deps) {
+                        dependencies.Enqueue(next);
+                        continue;
+                    }
+
+                    userTypesToProcess.Remove(next);
+                    UTRepo[next] = UserType.FromStruct(structNode, UTRepo);
+                }
+            }
+        }
+
         public string Visit(FunctionNode node) {
-            // Set up the stack frame for the function parameters
+            // Set up the stack frame for the return location
             StackFrame = new StackFrame(null);
-            node.ParameterDefinitions.ForEach(p => StackFrame.AddIdentifier(SType.FromTypeString(p.type), p.name));
             
+            var returnType = FTRepo.ReturnType(node.FunctionName);
+            if (!ReferenceEquals(returnType, SType.SVoid)) {
+                StackFrame.AddIdentifier(returnType, MagicReturnIdentifier);
+                StackFrame = new StackFrame(StackFrame);
+            }
+
+            // Set up the stack frame for the function parameters
+            node.ParameterDefinitions.ForEach(p =>
+                StackFrame.AddIdentifier(SType.FromTypeString(p.type, UTRepo), p.name));
+
             // TODO: Uncomment when the instruction pointer is stored on the memory stack and not the stack machine
             // 'Push' the instruction pointer, which is the same length as an integer
             //StackFrame.Pushed(SType.SInteger);
-            
+
             var functionBuilder = new StringBuilder();
             
-            functionBuilder.AppendLine($"LABEL func_{node.FunctionName}");
+            StackFrame = new StackFrame(StackFrame);
+
+            functionBuilder.AppendLine(Comment($"LABEL func_{node.FunctionName}",
+                $"Entry point of {node.FunctionName}"));
             functionBuilder.AppendLine(VisitStatementBlock(node.CodeBlock.Statements));
             
-            // AKA RET
-            functionBuilder.AppendLine($"POP r0");
+            var (stackFrame, length) = StackFrame.Purge();
+            StackFrame = stackFrame;
+            functionBuilder.AppendLine($"SUB r1 {length}");
 
-            node.ParameterDefinitions.ForEach(p => StackFrame.Popped(SType.FromTypeString(p.type)));
+            node.ParameterDefinitions.ForEach(p => StackFrame.Popped(SType.FromTypeString(p.type, UTRepo)));
+
+            // AKA RET
+            functionBuilder.AppendLine(Comment($"POP r0", $"Return from {node.FunctionName}"));
+            
             return functionBuilder.ToString();
         }
 
-        public string Visit(FunctionCallNode node) {
-            var functionCallBuilder = new StringBuilder();
+        public string Visit(ReturnStatementNode node) {
+            return Visit(new AssignmentNode(new VariableAccessNode(MagicReturnIdentifier),
+                node.Expression));
+        }
 
-            // Save the address of where we should return to after the function ends
-            var returnLabelNo = _returnLabelCount++;
-            functionCallBuilder.AppendLine($"PUSH $return_{returnLabelNo}");
-            
-            // Push each of the parameters
-            foreach (var arg in node.Args) {
-                var (argCommands, argReg) = new ExpressionGenVisitor(this).VisitDynamic(arg);
-                // All arguments are one word big
-                StackFrame.Pushed(SType.SInteger);
-                argCommands.ForEach(c => functionCallBuilder.AppendLine(c));
-                using (argReg) {
-                    // Push the argument onto the stack for the function to use
-                    functionCallBuilder.AppendLine($"MEMWRITE r1 {argReg}");
-                    // Shift the stack up
-                    functionCallBuilder.AppendLine($"ADD r1 1");
-                }
-            }
-            
-            functionCallBuilder.AppendLine($"JMP func_{node.FunctionName}");
-            functionCallBuilder.AppendLine($"LABEL return_{returnLabelNo}");
-            
-            // Fix the stack
-            foreach (var arg in node.Args) StackFrame.Popped(SType.SInteger);
-            functionCallBuilder.AppendLine($"SUB r1 {node.Args.Count}");
+        // General expressions e.g. naked function calls
+        public string Visit(ExpressionNode node) {
+            var (commands, resultLoc) = new ExpressionGenVisitor(this).GenerateCode(node);
+            using (resultLoc) { }
 
-            return functionCallBuilder.ToString();
+            return string.Join(Environment.NewLine, commands);
         }
 
         public string Visit(DeclarationStatementNode node) {
@@ -126,18 +165,19 @@ namespace ScriptCompiler.Visitors {
                 throw new CompileException($"Attempt to redefine identifier {node.Identifier}", 0, 0);
             }
 
-            SType type = SType.FromTypeString(node.TypeString);
-            if (type == SType.SNoType) {
-                throw new CompileException($"Unable to discern type from {node.TypeString}", 0, 0);
+            SType type = node.TypeNode.GetSType(UTRepo);
+            if (ReferenceEquals(type, SType.SNoType)) {
+                throw new CompileException($"Unable to discern type from {node.TypeNode}", 0, 0);
             }
-            
+
             StackFrame.AddIdentifier(type, node.Identifier);
             // Adjust stack pointer
-            declarationBuilder.AppendLine($"ADD r1 {type.Length}");
-            
+            declarationBuilder.AppendLine(Comment($"ADD r1 {type.Length}",
+                $"Declaration of {node.Identifier}"));
+
             // Set up with default value, if any
             if (node.InitialValue != null) {
-                var (commands, resultReg) = new ExpressionGenVisitor(this).VisitDynamic(node.InitialValue);
+                var (commands, resultReg) = new ExpressionGenVisitor(this).GenerateCode(node.InitialValue);
                 commands.ForEach(s => declarationBuilder.AppendLine(s));
                 // TODO: Remove duplication with the ExpressionGenVisitor VariableAccessNode handler
                 using (resultReg) {
@@ -145,25 +185,31 @@ namespace ScriptCompiler.Visitors {
                     using (var locationReg = GetRegister()) {
                         // reg = Stack
                         declarationBuilder.AppendLine($"MOV {locationReg} r1");
-                        
+
                         // reg = Stack - offset to variable
                         var offset = StackFrame.Lookup(node.Identifier).position;
                         declarationBuilder.AppendLine($"ADD {locationReg} {offset}");
-                        
+
                         // Write to memory
                         declarationBuilder.AppendLine($"MEMWRITE {locationReg} {resultReg}");
                     }
                 }
+            } else {
+                declarationBuilder.AppendLine($"SUB r1 {type.Length}");
+                for (int i = 0; i < type.Length; i++) {
+                    declarationBuilder.AppendLine($"MEMWRITE r1 0");
+                    declarationBuilder.AppendLine($"ADD r1 1");
+                }
             }
-            
+
             return declarationBuilder.ToString();
         }
 
         public string Visit(PrintStatementNode node) {
-            var (commands, register) = new ExpressionGenVisitor(this).VisitDynamic(node.Expression);
+            var (commands, register) = new ExpressionGenVisitor(this).GenerateCode(node.Expression);
 
             StringBuilder builder = new StringBuilder();
-            
+
             using (register) {
                 foreach (var command in commands) {
                     builder.AppendLine(command);
@@ -174,7 +220,8 @@ namespace ScriptCompiler.Visitors {
 
                 if (ReferenceEquals(type, SType.SString)) {
                     builder.AppendLine($"PRINT {register}");
-                } else if (ReferenceEquals(type, SType.SInteger)) {
+                }
+                else if (ReferenceEquals(type, SType.SInteger)) {
                     builder.AppendLine($"PRINTINT {register}");
                 }
             }
@@ -184,7 +231,7 @@ namespace ScriptCompiler.Visitors {
 
         public string VisitStatementBlock(List<StatementNode> statements) {
             var blockBuilder = new StringBuilder();
-            
+
             foreach (dynamic statementNode in statements) {
                 blockBuilder.AppendLine(Visit(statementNode));
             }
