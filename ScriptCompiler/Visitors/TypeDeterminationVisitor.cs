@@ -19,6 +19,10 @@ namespace ScriptCompiler.Visitors {
             return this.Visit(node as dynamic);
         }
 
+        public SType Visit(FunctionCallNode node) {
+            return _codeGenVisitor.FTRepo.ReturnType(node.FunctionName);
+        }
+
         public SType Visit(VariableAccessNode node) {
             var (type, _) = _codeGenVisitor.StackFrame.Lookup(node.Identifier);
             return type;

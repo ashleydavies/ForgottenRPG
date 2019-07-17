@@ -274,6 +274,7 @@ namespace ScriptCompiler {
         }
 
         private void AddInstruction(string instruction) {
+            if (instruction == "") throw new CompileException("Assembler failed critically", 0, 0);
             _instructions.Add(instruction);
             _instructionId++;
         }

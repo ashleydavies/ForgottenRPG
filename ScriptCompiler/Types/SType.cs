@@ -2,6 +2,7 @@
 
 namespace ScriptCompiler.Types {
     public class SType {
+        public static readonly SType SVoid = new SType(0);
         public static readonly SType SNoType = new SType();
         public static readonly SType SInteger = new SType();
         public static readonly SType SChar = new SType();
@@ -36,6 +37,8 @@ namespace ScriptCompiler.Types {
                     return SChar;
                 case "string":
                     return SString;
+                case "void":
+                    return SVoid;
                 case string _ when utr.ExistsType(nodeTypeString):
                     return utr[nodeTypeString];
             }
