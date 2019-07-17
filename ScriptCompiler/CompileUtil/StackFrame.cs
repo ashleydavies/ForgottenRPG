@@ -13,7 +13,7 @@ namespace ScriptCompiler.CompileUtil {
         //  stack) and therefore we need to keep track of how much we've "nudged" these things onto the stack
         public int Length { get; private set; }
         private readonly StackFrame _parent;
-        private readonly Dictionary<string, (SType, int)> _variableTable;
+        private readonly Dictionary<string, (SType type, int )> _variableTable;
 
         public StackFrame(StackFrame parent) : this() {
             _parent = parent;
@@ -21,6 +21,18 @@ namespace ScriptCompiler.CompileUtil {
 
         public StackFrame() {
             _variableTable = new Dictionary<string, (SType, int)>();
+        }
+
+        public (StackFrame parent, int length) Purge() {
+            var expectedLength = _variableTable.Values.Sum(v => v.type.Length);
+            
+            if (Length != expectedLength) {
+                throw new CompileException(
+                    $"Unexpected call to StackFrame::Purge() - not all locals popped? {Length - expectedLength} words left", 
+                    0, 0);
+            }
+
+            return (_parent, expectedLength);
         }
 
         public bool ExistsLocalScope(string identifier) {

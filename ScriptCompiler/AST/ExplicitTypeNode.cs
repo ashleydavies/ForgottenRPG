@@ -1,11 +1,16 @@
 ﻿using System.Collections.Generic;
+using ScriptCompiler.Types;
 
 namespace ScriptCompiler.AST {
     public class ExplicitTypeNode : ASTNode {
-        private string _type;
+        public readonly string TypeString;
         
-        public ExplicitTypeNode(string type) {
-            _type = type;
+        public ExplicitTypeNode(string typeString) {
+            TypeString = typeString;
+        }
+
+        public SType GetSType(UserTypeRepository utr) {
+            return SType.FromTypeString(TypeString, utr);
         }
 
         public override List<ASTNode> Children() {
