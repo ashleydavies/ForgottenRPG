@@ -14,6 +14,11 @@ struct Skills {
 func void printHealth(string o) {
     print o;
     Player player;
+    player.health = 23;
+    
+    Player player2;
+    player2 = player;
+    
     print player.health;
     print player.skills.fortitude;
 }
@@ -30,14 +35,24 @@ func void testingFunction(int a, string b, int c, string d) {
     print d;
 }
 
-func void getFive() {
-    return 5;
+func Player getPlayer() {
+    Player player;
+    player.health = 5;
+    player.skills.fortitude = 12;
+    return player;
 }
 
-int x = getFive();
-x = 10;
-print "x is now: ";
-print x;
+
+print getPlayer().health + getPlayer().skills.fortitude * getPlayer().skills.fortitude;
+print "Player fortitude:";
+print getPlayer().skills.fortitude;
+
+Player player1;
+Player player2;
+
+player1 = player2;
+
+int x = 10;
 x = 5;
 int y;
 int z = 6;
