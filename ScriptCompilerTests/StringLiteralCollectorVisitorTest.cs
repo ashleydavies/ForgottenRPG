@@ -14,6 +14,7 @@ namespace ScriptCompilerTests {
             var result = new StringLiteralCollectorVisitor().Visit(
                 new ProgramNode(
                     new List<ImportNode>(),
+                    new List<StructNode>(),
                     new List<FunctionNode> {
                         new FunctionNode("test", new ExplicitTypeNode("void"), new CodeBlockNode(
                             new List<StatementNode> {
