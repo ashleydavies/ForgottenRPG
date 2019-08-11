@@ -20,18 +20,6 @@
     <Reference Include="OpenTK.Compatibility">
       <HintPath>OpenTK.Compatibility.dll</HintPath>
     </Reference>
-    <Reference Include="sfml-audio">
-      <HintPath>sfml-audio.dll</HintPath>
-    </Reference>
-    <Reference Include="sfml-graphics">
-      <HintPath>sfml-graphics.dll</HintPath>
-    </Reference>
-    <Reference Include="sfml-system">
-      <HintPath>sfml-system.dll</HintPath>
-    </Reference>
-    <Reference Include="sfml-window">
-      <HintPath>sfml-window.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Update="csfml-audio-2.dll">
@@ -151,5 +139,11 @@
     <None Update="Resources\Image\worldmap.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SFML.Audio.NetCore" Version="1.0.0" />
+    <PackageReference Include="SFML.Graphics.NetCore" Version="1.0.0" />
+    <PackageReference Include="SFML.System.NetCore" Version="1.0.0" />
+    <PackageReference Include="SFML.Window.NetCore" Version="1.0.0" />
   </ItemGroup>
 </Project>
