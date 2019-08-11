@@ -1,9 +1,24 @@
 # ShaRPG [![Build Status](https://travis-ci.com/ashleydavies/Sharpg.svg?branch=develop)](https://travis-ci.com/ashleydavies/Sharpg)
-ShaRPG, or Sharp RPG, is an excellent example of bad puns, and a total re-write of my [unfinished] Java RPG engine, but in C#.
+ShaRPG, or Sharp RPG, is an bad pun, and a total re-write of my [unfinished] Java RPG engine, but in C#.
 
 It is not compatible with the data, as many of the XML formats have changed.
 
 It runs a simple 'bytecode' (integer array) VM as a scripting language, with a rudimentary ASM-style language and a small compiler to morph that into acceptable code.
+
+
+# Running
+
+I haven't tested Windows in a while, but it should run by adding the relevant SFML[.NET] DLLs (version 2.5.0) to the bin/{Debug,Production} folder.
+
+For MacOS with Homebrew, the following should allow it to run perfectly:
+
+```sh
+brew install sfml
+brew install csfml
+ln -s /usr/local/lib/libcsfml-system.2.5.0.dylib /usr/local/lib/libcsfml-system-2.dylib
+ln -s /usr/local/lib/libcsfml-graphics.2.5.0.dylib /usr/local/lib/libcsfml-graphics-2.dylib
+ln -s /usr/local/lib/libcsfml-window.2.5.0.dylib /usr/local/lib/libcsfml-window-2.dylib
+```
 
 # Status
 
