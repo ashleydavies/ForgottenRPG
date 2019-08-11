@@ -161,7 +161,6 @@ namespace ShaRPG.GameState {
         public override void Render(RenderTarget renderSurface) {
             _guiWindow.Render(renderSurface);
 
-
             for (var i = 0; i < _inventoryItemContainers.Length; i++) {
                 TryRenderTooltip(renderSurface, _inventoryItemContainers[i], _inventory.ItemStack(i));
             }
@@ -179,15 +178,14 @@ namespace ShaRPG.GameState {
         }
 
         private void TryRenderTooltip(RenderTarget renderSurface, SpriteContainer slot, ItemStack itemStack) {
-            if (slot.IsMouseOver(new ScreenCoordinate(Mouse.GetPosition()))) {
-                _tooltipTitle.Contents = itemStack.Item.DisplayName;
-                _tooltipText.Contents = itemStack.Item.Description;
-                // TODO: Can this be converted to a render matrix in SpriteContainer or something?
-                _tooltipSprite.Sprite = new Sprite(itemStack.Item.Texture) { Scale = new Vector2f(2, 2) };
+            if (!slot.IsMouseOver(Game.MousePosition)) return;
+            _tooltipTitle.Contents = itemStack.Item.DisplayName;
+            _tooltipText.Contents = itemStack.Item.Description;
+            // TODO: Can this be converted to a render matrix in SpriteContainer or something?
+            _tooltipSprite.Sprite = new Sprite(itemStack.Item.Texture) { Scale = new Vector2f(2, 2) };
 
-                _tooltipWindow.ScreenPosition = new ScreenCoordinate(Mouse.GetPosition() + new Vector2i(32, 32));
-                _tooltipWindow.Render(renderSurface);
-            }
+            _tooltipWindow.ScreenPosition = Game.MousePosition + new ScreenCoordinate(32, 32);
+            _tooltipWindow.Render(renderSurface);
         }
 
         public override void Clicked(ScreenCoordinate coordinates) {
