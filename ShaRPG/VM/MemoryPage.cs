@@ -3,7 +3,7 @@
         // 16 kB pages - 4096 32-bit integers per page
         public const int PageSize = 1024 * 4;
         
-        private int[] _memory = new int[PageSize];
+        private readonly int[] _memory = new int[PageSize];
         private bool _locked = false;
         
         public int ReadAddress(int offset) {
