@@ -2,6 +2,6 @@
 
 namespace ShaRPG.VM {
     public class IllegalMemoryAccessException : Exception {
-        public IllegalMemoryAccessException(string attemptToWriteToProtectedPage) : base(attemptToWriteToProtectedPage) { }
+        public IllegalMemoryAccessException(string message) : base(message) { }
     }
 }

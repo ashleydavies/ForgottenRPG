@@ -14,7 +14,7 @@ using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.GameState {
     public class StateGame : AbstractGameState, IOpenDialog {
-        private GameEntity _player => _entityManager.Player;
+        private GameEntity Player => _entityManager.Player;
         private readonly GameMap _map;
         private readonly MapLoader _mapLoader;
         private readonly EntityLoader _entityLoader;
@@ -67,12 +67,12 @@ namespace ShaRPG.GameState {
                 }
             };
 
-            if (_player == null) throw new EntityException("No player was created during map loading time");
+            if (Player == null) throw new EntityException("No player was created during map loading time");
 
-            _player.GetComponent<InventoryComponent>().Inventory
+            Player.GetComponent<InventoryComponent>().Inventory
                    .PickupItem(new ItemStack(_itemManager.GetItem("iron_longsword"), 1));
 
-            _gameCenter = (GameCoordinate) _player.Position;
+            _gameCenter = (GameCoordinate) Player.Position;
         }
 
         public override void Update(float delta) {
@@ -107,12 +107,12 @@ namespace ShaRPG.GameState {
             _clickManager.Clicked(coordinates);
         }
 
-        public override void MouseWheelMoved(int delta) {
-            _scale += delta / 10f;
+        public override void MouseWheelMoved(float delta) {
+            _scale = Math.Clamp(_scale + delta / 10f, 0.8f, 2.0f);
         }
 
         public void MovePlayer(TileCoordinate destination) {
-            _player.SendMessage(new DestinationMessage(destination));
+            Player.SendMessage(new DestinationMessage(destination));
         }
 
         public void ExitGame() {
@@ -132,8 +132,8 @@ namespace ShaRPG.GameState {
         }
 
         private void OpenInventory() {
-            ChangeState(new InventoryState(Game, _player.GetComponent<InventoryComponent>().Inventory, _map,
-                                           _player.Position, _windowSize, _textureStore));
+            ChangeState(new InventoryState(Game, Player.GetComponent<InventoryComponent>().Inventory, _map,
+                                           Player.Position, _windowSize, _textureStore));
         }
     }
 }

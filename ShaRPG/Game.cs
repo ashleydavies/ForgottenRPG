@@ -39,7 +39,7 @@ namespace ShaRPG {
 
             _window.Closed += (sender, args)
                 => _window.Close();
-            _window.MouseWheelMoved += (sender, args)
+            _window.MouseWheelScrolled += (sender, args)
                 => _gameStates.Peek().MouseWheelMoved(args.Delta);
             _window.MouseButtonReleased += (sender, args)
                 => _gameStates.Peek().Clicked(new ScreenCoordinate(args.X, args.Y));

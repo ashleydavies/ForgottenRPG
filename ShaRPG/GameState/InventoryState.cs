@@ -194,6 +194,6 @@ namespace ShaRPG.GameState {
             if (_guiWindow.IsMouseOver(coordinates)) _guiWindow.Clicked(coordinates);
         }
 
-        public override void MouseWheelMoved(int delta) { }
+        public override void MouseWheelMoved(float delta) { }
     }
 }

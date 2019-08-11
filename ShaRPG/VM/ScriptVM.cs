@@ -1,9 +1,5 @@
-﻿#region
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-
-#endregion
 
 namespace ShaRPG.VM {
     // Bytecode VM for a small language. 32-bit integers are the smallest atomic unit.
