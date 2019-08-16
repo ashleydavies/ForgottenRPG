@@ -6,7 +6,7 @@ using SFML.Window;
 using ShaRPG.Entity;
 using ShaRPG.Entity.Components;
 using ShaRPG.Entity.Components.Messages;
-using ShaRPG.EntityDialog;
+using ShaRPG.Entity.Dialog;
 using ShaRPG.Items;
 using ShaRPG.Map;
 using ShaRPG.Service;

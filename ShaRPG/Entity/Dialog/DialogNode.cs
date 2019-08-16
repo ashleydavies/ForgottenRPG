@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace ShaRPG.EntityDialog {
+namespace ShaRPG.Entity.Dialog {
     public class DialogNode {
         public string Prompt { get; }
         public List<string> Replies => _replies.Select(x => x.Prompt).ToList();
