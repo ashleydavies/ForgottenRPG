@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SFML.Graphics;
 using ShaRPG.Entity.Components;
+using ShaRPG.Entity.Components.Messages;
 using ShaRPG.GameState;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
@@ -10,6 +11,7 @@ using ShaRPG.Util.Coordinate;
 namespace ShaRPG.Entity {
     public class EntityManager : IClickObserver {
         public bool FightMode { get; private set; }
+
         public GameEntity Player => _playerId >= 0
                                         ? _entities[_playerId]
                                         : throw new EntityException("Unable to determine player - ID not set");
@@ -22,10 +24,10 @@ namespace ShaRPG.Entity {
 
         public EntityManager(StateGame gameState) {
             _gameState = gameState;
-            _nextId = 0;
-            _playerId = -1;
-            FightMode = false;
-            _entities = new Dictionary<int, GameEntity>();
+            _nextId    = 0;
+            _playerId  = -1;
+            FightMode  = false;
+            _entities  = new Dictionary<int, GameEntity>();
         }
 
         public int GetNextId(GameEntity e) {
@@ -47,12 +49,12 @@ namespace ShaRPG.Entity {
             // The queue should never be empty as it should at least contain the player
             if (FightMode && _combatQueue.Peek().ActionBlocked()) {
                 var gameEntity = _combatQueue.Dequeue();
-                
+
                 gameEntity.SendMessage(new TurnEndedMessage());
-                _combatQueue.Enqueue(gameEntity);   
+                _combatQueue.Enqueue(gameEntity);
                 _combatQueue.Peek().SendMessage(new TurnStartedMessage());
             }
-            
+
             foreach (GameEntity e in _entities.Values) {
                 e.Update(delta);
             }
@@ -72,11 +74,11 @@ namespace ShaRPG.Entity {
 
         public void Clicked(ScreenCoordinate coordinates) {
             GameCoordinate translateCoordinates = _gameState.TranslateCoordinates(coordinates);
-            
+
             foreach (GameEntity e in _entities.Values) {
                 if (e.MouseOver(translateCoordinates)) {
                     e.SendMessage(new MouseClickMessage(translateCoordinates));
-                    
+
                     // Only one entity can be clicked - return once we found it
                     return;
                 }
@@ -86,7 +88,7 @@ namespace ShaRPG.Entity {
         // We can only toggle fight mode if the player is in control
         public void TryToggleFightMode() {
             if (FightMode && _combatQueue.Peek() != Player) return;
-            
+
             FightMode = !FightMode;
 
             if (FightMode) {
@@ -98,15 +100,15 @@ namespace ShaRPG.Entity {
             // Set up the fight queue; the player always goes at the front
             _combatQueue = new Queue<GameEntity>();
             _combatQueue.Enqueue(_entities[_playerId]);
-            
+
             foreach (var (id, entity) in _entities) {
                 entity.SendMessage(new CombatStartMessage());
-                
+
                 if (id == _playerId) continue;
-                
+
                 _combatQueue.Enqueue(entity);
             }
-            
+
             // Start the turn for the first entity in the queue
             _combatQueue.Peek().SendMessage(new TurnStartedMessage());
         }

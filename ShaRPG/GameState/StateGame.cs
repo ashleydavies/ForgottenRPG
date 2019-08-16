@@ -5,6 +5,7 @@ using SFML.System;
 using SFML.Window;
 using ShaRPG.Entity;
 using ShaRPG.Entity.Components;
+using ShaRPG.Entity.Components.Messages;
 using ShaRPG.EntityDialog;
 using ShaRPG.Items;
 using ShaRPG.Map;
@@ -46,10 +47,10 @@ namespace ShaRPG.GameState {
             _keyMappings = new Dictionary<Keyboard.Key, (bool, Action<float>)> {
                 {
                     Keyboard.Key.Up,
-                    (true, delta => _gameCenter = new Vector2f(_gameCenter.X, _gameCenter.Y - 300 * delta))
+                    (true, delta => _gameCenter -= new Vector2f(0, 300 * delta))
                 }, {
                     Keyboard.Key.Down,
-                    (true, delta => _gameCenter = new Vector2f(_gameCenter.X, _gameCenter.Y + 300 * delta))
+                    (true, delta => _gameCenter += new Vector2f(0, 300 * delta))
                 }, {
                     Keyboard.Key.Left,
                     (true, delta => _gameCenter = new Vector2f(_gameCenter.X - 300 * delta, _gameCenter.Y))

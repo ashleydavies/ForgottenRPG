@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using SFML.Graphics;
 using SFML.System;
 using ShaRPG.Util;

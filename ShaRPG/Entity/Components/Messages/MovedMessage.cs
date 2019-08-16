@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using ShaRPG.Util.Coordinate;
+﻿using ShaRPG.Util.Coordinate;
 
-namespace ShaRPG.Entity.Components {
+namespace ShaRPG.Entity.Components.Messages {
     public class MovedMessage : IComponentMessage {
         public readonly TileCoordinate OldPosition;
         public readonly TileCoordinate NewPosition;

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Xml.Linq;
 using SFML.System;
 using ShaRPG.Service;
-using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Items {
     public class ItemManager {

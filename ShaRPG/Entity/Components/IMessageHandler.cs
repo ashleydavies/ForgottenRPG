@@ -1,4 +1,6 @@
-﻿namespace ShaRPG.Entity.Components {
+﻿using ShaRPG.Entity.Components.Messages;
+
+namespace ShaRPG.Entity.Components {
     public interface IMessageHandler<T> where T: IComponentMessage {
         void Message(T message);
     }

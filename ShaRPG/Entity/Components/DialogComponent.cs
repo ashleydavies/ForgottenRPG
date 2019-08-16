@@ -1,4 +1,5 @@
-﻿using ShaRPG.EntityDialog;
+﻿using ShaRPG.Entity.Components.Messages;
+using ShaRPG.EntityDialog;
 
 namespace ShaRPG.Entity.Components {
     public class DialogComponent : AbstractComponent, IMessageHandler<MouseClickMessage> {

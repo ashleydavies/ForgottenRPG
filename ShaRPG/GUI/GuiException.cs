@@ -1,5 +1,8 @@
 ﻿using System;
 
-public class GuiException : Exception {
-    public GuiException(string message) : base(message) { }
+namespace ShaRPG.GUI
+{
+    public class GuiException : Exception {
+        public GuiException(string message) : base(message) { }
+    }
 }

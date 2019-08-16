@@ -2,6 +2,7 @@
 using System.Linq;
 using SFML.Graphics;
 using ShaRPG.Entity.Components;
+using ShaRPG.Entity.Components.Messages;
 using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util.Coordinate;
