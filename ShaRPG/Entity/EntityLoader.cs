@@ -20,9 +20,9 @@ namespace ShaRPG.Entity {
             _textureStore  = textureStore;
         }
 
-        public GameEntity LoadEntity(string               fileName, GameMap map, TileCoordinate position,
+        public GameEntity LoadEntity(string fileName, GameMap map, TileCoordinate position,
                                      List<TileCoordinate> path,
-                                     IOpenDialog          dialogOpener) {
+                                     IOpenDialog dialogOpener) {
             XDocument document;
 
             using (FileStream fs = File.OpenRead(Path.Combine(_directory, fileName + ".xml"))) {
