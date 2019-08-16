@@ -10,18 +10,18 @@ namespace ShaRPG.Service {
         private static readonly IScriptStoreService NullScriptStoreService = new NullScriptStoreService();
 
         public static ILogService LogService {
-            get { return _logService ?? NullLogService; }
-            set { _logService = value; }
+            get => _logService ?? NullLogService;
+            set => _logService = value;
         }
 
         public static IAudioService AudioService {
-            get { return _audioService ?? NullAudioService; }
-            set { _audioService = value; }
+            get => _audioService ?? NullAudioService;
+            set => _audioService = value;
         }
 
         public static IScriptStoreService ScriptStoreService {
-            get { return _scriptStoreService ?? NullScriptStoreService; }
-            set { _scriptStoreService = value; }
+            get => _scriptStoreService ?? NullScriptStoreService;
+            set => _scriptStoreService = value;
         }
     }
 }

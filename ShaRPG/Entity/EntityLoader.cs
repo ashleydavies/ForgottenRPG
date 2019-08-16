@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -16,13 +15,14 @@ namespace ShaRPG.Entity {
         private readonly ITextureStore _textureStore;
 
         public EntityLoader(string directory, EntityManager entityManager, ITextureStore textureStore) {
-            _directory = directory;
+            _directory     = directory;
             _entityManager = entityManager;
-            _textureStore = textureStore;
+            _textureStore  = textureStore;
         }
 
-        public GameEntity LoadEntity(string fileName, GameMap map, TileCoordinate position, List<TileCoordinate> path,
-                                     IOpenDialog dialogOpener) {
+        public GameEntity LoadEntity(string               fileName, GameMap map, TileCoordinate position,
+                                     List<TileCoordinate> path,
+                                     IOpenDialog          dialogOpener) {
             XDocument document;
 
             using (FileStream fs = File.OpenRead(Path.Combine(_directory, fileName + ".xml"))) {
@@ -31,17 +31,18 @@ namespace ShaRPG.Entity {
 
             var entityInformation = document.Element("Entity");
 
-            string name = entityInformation?.Attribute("name")?.Value;
-            string avatar = entityInformation?.Attribute("avatar")?.Value;
+            string name         = entityInformation?.Attribute("name")?.Value;
+            string avatar       = entityInformation?.Attribute("avatar")?.Value;
             string healthString = entityInformation?.Attribute("maxHealth")?.Value;
-            string spriteName = entityInformation?.Element("EntityTextureInformation")?.Attribute("name")?.Value;
+            string spriteName   = entityInformation?.Element("EntityTextureInformation")?.Attribute("name")?.Value;
 
             if (spriteName == null || name == null || avatar == null || !int.TryParse(healthString, out var health)) {
                 throw new EntityException($"Unable to load entity {fileName}");
             }
 
             XElement dialogElem = entityInformation.Elements("Dialog").FirstOrDefault();
-            GameEntity entity = new GameEntity(_entityManager, name, position, _textureStore.GetNewSprite(spriteName));
+            var entity =
+                new GameEntity(_entityManager, name, position, _textureStore.GetNewSprite(spriteName));
             entity.AddComponent(new HealthComponent(entity, health));
             entity.AddComponent(new CombatManagementComponent(entity, 8));
             entity.AddComponent(new MovementComponent(entity, map));
@@ -51,6 +52,7 @@ namespace ShaRPG.Entity {
                 entity.AddComponent(new DialogComponent(entity, Dialog.FromXElement(name, avatar,
                                                                                     dialogElem, dialogOpener)));
             }
+
             return entity;
         }
     }

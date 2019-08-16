@@ -1,5 +1,6 @@
 ﻿using System;
 using SFML.Graphics;
+using ShaRPG.Entity.Components.Messages;
 
 namespace ShaRPG.Entity.Components {
     public abstract class AbstractComponent : IComponent {

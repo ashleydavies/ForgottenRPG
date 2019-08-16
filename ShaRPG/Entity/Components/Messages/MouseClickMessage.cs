@@ -1,6 +1,6 @@
 ﻿using ShaRPG.Util.Coordinate;
 
-namespace ShaRPG.Entity.Components {
+namespace ShaRPG.Entity.Components.Messages {
     public class MouseClickMessage : IComponentMessage {
         public readonly GameCoordinate MousePosition;
         

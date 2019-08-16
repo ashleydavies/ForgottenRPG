@@ -1,4 +1,4 @@
-﻿namespace ShaRPG.Entity.Components {
+﻿namespace ShaRPG.Entity.Components.Messages {
     public class TurnStartedMessage : IComponentMessage {
         
     }

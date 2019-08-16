@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using ShaRPG.Entity.Components.Messages;
 using ShaRPG.Map;
 using ShaRPG.Util.Coordinate;
 
