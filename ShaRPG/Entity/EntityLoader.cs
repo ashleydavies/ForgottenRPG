@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using ShaRPG.Entity.Components;
-using ShaRPG.EntityDialog;
+using ShaRPG.Entity.Dialog;
 using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util.Coordinate;
@@ -49,7 +49,7 @@ namespace ShaRPG.Entity {
             entity.AddComponent(new InventoryComponent(entity));
             if (path.Count > 0) entity.AddComponent(new PathFollowingComponent(entity, path));
             if (dialogElem != null) {
-                entity.AddComponent(new DialogComponent(entity, Dialog.FromXElement(name, avatar,
+                entity.AddComponent(new DialogComponent(entity, Dialog.Dialog.FromXElement(name, avatar,
                                                                                     dialogElem, dialogOpener)));
             }
 

@@ -1,6 +1,6 @@
 using SFML.Graphics;
 using SFML.System;
-using ShaRPG.EntityDialog;
+using ShaRPG.Entity.Dialog;
 using ShaRPG.GUI;
 using ShaRPG.Service;
 using ShaRPG.Util.Coordinate;

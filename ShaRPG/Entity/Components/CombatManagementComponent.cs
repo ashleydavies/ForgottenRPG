@@ -10,7 +10,7 @@ namespace ShaRPG.Entity.Components {
                                              IMessageHandler<TurnStartedMessage>, IMessageHandler<MovedMessage>,
                                              IMessageHandler<SkipTurnMessage> {
         public int MaxAp { get; }
-        public int Ap    { get; private set; }
+        public int Ap { get; private set; }
 
         public CombatManagementComponent(GameEntity entity, int ap) : base(entity) {
             MaxAp = ap;

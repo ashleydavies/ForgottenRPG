@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ShaRPG.EntityDialog {
+namespace ShaRPG.Entity.Dialog {
     public class DialogReply {
         public string Prompt { get; }
         private readonly List<DialogAction> _actions;
