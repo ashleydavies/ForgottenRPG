@@ -12,12 +12,15 @@ namespace ShaRPG.Entity {
     public class EntityLoader {
         private readonly string _directory;
         private readonly EntityManager _entityManager;
+        private readonly FactionManager _factionManager;
         private readonly ITextureStore _textureStore;
 
-        public EntityLoader(string directory, EntityManager entityManager, ITextureStore textureStore) {
-            _directory     = directory;
+        public EntityLoader(string directory, EntityManager entityManager, FactionManager factionManager,
+                            ITextureStore textureStore) {
+            _directory = directory;
             _entityManager = entityManager;
-            _textureStore  = textureStore;
+            _factionManager = factionManager;
+            _textureStore = textureStore;
         }
 
         public GameEntity LoadEntity(string fileName, GameMap map, TileCoordinate position,
@@ -31,10 +34,11 @@ namespace ShaRPG.Entity {
 
             var entityInformation = document.Element("Entity");
 
-            string name         = entityInformation?.Attribute("name")?.Value;
-            string avatar       = entityInformation?.Attribute("avatar")?.Value;
+            string name = entityInformation?.Attribute("name")?.Value;
+            string avatar = entityInformation?.Attribute("avatar")?.Value;
             string healthString = entityInformation?.Attribute("maxHealth")?.Value;
-            string spriteName   = entityInformation?.Element("EntityTextureInformation")?.Attribute("name")?.Value;
+            string spriteName = entityInformation?.Element("EntityTextureInformation")?.Attribute("name")?.Value;
+            string factionName = entityInformation?.Element("Faction")?.Value ?? FactionManager.Neutral;
 
             if (spriteName == null || name == null || avatar == null || !int.TryParse(healthString, out var health)) {
                 throw new EntityException($"Unable to load entity {fileName}");
@@ -44,13 +48,13 @@ namespace ShaRPG.Entity {
             var entity =
                 new GameEntity(_entityManager, name, position, _textureStore.GetNewSprite(spriteName));
             entity.AddComponent(new HealthComponent(entity, health));
-            entity.AddComponent(new CombatManagementComponent(entity, 8));
+            entity.AddComponent(new CombatComponent(entity, 8, _factionManager, factionName));
             entity.AddComponent(new MovementComponent(entity, map));
             entity.AddComponent(new InventoryComponent(entity));
             if (path.Count > 0) entity.AddComponent(new PathFollowingComponent(entity, path));
             if (dialogElem != null) {
                 entity.AddComponent(new DialogComponent(entity, Dialog.Dialog.FromXElement(name, avatar,
-                                                                                    dialogElem, dialogOpener)));
+                                                                                           dialogElem, dialogOpener)));
             }
 
             return entity;

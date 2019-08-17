@@ -24,7 +24,7 @@ namespace ShaRPG.Entity.Components {
         public MovementComponent(GameEntity entity, IPathCreator pathCreator) : base(entity) {
             // An entity cannot move if it does not know how to handle its movement in combat mode (importantly, this
             //   does not imply that it can fight.)
-            Dependency<CombatManagementComponent>();
+            Dependency<CombatComponent>();
             _pathCreator = pathCreator;
             _targetPosition = _previousPosition = entity.Position;
         }

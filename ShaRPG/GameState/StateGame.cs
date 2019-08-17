@@ -20,6 +20,7 @@ namespace ShaRPG.GameState {
         private readonly MapLoader _mapLoader;
         private readonly EntityLoader _entityLoader;
         private readonly EntityManager _entityManager;
+        private readonly FactionManager _factionManager;
         private readonly ItemManager _itemManager;
         private readonly ClickManager _clickManager = new ClickManager();
         private readonly Dictionary<Keyboard.Key, (bool repeat, Action<float> action)> _keyMappings;
@@ -37,7 +38,8 @@ namespace ShaRPG.GameState {
             _textureStore = textureStore;
             _itemManager = itemManager;
             _entityManager = new EntityManager(this);
-            _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, textureStore);
+            _factionManager = new FactionManager();
+            _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, _factionManager, textureStore);
             _mapLoader = new MapLoader(Config.MapDataDirectory, mapTileStore, _itemManager);
             _map = _mapLoader.LoadMap(0, this);
             _map.SpawnEntities(_entityLoader);
