@@ -1,4 +1,5 @@
 ﻿using ShaRPG.Entity.Components.Messages;
+using ShaRPG.Service;
 
 namespace ShaRPG.Entity.Components {
     /// <summary>
@@ -6,15 +7,20 @@ namespace ShaRPG.Entity.Components {
     /// Mainly, it maintains the current and max AP of the entity and allows other components to query the current AP
     /// and make changes to it (e.g. the move component decreases it each step).
     /// </summary>
-    public class CombatManagementComponent : AbstractComponent,
-                                             IMessageHandler<TurnStartedMessage>, IMessageHandler<MovedMessage>,
-                                             IMessageHandler<SkipTurnMessage> {
+    public class CombatComponent : AbstractComponent,
+                                   IMessageHandler<TurnStartedMessage>, IMessageHandler<MovedMessage>,
+                                   IMessageHandler<SkipTurnMessage> {
         public int MaxAp { get; }
         public int Ap { get; private set; }
 
-        public CombatManagementComponent(GameEntity entity, int ap) : base(entity) {
+        private readonly FactionManager _factionManager;
+
+        public CombatComponent(GameEntity entity, int ap, FactionManager factionManager,
+                               string faction) : base(entity) {
             MaxAp = ap;
-            Ap    = 0;
+            Ap = 0;
+            _factionManager = factionManager;
+            _factionManager.RegisterEntity(entity, faction);
         }
 
         public void Message(MovedMessage message) {

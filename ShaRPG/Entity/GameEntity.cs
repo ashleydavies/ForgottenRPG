@@ -12,7 +12,7 @@ namespace ShaRPG.Entity {
         public string Name { get; }
         public int Id { get; }
         public TileCoordinate Position { get; set; }
-        public bool ActionBlocked() => _manager.FightMode && GetComponent<CombatManagementComponent>().Ap <= 0;
+        public bool ActionBlocked() => _manager.FightMode && GetComponent<CombatComponent>().Ap <= 0;
 
         private readonly Sprite _sprite;
         private readonly List<IComponent> _components = new List<IComponent>();
@@ -57,6 +57,10 @@ namespace ShaRPG.Entity {
 
         public bool MouseOver(GameCoordinate position) {
             return position.Overlaps(RenderPosition, _sprite.TextureRect.Width, _sprite.TextureRect.Height);
+        }
+
+        public override string ToString() {
+            return $"GameEntity<{Name}>";
         }
     }
 }
