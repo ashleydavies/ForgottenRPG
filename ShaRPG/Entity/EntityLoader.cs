@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -56,6 +57,7 @@ namespace ShaRPG.Entity {
                 entity.AddComponent(new DialogComponent(entity, Dialog.Dialog.FromXElement(name, avatar,
                                                                                            dialogElem, dialogOpener)));
             }
+            entity.AddComponent(new AttackComponent(entity));
 
             return entity;
         }

@@ -1,4 +1,5 @@
-﻿using ShaRPG.Entity.Components.Messages;
+﻿using System;
+using ShaRPG.Entity.Components.Messages;
 using ShaRPG.Service;
 
 namespace ShaRPG.Entity.Components {
