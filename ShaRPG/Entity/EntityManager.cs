@@ -24,10 +24,10 @@ namespace ShaRPG.Entity {
 
         public EntityManager(StateGame gameState) {
             _gameState = gameState;
-            _nextId    = 0;
-            _playerId  = -1;
-            FightMode  = false;
-            _entities  = new Dictionary<int, GameEntity>();
+            _nextId = 0;
+            _playerId = -1;
+            FightMode = false;
+            _entities = new Dictionary<int, GameEntity>();
         }
 
         public int GetNextId(GameEntity e) {
@@ -77,7 +77,12 @@ namespace ShaRPG.Entity {
 
             foreach (GameEntity e in _entities.Values) {
                 if (e.MouseOver(translateCoordinates)) {
-                    e.SendMessage(new MouseClickMessage(translateCoordinates));
+                    // TODO: Don't automatically attack allies on click
+                    if (FightMode) {
+                        Player.SendMessage(new AttackMessage(e));
+                    } else {
+                        e.SendMessage(new PlayerInteractMessage(translateCoordinates));
+                    }
 
                     // Only one entity can be clicked - return once we found it
                     return;

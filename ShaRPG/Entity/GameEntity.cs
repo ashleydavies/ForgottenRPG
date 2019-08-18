@@ -62,5 +62,9 @@ namespace ShaRPG.Entity {
         public override string ToString() {
             return $"GameEntity<{Name}>";
         }
+
+        public bool IsAdjacent(GameEntity other) {
+            return Position.ManhattanDistance(other.Position) == 1;
+        }
     }
 }

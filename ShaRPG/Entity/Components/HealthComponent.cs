@@ -1,18 +1,20 @@
 using System;
 using SFML.Graphics;
 using SFML.System;
+using ShaRPG.Entity.Components.Messages;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 using Color = SFML.Graphics.Color;
 
 namespace ShaRPG.Entity.Components {
-    public class HealthComponent : AbstractComponent {
+    public class HealthComponent : AbstractComponent, IMessageHandler<DamageMessage> {
         private float Health {
             get => _health;
             set {
                 if (Dead) throw new EntityException(_entity, "Dead entity HP should not change");
 
                 _health = Math.Min(value, _maxHealth);
+                Console.WriteLine($"{_entity.Name} now has {_health} health");
 
                 if (Dead) Death?.Invoke();
             }
@@ -34,6 +36,7 @@ namespace ShaRPG.Entity.Components {
         }
 
         public override void Update(float delta) {
+            if (_entity.FightMode) return;
             Health += delta;
         }
         
@@ -47,6 +50,10 @@ namespace ShaRPG.Entity.Components {
                 renderSurface.Draw(barBackground);
                 renderSurface.Draw(barForeground);
             });
+        }
+
+        public void Message(DamageMessage message) {
+            Health -= message.Amount;
         }
     }
 }
