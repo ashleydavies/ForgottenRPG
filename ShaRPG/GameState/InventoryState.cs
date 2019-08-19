@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -12,6 +11,10 @@ using ShaRPG.Util.Coordinate;
 namespace ShaRPG.GameState {
     public partial class InventoryState : AbstractGameState {
         private readonly GuiWindow _guiWindow;
+        private readonly GuiWindow _tooltipWindow;
+        private readonly TextContainer _tooltipTitle;
+        private readonly SpriteContainer _tooltipSprite;
+        private readonly TextContainer _tooltipText;
         private readonly Inventory _inventory;
         private static readonly Vector2i Size = new Vector2i(WindowSizeX, WindowSizeY);
         private readonly SpriteContainer[] _inventoryItemContainers = new SpriteContainer[Inventory.MaxSize];
@@ -69,10 +72,28 @@ namespace ShaRPG.GameState {
             }
 
             UpdateNearbyItemSprites();
+            
+            _tooltipWindow = new GuiWindow(textureStore, new Vector2i(0, 0), new Vector2i(60 * 5, 60 * 3));
+            {
+                _tooltipTitle = new TextContainer("Title", 32);
+                _tooltipSprite = new SpriteContainer(new Sprite());
+                _tooltipText = new TextContainer("Hello, world", 18);
+                
+                var tooltipSplitBottom = new ColumnContainer(ColumnContainer.Side.Left, 80);
+                tooltipSplitBottom.SetLeftComponent(_tooltipSprite);
+                tooltipSplitBottom.SetRightComponent(_tooltipText);
+                
+                var tooltipSplit = new VerticalFlowContainer();
+                tooltipSplit.AddComponent(_tooltipTitle);
+                tooltipSplit.AddComponent(new PaddingContainer(8, null));
+                tooltipSplit.AddComponent(tooltipSplitBottom);
+                
+                _tooltipWindow.AddComponent(new PaddingContainer(8, tooltipSplit));
+            }
         }
 
         private void SlotClicked(int pos) {
-            ServiceLocator.LogService.Log(LogType.Information, $"Clicked inventory slot {pos}");
+            ServiceLocator.LogService.Log(LogType.Info, $"Clicked inventory slot {pos}");
 
             ItemStack inSlot = _inventory.ItemStack(pos);
 
@@ -100,8 +121,7 @@ namespace ShaRPG.GameState {
         }
 
         private void NearbySlotClicked(int pos) {
-            ServiceLocator.LogService.Log(LogType.Information, $"Clicked nearby slot {pos}");
-
+            ServiceLocator.LogService.Log(LogType.Info, $"Clicked nearby slot {pos}");
 
             if (_heldItemStack != null) {
                 _positionalItemStorage.DropItem(_playerPosition, _heldItemStack);
@@ -139,6 +159,16 @@ namespace ShaRPG.GameState {
 
         public override void Render(RenderTarget renderSurface) {
             _guiWindow.Render(renderSurface);
+
+            for (var i = 0; i < _inventoryItemContainers.Length; i++) {
+                TryRenderTooltip(renderSurface, _inventoryItemContainers[i], _inventory.ItemStack(i));
+            }
+
+            for (var i = 0; i < _nearbyItemContainers.Length; i++) {
+                if (NearbyItems.Count <= i) break;
+                TryRenderTooltip(renderSurface, _nearbyItemContainers[i], NearbyItems[i]);
+            }
+
             if (_heldItemStack != null) {
                 renderSurface.Draw(new Sprite(_heldItemStack.Item.Texture) {
                     Position = Game.MousePosition - new ScreenCoordinate(ItemManager.SpriteSize) / 2
@@ -146,10 +176,21 @@ namespace ShaRPG.GameState {
             }
         }
 
+        private void TryRenderTooltip(RenderTarget renderSurface, SpriteContainer slot, ItemStack itemStack) {
+            if (!slot.IsMouseOver(Game.MousePosition)) return;
+            _tooltipTitle.Contents = itemStack.Item.DisplayName;
+            _tooltipText.Contents = itemStack.Item.Description;
+            // TODO: Can this be converted to a render matrix in SpriteContainer or something?
+            _tooltipSprite.Sprite = new Sprite(itemStack.Item.Texture) { Scale = new Vector2f(2, 2) };
+
+            _tooltipWindow.ScreenPosition = Game.MousePosition + new ScreenCoordinate(32, 32);
+            _tooltipWindow.Render(renderSurface);
+        }
+
         public override void Clicked(ScreenCoordinate coordinates) {
             if (_guiWindow.IsMouseOver(coordinates)) _guiWindow.Clicked(coordinates);
         }
 
-        public override void MouseWheelMoved(int delta) { }
+        public override void MouseWheelMoved(float delta) { }
     }
 }

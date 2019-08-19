@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ShaRPG.VM;
 
-namespace ShaRPG.EntityDialog {
+namespace ShaRPG.Entity.Dialog {
     public abstract class DialogAction {
         public abstract void Execute(Dialog dialog);
     }

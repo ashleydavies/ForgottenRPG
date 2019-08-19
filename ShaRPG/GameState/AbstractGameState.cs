@@ -25,6 +25,6 @@ namespace ShaRPG.GameState {
         }
 
         public abstract void Clicked(ScreenCoordinate coordinates);
-        public abstract void MouseWheelMoved(int delta);
+        public abstract void MouseWheelMoved(float delta);
     }
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using SFML.Graphics;
 using ShaRPG.Entity.Components;
+using ShaRPG.Entity.Components.Messages;
 using ShaRPG.Map;
 using ShaRPG.Service;
 using ShaRPG.Util.Coordinate;
@@ -11,26 +12,34 @@ namespace ShaRPG.Entity {
         public string Name { get; }
         public int Id { get; }
         public TileCoordinate Position { get; set; }
+        public bool ActionBlocked() => _manager.FightMode && GetComponent<CombatComponent>().Ap <= 0;
+
         private readonly Sprite _sprite;
         private readonly List<IComponent> _components = new List<IComponent>();
-        private GameCoordinate RenderPosition => (GameCoordinate) Position + RenderOffset;
+        private EntityManager _manager;
+
+        public GameCoordinate RenderPosition => (GameCoordinate) Position + RenderOffset;
 
         private GameCoordinate RenderOffset => new GameCoordinate(-_sprite.TextureRect.Width / 2,
                                                                   -_sprite.TextureRect.Height + MapTile.Height / 2)
                                                + GetComponent<MovementComponent>()?.RenderOffset;
 
-        public GameEntity(IEntityIdAssigner idAssigner, string name, TileCoordinate position, Sprite sprite) {
+        public bool FightMode => _manager.FightMode;
+
+        public GameEntity(EntityManager manager, string name, TileCoordinate position, Sprite sprite) {
             Name = name;
             Position = position;
             _sprite = sprite;
-            Id = idAssigner.GetNextId(this);
+            _manager = manager;
+            Id = manager.GetNextId(this);
 
-            ServiceLocator.LogService.Log(LogType.Information, $"Entity {name} spawned at {Position}");
+            ServiceLocator.LogService.Log(LogType.Info, $"Entity {name} spawned at {Position}");
         }
 
         public void AddComponent(IComponent component) => _components.Add(component);
         public void AddComponents(params IComponent[] components) => components.ToList().ForEach(AddComponent);
         public T GetComponent<T>() where T : class, IComponent => _components.OfType<T>().FirstOrDefault();
+        public List<IComponent> GetComponents() => _components;
 
         public void Update(float delta) {
             _components.ForEach(x => x.Update(delta));
@@ -48,6 +57,14 @@ namespace ShaRPG.Entity {
 
         public bool MouseOver(GameCoordinate position) {
             return position.Overlaps(RenderPosition, _sprite.TextureRect.Width, _sprite.TextureRect.Height);
+        }
+
+        public override string ToString() {
+            return $"GameEntity<{Name}>";
+        }
+
+        public bool IsAdjacent(GameEntity other) {
+            return Position.ManhattanDistance(other.Position) == 1;
         }
     }
 }

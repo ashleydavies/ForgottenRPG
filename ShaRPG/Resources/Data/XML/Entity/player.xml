@@ -2,4 +2,5 @@
 <Entity name="Player" avatar="player" maxHealth="100">
     <!-- Temporary format - Will eventually be a way of loading animations from sheets for walking / attacking -->
     <EntityTextureInformation name="player" />
+    <Faction>PLAYER</Faction>
 </Entity>

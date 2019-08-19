@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-namespace ShaRPG.EntityDialog {
+namespace ShaRPG.Entity.Dialog {
     public class Dialog {
         public readonly string Name;
         public string Graphic => $"ui_avatar_{_graphicName}";
@@ -45,20 +45,20 @@ namespace ShaRPG.EntityDialog {
                         XElement reply = dialog.XPathSelectElement($"./Replies/Reply[@id='{replyId}']");
                         replies.Add(replyId, LoadReply(reply));
                     }
-                    
+
                     nodeReplies.Add(replies[replyId]);
                 }
-                
+
                 nodes.Add(nodeId, new DialogNode(nodeReplies, prompt));
             }
-            
+
             return new Dialog(name, graphic, dialogOpener, nodes);
         }
 
         private static DialogReply LoadReply(XElement reply) {
             string prompt = reply.Elements("Prompt").FirstOrDefault()?.Value.Trim() ?? "";
             List<DialogAction> replyActions = new List<DialogAction>();
-            
+
             foreach (XElement replyAction in reply.Elements("Action")) {
                 switch (replyAction.Attribute("type")?.Value) {
                     case "changeNode":
@@ -73,7 +73,7 @@ namespace ShaRPG.EntityDialog {
                         break;
                 }
             }
-            
+
             return new DialogReply(prompt, replyActions);
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+using ShaRPG.Entity;
 using ShaRPG.GameState;
 using ShaRPG.Items;
 using ShaRPG.Map;
@@ -37,12 +38,16 @@ namespace ShaRPG {
 
             _window.Closed += (sender, args)
                 => _window.Close();
-            _window.MouseWheelMoved += (sender, args)
+            _window.MouseWheelScrolled += (sender, args)
                 => _gameStates.Peek().MouseWheelMoved(args.Delta);
             _window.MouseButtonReleased += (sender, args)
                 => _gameStates.Peek().Clicked(new ScreenCoordinate(args.X, args.Y));
 
-            SetGameState(new StateGame(this, windowSize, _textureStore, _mapTileStore, _itemManager));
+            try {
+                SetGameState(new StateGame(this, windowSize, _textureStore, _mapTileStore, _itemManager));
+            } catch (EntityException e) {
+                SetGameState(new ExceptionState(this, e, windowSize, _textureStore));
+            }
 
             while (_window.IsOpen) {
                 _window.DispatchEvents();

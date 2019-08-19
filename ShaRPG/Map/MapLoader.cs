@@ -75,7 +75,7 @@ namespace ShaRPG.Map {
                 );
             }
 
-            ServiceLocator.LogService.Log(LogType.Information, $"Loaded {spawnPoints.Count} spawn points");
+            ServiceLocator.LogService.Log(LogType.Info, $"Loaded {spawnPoints.Count} spawn points");
             return spawnPoints;
         }
 
@@ -91,7 +91,7 @@ namespace ShaRPG.Map {
                 foreach (var pathElem in pathElements) {
                     path.Add(new TileCoordinate(int.Parse(pathElem.Attribute("x").Value) / 32,
                                                 int.Parse(pathElem.Attribute("y").Value) / 32));
-                    ServiceLocator.LogService.Log(LogType.Information, $"Pathing point {path[path.Count - 1]}");
+                    ServiceLocator.LogService.Log(LogType.Info, $"Pathing point {path[path.Count - 1]}");
                 }
             }
 
@@ -118,7 +118,7 @@ namespace ShaRPG.Map {
                 items.Add((new ItemStack(_itemManager.GetItem(name), quantity), position));
             }
 
-            ServiceLocator.LogService.Log(LogType.Information, $"Loaded {items.Count} map-based items");
+            ServiceLocator.LogService.Log(LogType.Info, $"Loaded {items.Count} map-based items");
 
             return items;
         }

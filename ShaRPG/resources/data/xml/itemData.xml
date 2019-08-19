@@ -6,4 +6,10 @@
             <Damage>3</Damage>
         </Modifiers>
     </Item>
+    <Item Id="1" Name="Frog Sword" Type="MeleeWeapon" Codename="frog_sword">
+        <Description>A sword said to have been wielded by the great frog warriors of old</Description>
+        <Modifiers>
+            <Damage>2147483647</Damage>
+        </Modifiers>
+    </Item>
 </Items>
