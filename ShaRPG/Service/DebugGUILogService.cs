@@ -1,5 +1,4 @@
-﻿using System;
-using ShaRPG.GUI;
+﻿using ShaRPG.GUI;
 
 namespace ShaRPG.Service {
     internal class DebugGuiLogService : ILogService {
