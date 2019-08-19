@@ -1,5 +1,4 @@
 using System;
-using OpenTK.Graphics;
 using ShaRPG.Entity.Components.Messages;
 using ShaRPG.Service;
 
