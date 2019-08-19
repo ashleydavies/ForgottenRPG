@@ -61,11 +61,11 @@ namespace ShaRPG.Entity.Components {
 
         public void Message(CombatStartMessage message) {
             // End movement lerping
-            /*if (!_targetPosition.Equals(_entity.Position)) {
-                _entity.Position = _pathCreator.GetPath(_entity.Position, _targetPosition)?[0] ?? _entity.Position;
+            if (!_targetPosition.Equals(_entity.Position)) {
+                //_entity.Position = _pathCreator.GetPath(_entity.Position, _targetPosition)?[0] ?? _entity.Position;
                 _targetPosition = _entity.Position;
                 _positionLerpTime = 0.0f;
-            }*/
+            }
         }
 
         private enum MoveState {

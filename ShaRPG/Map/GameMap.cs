@@ -67,7 +67,7 @@ namespace ShaRPG.Map {
 
         public void Clicked(ScreenCoordinate coordinates) {
             ServiceLocator.LogService.Log(
-                LogType.Information,
+                LogType.Info,
                 $"Clicked map at {(TileCoordinate) _game.TranslateCoordinates(coordinates)}"
             );
             _game.MovePlayer(_game.TranslateCoordinates(coordinates));

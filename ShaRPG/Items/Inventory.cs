@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using ShaRPG.Map;
+using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Items {
     public class Inventory {
@@ -39,6 +41,14 @@ namespace ShaRPG.Items {
 
             _items[pos] = null;
             return itemStack;
+        }
+
+        public void DropAllItems(IPositionalItemStorage area, GameCoordinate position) {
+            foreach (var itemStack in _items) {
+                if (itemStack != null) {
+                    area.DropItem(position, itemStack);
+                }
+            }
         }
     }
 }

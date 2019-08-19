@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -7,6 +8,7 @@ using ShaRPG.Entity;
 using ShaRPG.Entity.Components;
 using ShaRPG.Entity.Components.Messages;
 using ShaRPG.Entity.Dialog;
+using ShaRPG.GUI;
 using ShaRPG.Items;
 using ShaRPG.Map;
 using ShaRPG.Service;
@@ -16,6 +18,7 @@ using ShaRPG.Util.Coordinate;
 namespace ShaRPG.GameState {
     public class StateGame : AbstractGameState, IOpenDialog {
         private GameEntity Player => _entityManager.Player;
+        private readonly DebugGUI _debugGui;
         private readonly GameMap _map;
         private readonly MapLoader _mapLoader;
         private readonly EntityLoader _entityLoader;
@@ -46,6 +49,8 @@ namespace ShaRPG.GameState {
             _clickManager.Register(ClickPriority.Entity, _entityManager);
             _clickManager.Register(ClickPriority.Map, _map);
 
+            _debugGui = new DebugGUI(textureStore);
+
             _keyMappings = new Dictionary<Keyboard.Key, (bool, Action<float>)> {
                 {
                     Keyboard.Key.Up,
@@ -73,9 +78,20 @@ namespace ShaRPG.GameState {
             if (Player == null) throw new EntityException("No player was created during map loading time");
 
             Player.GetComponent<InventoryComponent>().Inventory
-                   .PickupItem(new ItemStack(_itemManager.GetItem("iron_longsword"), 1));
+                  .PickupItem(new ItemStack(_itemManager.GetItem("iron_longsword"), 1));
+
+            // Give everyone a frog sword -- to test item drops
+            foreach (var entity in _entityManager.Entities) {
+                entity.GetComponent<InventoryComponent>().Inventory
+                      .PickupItem(new ItemStack(_itemManager.GetItem("frog_sword"), 1));
+            }
 
             _gameCenter = (GameCoordinate) Player.Position;
+
+            ServiceLocator.LogService = new MultiLogService(new List<ILogService> {
+                ServiceLocator.LogService,
+                new DebugGuiLogService(_debugGui)
+            });
         }
 
         public override void Update(float delta) {
@@ -104,6 +120,7 @@ namespace ShaRPG.GameState {
                 _entityManager.Render(renderSurface);
             });
             _fpsCounter.Render(renderSurface);
+            _debugGui.Render(renderSurface);
         }
 
         public override void Clicked(ScreenCoordinate coordinates) {

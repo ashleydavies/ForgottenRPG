@@ -18,8 +18,8 @@ namespace ShaRPG.Entity.Components {
             if (_target == null || _entity.ActionBlocked()) return;
 
             if (_entity.IsAdjacent(_target)) {
-                ServiceLocator.LogService.Log(LogType.Information, $"{_entity.Name} attacked {_target.Name}");
-                _target.SendMessage(new DamageMessage(new Random().Next(30)));
+                ServiceLocator.LogService.Log(LogType.Info, $"{_entity.Name} attacked {_target.Name}");
+                _target.SendMessage(new DamageMessage(100));
                 SendMessage(new SkipTurnMessage());
             } else {
                 SendMessage(new DestinationMessage(_target.Position));

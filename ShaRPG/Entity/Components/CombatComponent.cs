@@ -10,7 +10,7 @@ namespace ShaRPG.Entity.Components {
     /// </summary>
     public class CombatComponent : AbstractComponent,
                                    IMessageHandler<TurnStartedMessage>, IMessageHandler<MovedMessage>,
-                                   IMessageHandler<SkipTurnMessage> {
+                                   IMessageHandler<SkipTurnMessage>, IMessageHandler<DiedMessage> {
         public int MaxAp { get; }
         public int Ap { get; private set; }
 
@@ -23,6 +23,8 @@ namespace ShaRPG.Entity.Components {
             _factionManager = factionManager;
             _factionManager.RegisterEntity(entity, faction);
         }
+
+        public override void Update(float delta) { }
 
         public void Message(MovedMessage message) {
             Ap--;
@@ -38,6 +40,8 @@ namespace ShaRPG.Entity.Components {
             Ap = 0;
         }
 
-        public override void Update(float delta) { }
+        public void Message(DiedMessage message) {
+            _factionManager.DeregisterEntity(_entity);
+        }
     }
 }

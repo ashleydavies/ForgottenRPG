@@ -2,25 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using SFML.Graphics;
-using ShaRPG.Entity.Components;
 using ShaRPG.Entity.Components.Messages;
 using ShaRPG.GameState;
 using ShaRPG.Util;
 using ShaRPG.Util.Coordinate;
 
 namespace ShaRPG.Entity {
-    public class EntityManager : IClickObserver {
+    public class EntityManager : IClickObserver, ICleanupEntities {
         public bool FightMode { get; private set; }
 
         public GameEntity Player => _playerId >= 0
                                         ? _entities[_playerId]
                                         : throw new EntityException("Unable to determine player - ID not set");
 
+        public IEnumerable<GameEntity> Entities => _entities.Values.ToList();
+
         private readonly StateGame _gameState;
         private readonly Dictionary<int, GameEntity> _entities;
         private int _nextId;
         private int _playerId;
         private Queue<GameEntity> _combatQueue;
+        private List<GameEntity> _deadList = new List<GameEntity>();
 
         public EntityManager(StateGame gameState) {
             _gameState = gameState;
@@ -58,6 +60,11 @@ namespace ShaRPG.Entity {
             foreach (GameEntity e in _entities.Values) {
                 e.Update(delta);
             }
+
+            foreach (GameEntity e in _deadList) {
+                _entities.Remove(e.Id);
+            }
+            _deadList.Clear();
         }
 
         public void Render(RenderTarget renderSurface) {
@@ -122,5 +129,18 @@ namespace ShaRPG.Entity {
             if (!FightMode || _combatQueue.Peek() != Player) return;
             Player.SendMessage(new SkipTurnMessage());
         }
+
+        public void EntityDied(GameEntity entity) {
+            _deadList.Add(entity);
+            
+            if (FightMode) {
+                // Rebuild combat queue without the newly dead entity
+                _combatQueue = new Queue<GameEntity>(_combatQueue.Where(e => e != entity));
+            }
+        }
+    }
+
+    public interface ICleanupEntities {
+        void EntityDied(GameEntity entity);
     }
 }
