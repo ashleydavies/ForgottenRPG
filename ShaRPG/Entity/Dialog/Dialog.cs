@@ -17,10 +17,10 @@ namespace ShaRPG.Entity.Dialog {
         private int _currentNode = 0;
 
         public Dialog(string name, string graphic, IOpenDialog dialogOpener, Dictionary<int, DialogNode> dialogNodes) {
-            Name          = name;
-            _graphicName  = graphic;
+            Name = name;
+            _graphicName = graphic;
             _dialogOpener = dialogOpener;
-            _dialogNodes  = dialogNodes;
+            _dialogNodes = dialogNodes;
         }
 
         public void StartDialog() {
@@ -29,11 +29,11 @@ namespace ShaRPG.Entity.Dialog {
 
         public static Dialog FromXElement(string name, string graphic, XElement dialog, IOpenDialog dialogOpener) {
             Dictionary<int, DialogReply> replies = new Dictionary<int, DialogReply>();
-            Dictionary<int, DialogNode>  nodes   = new Dictionary<int, DialogNode>();
+            Dictionary<int, DialogNode> nodes = new Dictionary<int, DialogNode>();
 
             foreach (XElement node in dialog.XPathSelectElements("./Nodes/Node")) {
-                int               nodeId      = int.Parse(node.Attribute("id")?.Value);
-                string            prompt      = node.Elements("Prompt").FirstOrDefault()?.Value.Trim() ?? "";
+                int nodeId = int.Parse(node.Attribute("id")?.Value);
+                string prompt = node.Elements("Prompt").FirstOrDefault()?.Value.Trim() ?? "";
                 List<DialogReply> nodeReplies = new List<DialogReply>();
 
                 foreach (XElement nodeReply in node.Elements("Reply")) {
@@ -56,7 +56,7 @@ namespace ShaRPG.Entity.Dialog {
         }
 
         private static DialogReply LoadReply(XElement reply) {
-            string             prompt       = reply.Elements("Prompt").FirstOrDefault()?.Value.Trim() ?? "";
+            string prompt = reply.Elements("Prompt").FirstOrDefault()?.Value.Trim() ?? "";
             List<DialogAction> replyActions = new List<DialogAction>();
 
             foreach (XElement replyAction in reply.Elements("Action")) {
@@ -88,7 +88,7 @@ namespace ShaRPG.Entity.Dialog {
         public void EndDialog() {
             OnEnd?.Invoke();
             _currentNode = 0;
-            OnEnd        = null;
+            OnEnd = null;
         }
     }
 
