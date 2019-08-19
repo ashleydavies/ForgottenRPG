@@ -1,4 +1,3 @@
-using System;
 using ShaRPG.Entity.Components.Messages;
 using ShaRPG.Service;
 
