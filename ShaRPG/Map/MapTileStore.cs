@@ -23,7 +23,7 @@ namespace ShaRPG.Map {
 
         public MapTile GetTile(int id) {
             if (!_mapTileDictionary.ContainsKey(id)) {
-                ServiceLocator.LogService.Log(LogType.Information, "Loading tile " + id);
+                ServiceLocator.LogService.Log(LogType.Info, "Loading tile " + id);
                 _mapTileDictionary[id] = LoadTile(id);
                 if (_mapTileDictionary[id] == MapTile.Null) {
                     ServiceLocator.LogService.Log(LogType.Error, "Attempt to load tile " + id + " failed.");

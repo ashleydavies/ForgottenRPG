@@ -33,7 +33,7 @@ namespace ShaRPG.Entity {
             _manager = manager;
             Id = manager.GetNextId(this);
 
-            ServiceLocator.LogService.Log(LogType.Information, $"Entity {name} spawned at {Position}");
+            ServiceLocator.LogService.Log(LogType.Info, $"Entity {name} spawned at {Position}");
         }
 
         public void AddComponent(IComponent component) => _components.Add(component);

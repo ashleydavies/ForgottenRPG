@@ -25,6 +25,10 @@ namespace ShaRPG.Entity {
                 _entities.Add(entity);
             }
 
+            public void DeregisterEntity(GameEntity entity) {
+                _entities.Remove(entity);
+            }
+
             public int GetRelationship(Faction other) {
                 if (_relationships.ContainsKey(other)) return _relationships[other];
                 return _baseRelationship;
@@ -73,7 +77,7 @@ namespace ShaRPG.Entity {
 
             _factions[factionName].RegisterEntity(entity);
             _userLookup[entity] = _factions[factionName];
-            ServiceLocator.LogService.Log(LogType.Information, $"Registered {entity} to {_factions[factionName]}");
+            ServiceLocator.LogService.Log(LogType.Info, $"Registered {entity} to {_factions[factionName]}");
         }
 
         public Faction GetFaction(GameEntity entity) {
@@ -82,6 +86,11 @@ namespace ShaRPG.Entity {
             }
 
             return _userLookup[entity];
+        }
+
+        public void DeregisterEntity(GameEntity entity) {
+            _userLookup[entity].DeregisterEntity(entity);
+            _userLookup.Remove(entity);
         }
     }
 }

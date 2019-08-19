@@ -3,7 +3,7 @@
         NullObject,
         Warning,
         Error,
-        Information
+        Info
     }
 
     public interface ILogService {
