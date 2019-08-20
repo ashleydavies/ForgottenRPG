@@ -6,14 +6,6 @@
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Resources\Image\mapIcons.pdn" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\Image\mapIcons.pdn">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <None Update="Resources\Data\properties\IntDataFriendlyNames.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -85,9 +77,6 @@
     </None>
     <None Update="Resources\Image\mapIcons.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Resources\Image\newmap.pdn">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Image\Resolution.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
