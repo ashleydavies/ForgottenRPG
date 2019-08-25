@@ -7,6 +7,9 @@ using ForgottenRPG.VM;
 
 namespace ScriptCompiler {
     public static class MainClass {
+        public const string ScriptExtension = ".fscr";
+        public const string AssemblyExtension = ".fscrbyte";
+
         public static void Main(string[] args) {
             string fileName;
 
@@ -20,9 +23,9 @@ namespace ScriptCompiler {
             if (args[0] == "compile") {
                 Console.WriteLine(Parser.FromFile(fileName).Compile());
             } else if (args[0] == "assemble") {
-                List<string> compiled = new Assembler(File.ReadLines(fileName + ".shascr").ToList()).Compile();
+                List<string> compiled = new Assembler(File.ReadLines(fileName + ScriptExtension).ToList()).Compile();
 
-                File.WriteAllLines($"{fileName}.shascrbyte", compiled);
+                File.WriteAllLines($"{fileName}{AssemblyExtension}", compiled);
                 Console.WriteLine("Completed output:");
 
                 string bytecodeString = string.Join(",", compiled);

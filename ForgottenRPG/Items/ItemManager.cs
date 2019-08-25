@@ -25,9 +25,10 @@ namespace ForgottenRPG.Items {
                 string description = itemElement.Element("Description").Value;
 
                 if (type == "MeleeWeapon") {
-                    _itemDictionary.Add(id,
-                                        MeleeWeapon.Load(id, name, codename, description,
-                                                         itemElement.Element("Modifiers"), textureStore));
+                    _itemDictionary.Add(
+                        id,
+                        MeleeWeapon.Load(id, name, codename, description, itemElement.Element("Modifiers"),
+                                         textureStore));
                 }
             }
         }

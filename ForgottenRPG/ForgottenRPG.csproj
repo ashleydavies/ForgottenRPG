@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <StartupObject>ForgottenRPG.Game</StartupObject>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <RootNamespace>ForgottenRPG</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
