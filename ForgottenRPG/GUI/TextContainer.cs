@@ -54,7 +54,7 @@ namespace ForgottenRPG.GUI {
 
                 if (nextIndex == 0) {
                     if (remainingContent[0] == '\n') {
-                        if (previous != null) _textList.Add(previous);
+                        _textList.Add(previous);
                         currentString = "";
                         remainingContent = remainingContent.Substring(1);
                         previous = new Text("", Config.GuiFont, TextSize);
