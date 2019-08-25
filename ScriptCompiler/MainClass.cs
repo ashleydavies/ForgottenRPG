@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ScriptCompiler.Parsing;
-using ShaRPG.VM;
+using ForgottenRPG.VM;
 
 namespace ScriptCompiler {
     public static class MainClass {

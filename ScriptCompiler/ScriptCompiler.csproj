@@ -6,6 +6,6 @@
     <StartupObject>ScriptCompiler.MainClass</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ShaRPG\ShaRPG.csproj" />
+    <ProjectReference Include="..\ForgottenRPG\ForgottenRPG.csproj" />
   </ItemGroup>
 </Project>

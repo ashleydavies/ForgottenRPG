@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ShaRPG.VM;
+using ForgottenRPG.VM;
 
 namespace ScriptCompiler {
     internal enum AssemblyContext {

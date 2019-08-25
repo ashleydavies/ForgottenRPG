@@ -1,5 +1,5 @@
-# ShaRPG [![Build Status](https://travis-ci.com/ashleydavies/Sharpg.svg?branch=develop)](https://travis-ci.com/ashleydavies/Sharpg)
-ShaRPG, or Sharp RPG, is an bad pun, and a total re-write of my [unfinished] Java RPG engine, but in C#.
+# ForgottenRPG [![Build Status](https://travis-ci.com/ashleydavies/Forgottenrpg.svg?branch=develop)](https://travis-ci.com/ashleydavies/Forgottenrpg)
+ForgottenRPG is a game I am building in C# on top of a total re-write of my [unfinished] Java RPG engine.
 
 It is not compatible with the data, as many of the XML formats have changed.
 
@@ -18,6 +18,8 @@ brew install csfml
 ln -s /usr/local/lib/libcsfml-system.2.5.0.dylib /usr/local/lib/libcsfml-system-2.dylib
 ln -s /usr/local/lib/libcsfml-graphics.2.5.0.dylib /usr/local/lib/libcsfml-graphics-2.dylib
 ln -s /usr/local/lib/libcsfml-window.2.5.0.dylib /usr/local/lib/libcsfml-window-2.dylib
+ln -s /usr/local/lib/libcsfml-network.2.5.0.dylib /usr/local/lib/libcsfml-network-2.dylib
+ln -s /usr/local/lib/libcsfml-audio.2.5.0.dylib /usr/local/lib/libcsfml-audio-2.dylib
 ```
 
 # Status
@@ -27,9 +29,9 @@ The following show the completed parts of / technical information about each mai
 
  * Core information
    * Uses XML for maps, entities, etc.
-   * Wraps around the SFML framework (ideally only the Utils namespace should ever reference SFML so the underlying library can be swapped out, but it leaks into a small handful classes currently for convenience)
+   * Uses the SFML framework for rendering, audio, etc.
  * Map loading
-   * Uses Tiled map editor, parsing the XML.
+   * Uses the Tiled map editor, but the game contains its own logic for parsing the XML.
    * Player start location loaded from map
  * Entities
    * Entities based on a component system with inter-component messaging
@@ -65,7 +67,7 @@ The following show the completed parts of / technical information about each mai
 
 Currently, I am working on a higher-level scripting language for the engine, primarily for fun rather than because it will be more helpful than actually implementing important game features.
 
-You can see the progress in ScriptCompiler/, ShaRPG/VM/ and ScriptCompilerTests/ for CI (the first CI in the project!)
+You can see the progress in ScriptCompiler/, ForgottenRPG/VM/ and ScriptCompilerTests/ for CI (the first CI in the project!)
 
 A snippet of code that currently works, compiling into the assembly and then being assembled into the byte code, is:
 
