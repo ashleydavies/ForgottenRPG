@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using ForgottenRPG.Items;
+using SFML.System;
 
 namespace ForgottenRPG.GameState {
     public partial class InventoryState {
@@ -13,6 +15,13 @@ namespace ForgottenRPG.GameState {
         private const int NearbyItemsY = 7;
         private const int TilesEdgeMargin = (WindowSizeX - TilesX * (TileSize + TilesMargin)) / 2;
         private const int NearbyItemSearchDistance = 80;
+
+        private static readonly Vector2i Size = new Vector2i(WindowSizeX, WindowSizeY);
+
+        private static readonly Dictionary<EquipmentSlot, Vector2i> EquipmentPositions =
+            new Dictionary<EquipmentSlot, Vector2i> {
+                { EquipmentSlot.Primary, new Vector2i(100, 300) }
+            };
 
         private List<ItemStack> NearbyItems =>
             _positionalItemStorage.GetItems(_playerPosition, NearbyItemSearchDistance);

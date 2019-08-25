@@ -9,19 +9,18 @@ namespace ForgottenRPG.GameState
 {
     public class ExceptionState : AbstractGameState {
         private readonly GuiWindow _exceptionGuiWindow;
-        private static readonly Vector2i GuiWindowSize = new Vector2i(60 * 9, 60 * 12);
+        private static readonly Vector2i GuiWindowSize = new Vector2i(60 * 12, 60 * 14);
 
         public ExceptionState(Game game, Exception exception, Vector2f windowSize, ITextureStore textureStore)
             : base(game) {
             _exceptionGuiWindow = new GuiWindow(textureStore, (Vector2i) (windowSize / 2), GuiWindowSize);
 
-            var contents = $"Encountered exception. Details:" +
-                           $"Type: {exception.GetType()}" +
-                           $"Message: {exception.Message}";
-            var inner = new PaddingContainer(20);
-            inner.AddComponent(new TextContainer(contents, 18));
+            var contents =
+                $"EXCEPTION\n\n Type: {exception.GetType()}\n Message: {exception.Message}";
+            ServiceLocator.LogService.Log(LogType.Error, contents);
+            
+            var inner = new PaddingContainer(20, new TextContainer(contents, 26));
             _exceptionGuiWindow.AddComponent(inner);
-            Console.WriteLine(contents);
         }
 
         public override void Update(float delta) {

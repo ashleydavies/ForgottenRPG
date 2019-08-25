@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using ForgottenRPG.Util.Coordinate;
 using SFML.Graphics;
@@ -12,6 +13,7 @@ namespace ForgottenRPG.GUI {
         public uint TextSize { get; }
         public override int Height => _textList.Aggregate(0, (h, text) => h + (int) text.CharacterSize) + TotalSpacing;
         public override int Width => Parent?.Width ?? 0;
+
         public string Contents {
             get => _contents;
             set {
@@ -19,6 +21,7 @@ namespace ForgottenRPG.GUI {
                 ReflowAll();
             }
         }
+
         private string _contents;
         private readonly List<Text> _textList = new List<Text>();
         private int TotalSpacing => Math.Max((_textList.Count - 1) * LineSpacing, 0);
@@ -38,27 +41,54 @@ namespace ForgottenRPG.GUI {
         }
 
         public override void Reflow() {
+            Console.WriteLine("Reflow!");
             _textList.Clear();
 
-            Text previous = null;
+            Text previous = new Text("", Config.GuiFont, TextSize);
             string currentString = string.Empty.PadLeft(Indent);
-            
-            foreach (string word in Contents.Split(' ')) {
-                string testString = $"{currentString} {word}";
-                if (currentString == string.Empty) testString = word;
-                Text testText = new Text(testString, Config.GuiFont, TextSize) { 
+
+            // This code used to use Split, which is nicer, but we want to maintain spacing e.g. double spaces
+            string remainingContent = Contents;
+            while (remainingContent.Length > 0) {
+                int nextIndex = remainingContent.IndexOfAny(new[] { '\n', ' ' });
+                if (nextIndex == -1) nextIndex = remainingContent.Length - 1;
+
+                if (nextIndex == 0) {
+                    if (remainingContent[0] == '\n') {
+                        if (previous != null) _textList.Add(previous);
+                        currentString = "";
+                        remainingContent = remainingContent.Substring(1);
+                        previous = new Text("", Config.GuiFont, TextSize);
+                        continue;
+                    }
+
+                    // Just add the single space as a word
+                    nextIndex++;
+                }
+
+                string word = remainingContent.Substring(0, nextIndex);
+                remainingContent = remainingContent.Substring(nextIndex);
+
+                string candidateString = $"{currentString}{word}";
+                Text candidateText = new Text(candidateString, Config.GuiFont, TextSize) {
                     FillColor = Color
                 };
 
-                if (testText.GetLocalBounds().Width > Width) {
-                    if (currentString == string.Empty) return;
+                if (candidateText.GetLocalBounds().Width > Width) {
+                    // TODO: Hyphenate
+                    if (currentString.Trim() == string.Empty) {
+                        if (Width < 12) return;
+                        throw new GuiException(
+                            $"Tried to display text which could not be flowed. Problematic word: '{candidateString}'");
+                    }
+
                     _textList.Add(previous);
                     currentString = word;
                     continue;
                 }
 
-                currentString = testString;
-                previous = testText;
+                currentString = candidateString;
+                previous = candidateText;
             }
 
             if (currentString.Trim() != string.Empty) {
@@ -68,6 +98,8 @@ namespace ForgottenRPG.GUI {
                 if (testText.GetLocalBounds().Width > Width) return;
                 _textList.Add(testText);
             }
+
+            Console.WriteLine(string.Join("\n", _textList.Select(s => s.ToString())));
         }
     }
 }

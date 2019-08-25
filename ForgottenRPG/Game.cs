@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ForgottenRPG.Entity;
@@ -61,6 +62,9 @@ namespace ForgottenRPG {
                     }
                 } catch (EndGameException) {
                     break;
+                } catch (Exception e) {
+                    if (_gameStates.Peek() is ExceptionState) throw;
+;                    SetGameState(new ExceptionState(this, e, windowSize, _textureStore));
                 }
 
                 _window.Display();

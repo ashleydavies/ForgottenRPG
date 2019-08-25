@@ -16,15 +16,19 @@ namespace ForgottenRPG.GameState {
         private readonly SpriteContainer _tooltipSprite;
         private readonly TextContainer _tooltipText;
         private readonly Inventory _inventory;
-        private static readonly Vector2i Size = new Vector2i(WindowSizeX, WindowSizeY);
         private readonly SpriteContainer[] _inventoryItemContainers = new SpriteContainer[Inventory.MaxSize];
         private readonly SpriteContainer[] _nearbyItemContainers = new SpriteContainer[NearbyItemsX * NearbyItemsY];
+        private readonly SpriteContainer[] _equipmentContainers = new SpriteContainer[EquipmentPositions.Count];
         private ItemStack _heldItemStack;
         private readonly IPositionalItemStorage _positionalItemStorage;
         private readonly GameCoordinate _playerPosition;
 
         public InventoryState(Game game, Inventory inventory, IPositionalItemStorage closeItemStorage,
                               GameCoordinate playerPos, Vector2f windowSize, ITextureStore textureStore) : base(game) {
+            if (_equipmentContainers.Length != (int) EquipmentSlot.Count) {
+                throw new InventoryException("InventoryState's understanding of equipment is out of date");
+            }
+            
             _positionalItemStorage = closeItemStorage;
             _playerPosition = playerPos;
             _inventory = inventory;
