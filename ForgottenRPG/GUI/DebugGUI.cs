@@ -6,11 +6,11 @@ using SFML.Graphics;
 using SFML.System;
 
 namespace ForgottenRPG.GUI {
-    public class DebugGUI {
+    public class DebugGui {
         private GuiWindow _window;
         private TextContainer _log;
 
-        public DebugGUI(ITextureStore store) {
+        public DebugGui(ITextureStore store) {
             _window = new GuiWindow(store, new Vector2i(320, 120), new Vector2i(600, 180));
 
             _log = new TextContainer("Debug Log", 16);

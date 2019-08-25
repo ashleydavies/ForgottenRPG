@@ -91,11 +91,7 @@ namespace ForgottenRPG.GUI {
             }
 
             if (currentString.Trim() != string.Empty) {
-                Text testText = new Text(currentString, Config.GuiFont, TextSize) {
-                    FillColor = Color
-                };
-                if (testText.GetLocalBounds().Width > Width) return;
-                _textList.Add(testText);
+                _textList.Add(previous);
             }
         }
     }

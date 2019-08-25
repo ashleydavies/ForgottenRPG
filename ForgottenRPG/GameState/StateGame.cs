@@ -17,7 +17,7 @@ using SFML.Window;
 namespace ForgottenRPG.GameState {
     public class StateGame : AbstractGameState, IOpenDialog {
         private GameEntity Player => _entityManager.Player;
-        private readonly DebugGUI _debugGui;
+        private readonly DebugGui _debugGui;
         private readonly GameMap _map;
         private readonly MapLoader _mapLoader;
         private readonly EntityLoader _entityLoader;
@@ -48,7 +48,7 @@ namespace ForgottenRPG.GameState {
             _clickManager.Register(ClickPriority.Entity, _entityManager);
             _clickManager.Register(ClickPriority.Map, _map);
 
-            _debugGui = new DebugGUI(textureStore);
+            _debugGui = new DebugGui(textureStore);
 
             _keyMappings = new Dictionary<Keyboard.Key, (bool, Action<float>)> {
                 {

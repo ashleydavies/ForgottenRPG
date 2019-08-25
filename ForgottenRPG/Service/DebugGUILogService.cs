@@ -2,9 +2,9 @@
 
 namespace ForgottenRPG.Service {
     internal class DebugGuiLogService : ILogService {
-        private readonly DebugGUI _debugWindow;
+        private readonly DebugGui _debugWindow;
 
-        public DebugGuiLogService(DebugGUI debugWindow) {
+        public DebugGuiLogService(DebugGui debugWindow) {
             _debugWindow = debugWindow;
         }
         public void Log(LogType logType, string content) {
