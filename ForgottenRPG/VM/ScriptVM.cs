@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ForgottenRPG.Service;
 
 namespace ForgottenRPG.VM {
     // Bytecode VM for a small language. 32-bit integers are the smallest atomic unit.
@@ -11,7 +12,7 @@ namespace ForgottenRPG.VM {
         private readonly Flags _flagRegister;
         private readonly Stack<int> _stack;
         private readonly Dictionary<int, IMemoryPage> _memory = new Dictionary<int, IMemoryPage>();
-        public Action<string> PrintMethod { get; set; } = Console.WriteLine;
+        public Action<string> PrintMethod { get; set; } = s => ServiceLocator.LogService.Log(LogType.Info, "VM : " + s);
 
         public ScriptVM(List<int> bytes) {
             _bytes = bytes;

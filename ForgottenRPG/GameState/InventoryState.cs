@@ -28,6 +28,10 @@ namespace ForgottenRPG.GameState {
             if (_equipmentContainers.Length != (int) EquipmentSlot.Count) {
                 throw new InventoryException("InventoryState's understanding of equipment is out of date");
             }
+
+            if (TilesX * TilesY != Inventory.MaxSize) {
+                throw new InventoryException("InventoryState's understanding of inventory size is out of date");
+            }
             
             _positionalItemStorage = closeItemStorage;
             _playerPosition = playerPos;

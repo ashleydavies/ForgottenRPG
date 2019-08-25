@@ -41,7 +41,6 @@ namespace ForgottenRPG.GUI {
         }
 
         public override void Reflow() {
-            Console.WriteLine("Reflow!");
             _textList.Clear();
 
             Text previous = new Text("", Config.GuiFont, TextSize);
@@ -98,8 +97,6 @@ namespace ForgottenRPG.GUI {
                 if (testText.GetLocalBounds().Width > Width) return;
                 _textList.Add(testText);
             }
-
-            Console.WriteLine(string.Join("\n", _textList.Select(s => s.ToString())));
         }
     }
 }
