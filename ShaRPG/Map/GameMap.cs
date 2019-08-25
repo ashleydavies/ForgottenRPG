@@ -18,6 +18,7 @@ namespace ShaRPG.Map {
         private readonly List<GameMapEntitySpawnDetails> _spawnPositions;
         private readonly List<(ItemStack itemStack, GameCoordinate position)> _items;
         private readonly MapTileStore _tileStore;
+        private readonly Random _random = new Random();
         public readonly Vector2I Size;
 
         public MapTile GetTile(TileCoordinate coordinate) => _tileStore.GetTile(TileId(coordinate));
@@ -108,7 +109,19 @@ namespace ShaRPG.Map {
         }
 
         public void DropItem(GameCoordinate position, ItemStack item) {
-            _items.Add((item, position));
+            // If there are nearby items, try to put this item somewhere unique
+            TryDropItem(position, item);
+        }
+
+        // TODO: Identify a number of candidate positions and choose the best (closest) so we can increase density
+        private void TryDropItem(GameCoordinate position, ItemStack item, int retries = 25) {
+            if (retries == 0 || !_items.Any(i => i.position.EuclideanDistance(position) < 16)) {
+                _items.Add((item, position));
+                return;
+            }
+
+            TryDropItem(position + new GameCoordinate(_random.Next(-10, 10), _random.Next(-10, 10)),
+                        item, retries - 1);
         }
 
         public void CollectItem(ItemStack itemStack) {

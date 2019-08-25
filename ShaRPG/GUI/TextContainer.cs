@@ -23,7 +23,7 @@ namespace ShaRPG.GUI {
         private readonly List<Text> _textList = new List<Text>();
         private int TotalSpacing => Math.Max((_textList.Count - 1) * LineSpacing, 0);
 
-        public TextContainer(string contents, uint size = 12) {
+        public TextContainer(string contents, uint size = 16) {
             Contents = contents;
             TextSize = size;
         }

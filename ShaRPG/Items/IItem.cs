@@ -8,5 +8,6 @@ namespace ShaRPG.Items {
         string DisplayName { get; }
         string Description { get; }
         Sprite Texture { get; }
+        int MaxStackSize { get; }
     }
 }

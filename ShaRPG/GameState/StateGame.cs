@@ -83,6 +83,12 @@ namespace ShaRPG.GameState {
             foreach (var entity in _entityManager.Entities) {
                 entity.GetComponent<InventoryComponent>().Inventory
                       .PickupItem(new ItemStack(_itemManager.GetItem("frog_sword"), 1));
+
+                if (entity != Player) {
+                    for (int i = 0; i < 15; i++)
+                        entity.GetComponent<InventoryComponent>().Inventory
+                              .PickupItem(new ItemStack(_itemManager.GetItem("iron_longsword"), 1));
+                }
             }
 
             _gameCenter = (GameCoordinate) Player.Position;

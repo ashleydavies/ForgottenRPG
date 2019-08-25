@@ -13,7 +13,7 @@ namespace ShaRPG.Items {
 
         private MeleeWeapon(int id, string name, string codename, string description, int damage,
                             ITextureStore textureStore)
-            : base(id, name, description, codename, textureStore.GetNewSprite($"ui_item_{codename}")) {
+            : base(id, name, description, codename, textureStore.GetNewSprite($"ui_item_{codename}"), 1) {
             Damage = damage;
         }
     }

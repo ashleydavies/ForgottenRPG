@@ -10,13 +10,15 @@ namespace ShaRPG.Items {
         public string DisplayName => _textInfo.ToTitleCase(Codename.Replace('_', ' '));
         public string Description { get; }
         public Sprite Texture { get; }
+        public int MaxStackSize { get; }
 
-        public AbstractItem(int id, string name, string description, string codename, Sprite sprite) {
+        public AbstractItem(int id, string name, string description, string codename, Sprite sprite, int maxStackSize) {
             Id = id;
             Name = name;
             Description = description;
             Codename = codename;
             Texture = sprite;
+            maxStackSize = maxStackSize;
         }
     }
 }

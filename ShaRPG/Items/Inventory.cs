@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ShaRPG.Map;
 using ShaRPG.Util.Coordinate;
 
@@ -14,11 +15,13 @@ namespace ShaRPG.Items {
         public void PickupItem(ItemStack stack) {
             if (Full) throw new InventoryException("Inventory full, item cannot be added");
 
-            ItemStack existing = _items.ToList().FindAll(s => s?.Item == stack.Item).FirstOrDefault();
+            var existing = new Queue<ItemStack>(_items.ToList().FindAll(s => s?.Item == stack.Item));
 
-            if (existing != null) {
-                existing.Merge(stack);
-            } else {
+            while (stack.Count > 0 && existing.Count > 0) {
+                existing.Dequeue().Merge(stack);
+            }
+
+            if (stack.Count > 0) {
                 _items[_items.ToList().IndexOf(null)] = stack;
             }
         }

@@ -18,7 +18,7 @@ namespace ShaRPG.Util {
         public void Render(RenderTarget renderSurface) {
             renderSurface.Draw(new Text($"FPS: {Fps}", Config.GuiFont) {
                 Position = new Vector2f(0, 0),
-                CharacterSize = 12,
+                CharacterSize = 16,
                 Color = Color.White
             });
         }
