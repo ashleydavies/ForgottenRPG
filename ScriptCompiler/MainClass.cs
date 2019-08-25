@@ -8,7 +8,8 @@ using ForgottenRPG.VM;
 namespace ScriptCompiler {
     public static class MainClass {
         public const string ScriptExtension = ".fscr";
-        public const string AssemblyExtension = ".fscrbyte";
+        public const string BytecodeExtension = ".fscrbyte";
+        public const string AssemblyExtension = ".fscrasm";
 
         public static void Main(string[] args) {
             string fileName;
@@ -23,9 +24,9 @@ namespace ScriptCompiler {
             if (args[0] == "compile") {
                 Console.WriteLine(Parser.FromFile(fileName).Compile());
             } else if (args[0] == "assemble") {
-                List<string> compiled = new Assembler(File.ReadLines(fileName + ScriptExtension).ToList()).Compile();
+                List<string> compiled = new Assembler(File.ReadLines(fileName + AssemblyExtension).ToList()).Compile();
 
-                File.WriteAllLines($"{fileName}{AssemblyExtension}", compiled);
+                File.WriteAllText($"{fileName}{BytecodeExtension}", string.Join(",", compiled));
                 Console.WriteLine("Completed output:");
 
                 string bytecodeString = string.Join(",", compiled);

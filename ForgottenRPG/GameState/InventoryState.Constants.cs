@@ -17,10 +17,11 @@ namespace ForgottenRPG.GameState {
         private const int NearbyItemSearchDistance = 80;
 
         private static readonly Vector2i Size = new Vector2i(WindowSizeX, WindowSizeY);
+        private static readonly Vector2i PlayerSpritePosition = new Vector2i(120, 20);
 
         private static readonly Dictionary<EquipmentSlot, Vector2i> EquipmentPositions =
             new Dictionary<EquipmentSlot, Vector2i> {
-                { EquipmentSlot.Primary, new Vector2i(100, 300) }
+                { EquipmentSlot.Primary, new Vector2i(90, 220) }
             };
 
         private List<ItemStack> NearbyItems =>

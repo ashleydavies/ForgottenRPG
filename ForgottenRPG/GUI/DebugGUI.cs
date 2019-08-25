@@ -11,9 +11,9 @@ namespace ForgottenRPG.GUI {
         private TextContainer _log;
 
         public DebugGui(ITextureStore store) {
-            _window = new GuiWindow(store, new Vector2i(320, 120), new Vector2i(600, 180));
+            _window = new GuiWindow(store, new Vector2i(350, 200), new Vector2i(660, 300));
 
-            _log = new TextContainer("Debug Log", 16);
+            _log = new TextContainer("Debug Log", 22);
             _window.AddComponent(new PaddingContainer(10, _log));
         }
 
@@ -21,7 +21,7 @@ namespace ForgottenRPG.GUI {
             _log.Contents = String.Join("\n", 
                                         _log.Contents
                                             .Split("\n")
-                                            .TakeLast(8)
+                                            .TakeLast(10)
                                             .Concat(new List<string> { text }));
         }
 

@@ -31,7 +31,7 @@ namespace ForgottenRPG.Items {
 
             // If the stacks are the same item, attempt to merge them.
             if (EquippedItem(slot) == stack) {
-                _equipped[slotId].Merge(stack);
+                _equipped[slotId]?.Merge(stack);
                 return stack;
             }
 

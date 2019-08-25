@@ -16,6 +16,9 @@ namespace ForgottenRPG.GUI {
 
         public FixedContainer() { }
 
+        public FixedContainer(Vector2i position, IGuiComponent component)
+            : this(position.X, position.Y, component) { }
+
         public FixedContainer(int top, int left, IGuiComponent component) {
             Top = top;
             Left = left;

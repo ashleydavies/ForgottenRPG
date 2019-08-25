@@ -1,4 +1,4 @@
-﻿.data
+.data
 STRING loopmsg Looping...
 STRING endmsg Finished looping!
 .text
@@ -7,7 +7,7 @@ LABEL START
 CMP r1 5
 JEQ END
 
-PRINT loopmsg
+PRINT !loopmsg
 
 ADD r6 1
 
@@ -15,4 +15,4 @@ INC r1
 JMP START
 LABEL END
 
-PRINT endmsg
+PRINT !endmsg

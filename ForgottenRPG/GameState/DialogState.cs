@@ -46,9 +46,9 @@ namespace ForgottenRPG.GameState
 
         private void InitialiseText() {
             _textContainer.Clear();
-            _textContainer.AddComponent(new TextContainer(_dialog.Name, 24));
+            _textContainer.AddComponent(new TextContainer(_dialog.Name, 26));
             _textContainer.AddComponent(new PaddingContainer(10, null));
-            _textContainer.AddComponent(new TextContainer(_dialog.Prompt, 16) {
+            _textContainer.AddComponent(new TextContainer(_dialog.Prompt, 22) {
                 Indent = 4,
                 LineSpacing = 2
             });
@@ -58,7 +58,7 @@ namespace ForgottenRPG.GameState
                 int replyIndex = 0;
                 _dialog.Replies.ForEach(reply => {
                     _textContainer.AddComponent(new PaddingContainer(3, null));
-                    TextContainer replyTextContainer = new TextContainer($"{replyIndex + 1}. {reply}", 16) {
+                    TextContainer replyTextContainer = new TextContainer($"{replyIndex + 1}. {reply}", 22) {
                         Color = Color.Blue
                     };
                     int index = replyIndex;

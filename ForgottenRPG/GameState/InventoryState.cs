@@ -11,17 +11,26 @@ using SFML.Window;
 namespace ForgottenRPG.GameState {
     public partial class InventoryState : AbstractGameState {
         private readonly GuiWindow _guiWindow;
-        private readonly GuiWindow _tooltipWindow;
-        private readonly TextContainer _tooltipTitle;
-        private readonly SpriteContainer _tooltipSprite;
-        private readonly TextContainer _tooltipText;
         private readonly Inventory _inventory;
         private readonly SpriteContainer[] _inventoryItemContainers = new SpriteContainer[Inventory.MaxSize];
         private readonly SpriteContainer[] _nearbyItemContainers = new SpriteContainer[NearbyItemsX * NearbyItemsY];
         private readonly SpriteContainer[] _equipmentContainers = new SpriteContainer[EquipmentPositions.Count];
-        private ItemStack _heldItemStack;
         private readonly IPositionalItemStorage _positionalItemStorage;
         private readonly GameCoordinate _playerPosition;
+        private GuiWindow _tooltipWindow;
+        private TextContainer _tooltipTitle;
+        private SpriteContainer _tooltipSprite;
+        private TextContainer _tooltipText;
+        private ItemStack _heldItemStack;
+
+        private ItemStack HeldItemStack {
+            get => _heldItemStack;
+            set {
+                if (value == null) Game.ShowMouse();
+                else Game.HideMouse();
+                _heldItemStack = value;
+            }
+        }
 
         public InventoryState(Game game, Inventory inventory, IPositionalItemStorage closeItemStorage,
                               GameCoordinate playerPos, Vector2f windowSize, ITextureStore textureStore) : base(game) {
@@ -32,72 +41,22 @@ namespace ForgottenRPG.GameState {
             if (TilesX * TilesY != Inventory.MaxSize) {
                 throw new InventoryException("InventoryState's understanding of inventory size is out of date");
             }
-            
+
             _positionalItemStorage = closeItemStorage;
             _playerPosition = playerPos;
             _inventory = inventory;
 
             _guiWindow = new GuiWindow(textureStore, (Vector2i) (windowSize / 2), Size);
+            var playerSprite = textureStore.GetNewSprite("ui_avatar_player");
+            playerSprite.Scale = new Vector2f(6, 6);
+            _guiWindow.AddComponent(new FixedContainer(PlayerSpritePosition, new SpriteContainer(playerSprite)));
 
             Sprite itemSlotSprite = textureStore.GetNewSprite("ui_item_slot");
 
-            for (int y = 0; y < TilesY; y++) {
-                for (int x = 0; x < TilesX; x++) {
-                    int pos = y * TilesX + x;
-                    int xPosition = TilesEdgeMargin + x * (TileSize + TilesMargin);
-                    int yPosition = WindowSizeY - TilesEdgeMargin - (TilesY - y) * (TileSize + TilesMargin);
-
-                    SpriteContainer slotContainer = new SpriteContainer(itemSlotSprite);
-                    slotContainer.OnClicked += _ => SlotClicked(pos);
-
-                    _guiWindow.AddComponent(new FixedContainer(xPosition, yPosition, slotContainer));
-
-                    _inventoryItemContainers[pos] = new SpriteContainer(inventory.ItemStack(pos) != null
-                                                                            ? inventory.ItemStack(pos).Item.Texture
-                                                                            : new Sprite());
-                    _guiWindow.AddComponent(new FixedContainer(xPosition + TileSize / 2 - ItemManager.SpriteSizeX / 2,
-                                                               yPosition + TileSize / 2 - ItemManager.SpriteSizeY / 2,
-                                                               _inventoryItemContainers[pos]));
-                }
-            }
-
-            for (int y = 0; y < NearbyItemsY; y++) {
-                for (int x = 0; x < NearbyItemsX; x++) {
-                    int pos = y * NearbyItemsX + x;
-                    int xPosition = WindowSizeX - TilesEdgeMargin - (2 - x) * (TileSize + TilesMargin);
-                    int yPosition = TilesEdgeMargin + TilesMargin + y * (TileSize + TilesMargin);
-
-                    SpriteContainer slotContainer = new SpriteContainer(itemSlotSprite);
-                    slotContainer.OnClicked += _ => NearbySlotClicked(pos);
-
-                    _guiWindow.AddComponent(new FixedContainer(xPosition, yPosition, slotContainer));
-
-                    _nearbyItemContainers[pos] = new SpriteContainer(new Sprite());
-                    _guiWindow.AddComponent(new FixedContainer(xPosition + TileSize / 2 - ItemManager.SpriteSizeX / 2,
-                                                               yPosition + TileSize / 2 - ItemManager.SpriteSizeY / 2,
-                                                               _nearbyItemContainers[pos]));
-                }
-            }
-
-            UpdateNearbyItemSprites();
-            
-            _tooltipWindow = new GuiWindow(textureStore, new Vector2i(0, 0), new Vector2i(60 * 5, 60 * 3));
-            {
-                _tooltipTitle = new TextContainer("Title", 32);
-                _tooltipSprite = new SpriteContainer(new Sprite());
-                _tooltipText = new TextContainer("Hello, world", 18);
-                
-                var tooltipSplitBottom = new ColumnContainer(ColumnContainer.Side.Left, 80);
-                tooltipSplitBottom.SetLeftComponent(_tooltipSprite);
-                tooltipSplitBottom.SetRightComponent(_tooltipText);
-                
-                var tooltipSplit = new VerticalFlowContainer();
-                tooltipSplit.AddComponent(_tooltipTitle);
-                tooltipSplit.AddComponent(new PaddingContainer(8, null));
-                tooltipSplit.AddComponent(tooltipSplitBottom);
-                
-                _tooltipWindow.AddComponent(new PaddingContainer(8, tooltipSplit));
-            }
+            InitialiseInventorySlots(inventory, itemSlotSprite);
+            InitialiseNearbyItemSlots(itemSlotSprite);
+            InitialiseTooltip(textureStore);
+            InitialiseEquipmentSlots(itemSlotSprite);
         }
 
         private void SlotClicked(int pos) {
@@ -106,44 +65,45 @@ namespace ForgottenRPG.GameState {
             ItemStack inSlot = _inventory.ItemStack(pos);
 
             // If there is nothing in the slot and they are not holding an item, we have nothing to do
-            if (inSlot == null && _heldItemStack == null) {
+            if (inSlot == null && HeldItemStack == null) {
                 return;
             }
 
             // Otherwise, handle the cases of dropping into an empty slot, dropping into an occupied slot, or collecting
             //  from an occupied slot.
-            if (_heldItemStack != null && inSlot == null) {
-                _inventory.InsertToSlot(pos, _heldItemStack);
-                _heldItemStack = null;
-                Game.ShowMouse();
-            } else if (_heldItemStack != null) {
-                var previouslyHeldItem = _heldItemStack;
-                _heldItemStack = _inventory.RemoveFromSlot(pos);
+            if (HeldItemStack != null && inSlot == null) {
+                _inventory.InsertToSlot(pos, HeldItemStack);
+                HeldItemStack = null;
+            } else if (HeldItemStack != null) {
+                var previouslyHeldItem = HeldItemStack;
+                HeldItemStack = _inventory.RemoveFromSlot(pos);
                 _inventory.InsertToSlot(pos, previouslyHeldItem);
             } else if (inSlot != null) {
-                _heldItemStack = _inventory.RemoveFromSlot(pos);
-                Game.HideMouse();
+                HeldItemStack = _inventory.RemoveFromSlot(pos);
             }
 
             _inventoryItemContainers[pos].Sprite = _inventory.ItemStack(pos)?.Item?.Texture ?? new Sprite();
         }
 
+        private void EquipmentSlotClicked(EquipmentSlot slot) {
+            HeldItemStack = _inventory.EquipItem(HeldItemStack, slot);
+            _equipmentContainers[(int) slot].Sprite = _inventory.EquippedItem(slot)?.Item?.Texture ?? new Sprite();
+        }
+
         private void NearbySlotClicked(int pos) {
             ServiceLocator.LogService.Log(LogType.Info, $"Clicked nearby slot {pos}");
 
-            if (_heldItemStack != null) {
-                _positionalItemStorage.DropItem(_playerPosition, _heldItemStack);
-                _heldItemStack = null;
+            if (HeldItemStack != null) {
+                _positionalItemStorage.DropItem(_playerPosition, HeldItemStack);
+                HeldItemStack = null;
                 UpdateNearbyItemSprites();
-                Game.ShowMouse();
             } else {
                 ItemStack inSlot = pos < NearbyItems.Count ? NearbyItems[pos] : null;
 
                 if (inSlot != null) {
-                    _heldItemStack = inSlot;
+                    HeldItemStack = inSlot;
                     _positionalItemStorage.CollectItem(inSlot);
                     UpdateNearbyItemSprites();
-                    Game.HideMouse();
                 }
             }
         }
@@ -177,8 +137,12 @@ namespace ForgottenRPG.GameState {
                 TryRenderTooltip(renderSurface, _nearbyItemContainers[i], NearbyItems[i]);
             }
 
-            if (_heldItemStack != null) {
-                renderSurface.Draw(new Sprite(_heldItemStack.Item.Texture) {
+            for (var i = 0; i < _equipmentContainers.Length; i++) {
+                TryRenderTooltip(renderSurface, _equipmentContainers[i], _inventory.EquippedItem((EquipmentSlot) i));
+            }
+
+            if (HeldItemStack != null) {
+                renderSurface.Draw(new Sprite(HeldItemStack.Item.Texture) {
                     Position = Game.MousePosition - new ScreenCoordinate(ItemManager.SpriteSize) / 2
                 });
             }

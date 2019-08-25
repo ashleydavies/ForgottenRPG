@@ -175,11 +175,17 @@
             <position x="84" y="0"/>
             <size width="48" height="48"/>
         </ImageResolution>
-        
+
 
         <ImageResolution id="10500" name="ui_avatar_farmer_joe" texture="4">
             <position x="0" y="0"/>
             <size width="64" height="128"/>
+        </ImageResolution>
+        
+        <!-- TODO: Make a proper player inventory sprite -->
+        <ImageResolution id="10501" name="ui_avatar_player" texture="1">
+            <position x="0" y="0"/>
+            <size width="32" height="64"/>
         </ImageResolution>
 
         
