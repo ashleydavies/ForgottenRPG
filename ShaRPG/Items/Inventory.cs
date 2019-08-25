@@ -26,6 +26,7 @@ namespace ShaRPG.Items {
             }
         }
 
+        // TODO: This / the users of this method does / do not follow maximum stack size rules properly
         public void InsertToSlot(int slot, ItemStack insert) {
             if (slot > MaxSize || _items[slot] != null && _items[slot].Item != insert.Item) {
                 throw new InventoryException("Unable to insert item into designated inventory slot");
