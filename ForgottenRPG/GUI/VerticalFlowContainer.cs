@@ -43,7 +43,7 @@ namespace ForgottenRPG.GUI {
             throw new GuiException($"{child} is not a child of vertical flow container");
         }
 
-        public void Clicked(ScreenCoordinate coordinates) {
+        public override void Clicked(ScreenCoordinate coordinates) {
             base.Clicked(coordinates);
             _components.ForEach(c => {
                 if (c.IsMouseOver(coordinates)) c.Clicked(coordinates);

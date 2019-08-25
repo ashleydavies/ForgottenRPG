@@ -60,7 +60,7 @@ namespace ForgottenRPG.GameState {
                     int yPosition = TilesEdgeMargin + TilesMargin + y * (TileSize + TilesMargin);
 
                     SpriteContainer slotContainer = new SpriteContainer(itemSlotSprite);
-                    slotContainer.OnClicked += _ => NearbySlotClicked(0);
+                    slotContainer.OnClicked += _ => NearbySlotClicked(pos);
 
                     _guiWindow.AddComponent(new FixedContainer(xPosition, yPosition, slotContainer));
 

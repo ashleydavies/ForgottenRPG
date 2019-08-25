@@ -48,11 +48,11 @@ namespace ForgottenRPG.GUI {
             return Parent.ChildScreenPosition(this) + new ScreenCoordinate(Top, Left);
         }
 
-        public bool IsMouseOver(ScreenCoordinate coordinates) {
+        public override bool IsMouseOver(ScreenCoordinate coordinates) {
             return coordinates.Overlaps(ScreenPosition + new ScreenCoordinate(Top, Left), Width, Height);
         }
 
-        public void Clicked(ScreenCoordinate coordinates) {
+        public override void Clicked(ScreenCoordinate coordinates) {
             foreach (IGuiComponent component in _components.Where(x => x.IsMouseOver(coordinates))) {
                 component.Clicked(coordinates);
             }

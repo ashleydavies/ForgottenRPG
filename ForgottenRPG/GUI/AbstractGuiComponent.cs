@@ -29,7 +29,7 @@ namespace ForgottenRPG.GUI {
             component.Reflow();
         }
 
-        public bool IsMouseOver(ScreenCoordinate coordinates) {
+        public virtual bool IsMouseOver(ScreenCoordinate coordinates) {
             return coordinates.Overlaps(ScreenPosition, Width, Height);
         }
 

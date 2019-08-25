@@ -18,7 +18,7 @@ namespace ForgottenRPG.Items {
             Description = description;
             Codename = codename;
             Texture = sprite;
-            maxStackSize = maxStackSize;
+            MaxStackSize = maxStackSize;
         }
     }
 }

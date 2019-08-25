@@ -66,7 +66,7 @@ namespace ForgottenRPG.GUI {
             _right.AddComponent(component);
         }
 
-        public void Clicked(ScreenCoordinate coordinates) {
+        public override void Clicked(ScreenCoordinate coordinates) {
             base.Clicked(coordinates);
             if (coordinates.X < ScreenPosition.X + LeftWidth) _left.Clicked(coordinates);
             else _right.Clicked(coordinates);

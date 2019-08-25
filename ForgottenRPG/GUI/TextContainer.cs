@@ -46,8 +46,8 @@ namespace ForgottenRPG.GUI {
             foreach (string word in Contents.Split(' ')) {
                 string testString = $"{currentString} {word}";
                 if (currentString == string.Empty) testString = word;
-                Text testText = new Text(testString, Config.GuiFont, TextSize) {
-                    Color = Color
+                Text testText = new Text(testString, Config.GuiFont, TextSize) { 
+                    FillColor = Color
                 };
 
                 if (testText.GetLocalBounds().Width > Width) {
@@ -63,7 +63,7 @@ namespace ForgottenRPG.GUI {
 
             if (currentString.Trim() != string.Empty) {
                 Text testText = new Text(currentString, Config.GuiFont, TextSize) {
-                    Color = Color
+                    FillColor = Color
                 };
                 if (testText.GetLocalBounds().Width > Width) return;
                 _textList.Add(testText);
