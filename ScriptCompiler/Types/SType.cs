@@ -29,7 +29,18 @@ namespace ScriptCompiler.Types {
         /// <summary>
         /// Returns a type from a type string (e.g. from 'int x = 5;'), returning SNoType if no type could be decided on
         /// </summary>
-        public static SType FromTypeString(string nodeTypeString, UserTypeRepository utr) {
+        public static SType FromTypeString(string nodeTypeString, UserTypeRepository utr, int pointerDepth = 0) {
+            SType type = FromTypeString(nodeTypeString, utr);
+            if (ReferenceEquals(type, SNoType)) return type;
+            while (pointerDepth > 0) {
+                pointerDepth--;
+                type = new ReferenceType(type);
+            }
+
+            return type;
+        }
+
+        private static SType FromTypeString(string nodeTypeString, UserTypeRepository utr) {
             switch (nodeTypeString) {
                 case "int":
                     return SInteger;

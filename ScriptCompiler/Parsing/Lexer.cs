@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
+using static ScriptCompiler.Parsing.Consts;
 
 namespace ScriptCompiler.Parsing {
     public class Lexer {
@@ -11,7 +11,7 @@ namespace ScriptCompiler.Parsing {
         private static readonly char[] Symbols = {
             '+', '-', '*', '/', '=', ';',
             '<', '>', '[', ']', '{', '}',
-            '(', ')', '.', ','
+            '(', ')', '.', ',', ADDR_CHAR, DEREF_CHAR
         };
 
         private static readonly Dictionary<char, char[]> MultiCharSymbols = new Dictionary<char, char[]> {
@@ -246,6 +246,10 @@ namespace ScriptCompiler.Parsing {
 
         public SymbolToken(int line, int position, string symbol) : base(line, position) {
             Symbol = symbol;
+        }
+
+        public bool IsChar(char symbol) {
+            return symbol.ToString() == Symbol;
         }
 
         protected override string StringRepresentation() {

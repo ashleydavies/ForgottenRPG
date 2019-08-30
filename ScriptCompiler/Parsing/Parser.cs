@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ScriptCompiler.AST;
@@ -190,13 +191,16 @@ namespace ScriptCompiler.Parsing {
         private ExpressionNode ParseBinaryExpressionNode(ExpressionNode leftSide, SymbolToken binOp) {
             switch (binOp.Symbol) {
                 case "+":
-                    return new AdditionNode(leftSide, ParseExpressionPrecedence(Precedence.TERM));
                 case "-":
                     return new SubtractionNode(leftSide, ParseExpressionPrecedence(Precedence.TERM));
                 case "*":
                     return new MultiplicationNode(leftSide, ParseExpressionPrecedence(Precedence.FACTOR));
                 case "/":
                     return new DivisionNode(leftSide, ParseExpressionPrecedence(Precedence.FACTOR));
+            }
+            
+            return binOp.Symbol switch {
+                "+" => return new AdditionNode(leftSide, ParseExpressionPrecedence(Precedence.TERM)),
             }
 
             throw new NotImplementedException();

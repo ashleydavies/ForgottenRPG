@@ -39,6 +39,10 @@ func Player getPlayer() {
     Player player;
     player.health = 5;
     player.skills.fortitude = 12;
+    
+    Player@ playerRef = @player;
+    playerRef->health = 10;
+    
     return player;
 }
 
