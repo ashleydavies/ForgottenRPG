@@ -17,7 +17,7 @@ namespace ForgottenRPG.Entity.Components {
 
             if (_entity.IsAdjacent(_target)) {
                 ServiceLocator.LogService.Log(LogType.Info, $"{_entity.Name} attacked {_target.Name}");
-                _target.SendMessage(new DamageMessage(100));
+                _target.SendMessage(new DamageMessage(100, _entity));
                 SendMessage(new SkipTurnMessage());
             } else {
                 SendMessage(new DestinationMessage(_target.Position));

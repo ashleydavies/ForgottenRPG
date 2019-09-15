@@ -44,6 +44,8 @@ namespace ForgottenRPG.Entity {
 
         /// <summary>
         /// The neutral faction represents an entity who has no particular allegiance to any faction.
+        /// To make handling relationships easier, the neutral faction is a special case: any entity registered to
+        /// neutral is actually given their own unique faction, NEUTRAL_(GUID), which is considered "equal" to neutral.
         /// </summary>
         public const string Neutral = "NEUTRAL";
 
@@ -64,15 +66,19 @@ namespace ForgottenRPG.Entity {
 
         public FactionManager() {
             _factions.Add(Player, new Faction(Player));
-            _factions.Add(Neutral, new Faction(Neutral));
             _factions.Add(Hostile, new Faction(Hostile, 10 * HostilityRelationshipValue));
         }
 
         public void RegisterEntity(GameEntity entity, string factionName) {
-            if (!_factions.ContainsKey(factionName)) {
+            if (!_factions.ContainsKey(factionName) && factionName != Neutral) {
                 throw new ArgumentException($"No such faction {factionName} to assign to {entity.Name}");
             }
 
+            if (factionName == Neutral) {
+                factionName = $"{Neutral}_{Guid.NewGuid()}";
+                _factions[factionName] = new Faction(factionName);
+            }
+            
             _factions[factionName].RegisterEntity(entity);
             _userLookup[entity] = _factions[factionName];
             ServiceLocator.LogService.Log(LogType.Info, $"Registered {entity} to {_factions[factionName]}");

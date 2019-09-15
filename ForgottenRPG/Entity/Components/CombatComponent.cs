@@ -8,7 +8,8 @@ namespace ForgottenRPG.Entity.Components {
     /// </summary>
     public class CombatComponent : AbstractComponent,
                                    IMessageHandler<TurnStartedMessage>, IMessageHandler<MovedMessage>,
-                                   IMessageHandler<SkipTurnMessage>, IMessageHandler<DiedMessage> {
+                                   IMessageHandler<SkipTurnMessage>, IMessageHandler<DiedMessage>,
+    IMessageHandler<DamageMessage> {
         public int MaxAp { get; }
         public int Ap { get; private set; }
 
@@ -40,6 +41,10 @@ namespace ForgottenRPG.Entity.Components {
 
         public void Message(DiedMessage message) {
             _factionManager.DeregisterEntity(_entity);
+        }
+
+        public void Message(DamageMessage message) {
+            
         }
     }
 }
