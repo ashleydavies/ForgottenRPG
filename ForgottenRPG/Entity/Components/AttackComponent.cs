@@ -13,11 +13,11 @@ namespace ForgottenRPG.Entity.Components {
 
         public override void Update(float delta) {
             // TODO: Should components just not update if ActionBlocked..?
-            if (_target == null || _entity.ActionBlocked()) return;
+            if (_target == null || Entity.ActionBlocked()) return;
 
-            if (_entity.IsAdjacent(_target)) {
-                ServiceLocator.LogService.Log(LogType.Info, $"{_entity.Name} attacked {_target.Name}");
-                _target.SendMessage(new DamageMessage(100, _entity));
+            if (Entity.IsAdjacent(_target)) {
+                ServiceLocator.LogService.Log(LogType.Info, $"{Entity.Name} attacked {_target.Name}");
+                _target.SendMessage(new DamageMessage(100, Entity));
                 SendMessage(new SkipTurnMessage());
             } else {
                 SendMessage(new DestinationMessage(_target.Position));

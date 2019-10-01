@@ -14,18 +14,18 @@ namespace ForgottenRPG.Entity.Components {
         private float Health {
             get => _health;
             set {
-                if (Dead) throw new EntityException(_entity, "Dead entity HP should not change");
+                if (Dead) throw new EntityException(Entity, "Dead entity HP should not change");
 
                 float oldVal = _health;
                 _health = Math.Clamp(value, 0, _maxHealth);
                 if (_health < oldVal) {
-                    ServiceLocator.LogService.Log(LogType.Info, $"{_entity.Name} now has {_health} health");
+                    ServiceLocator.LogService.Log(LogType.Info, $"{Entity.Name} now has {_health} health");
                 }
 
                 if (Dead) {
-                    ServiceLocator.LogService.Log(LogType.Info, $"{_entity.Name} has died");
+                    ServiceLocator.LogService.Log(LogType.Info, $"{Entity.Name} has died");
                     SendMessage(new DiedMessage());
-                    _caretaker.EntityDied(_entity);
+                    _caretaker.EntityDied(Entity);
                 }
             }
         }
@@ -47,18 +47,18 @@ namespace ForgottenRPG.Entity.Components {
         }
 
         public override void Update(float delta) {
-            if (_entity.FightMode) return;
+            if (Entity.FightMode) return;
 
             if (Health < _maxHealth) Health += delta;
         }
 
         public override void Render(RenderTarget renderSurface) {
             // Only render health bars during fight mode
-            if (!_entity.FightMode) return;
+            if (!Entity.FightMode) return;
 
             barForeground.Size = new Vector2f(_health / _maxHealth * 64, 10);
 
-            renderSurface.WithOffset(_entity.RenderPosition - new GameCoordinate(16, 24), () => {
+            renderSurface.WithOffset(Entity.RenderPosition - new GameCoordinate(16, 24), () => {
                 renderSurface.Draw(barBackground);
                 renderSurface.Draw(barForeground);
             });

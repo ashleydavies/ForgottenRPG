@@ -40,7 +40,7 @@ namespace ForgottenRPG.Entity.Components {
         }
 
         public void Message(DiedMessage message) {
-            _factionManager.DeregisterEntity(_entity);
+            _factionManager.DeregisterEntity(Entity);
         }
 
         public void Message(DamageMessage message) {
