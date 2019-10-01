@@ -108,9 +108,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SFML.Audio.NetCore" Version="1.0.0" />
-    <PackageReference Include="SFML.Graphics.NetCore" Version="1.0.0" />
-    <PackageReference Include="SFML.System.NetCore" Version="1.0.0" />
-    <PackageReference Include="SFML.Window.NetCore" Version="1.0.0" />
+    <PackageReference Include="SFML.Graphics" Version="2.5.0" />
+    <PackageReference Include="SFML.Net" Version="2.5.0" />
+    <PackageReference Include="SFML.System" Version="2.5.0" />
   </ItemGroup>
 </Project>
