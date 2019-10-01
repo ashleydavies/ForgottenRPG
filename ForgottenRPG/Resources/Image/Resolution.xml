@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<Resolutions>
+    <NamespaceResolutions>
+        <NamespaceResolution id="0" name="Tiles"/>
+        <NamespaceResolution id="1" name="Entities"/>
+        <NamespaceResolution id="2" name="UI"/>
+    </NamespaceResolutions>
+    
+    <TextureResolutions>
+        <TextureResolution id="0" namespace="0">
+            <name>tiles</name>
+            <extension>png</extension>
+        </TextureResolution>
+
+        <TextureResolution id="1" namespace="1">
+            <name>player</name>
+            <extension>png</extension>
+        </TextureResolution>
+
+        <TextureResolution id="2" namespace="1">
+            <name>farmerjoe</name>
+            <extension>png</extension>
+        </TextureResolution>
+
+        <TextureResolution id="3" namespace="2">
+            <name>ui</name>
+            <extension>png</extension>
+        </TextureResolution>
+
+        <TextureResolution id="4" namespace="2">
+            <name>avatars</name>
+            <extension>png</extension>
+        </TextureResolution>
+
+        <TextureResolution id="5" namespace="2">
+            <name>items</name>
+            <extension>png</extension>
+        </TextureResolution>
+    </TextureResolutions>
+    
+    <ImageResolutions>
+        <ImageResolution id="0" name="blank" texture="0">
+            <position x="0" y="0"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="1" name="grass" texture="0">
+            <position x="0" y="33"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="2" name="stone" texture="0">
+            <position x="0" y="66"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="3" name="borderOverlay" texture="0">
+            <position x="0" y="99"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="4" name="fowSeen" texture="0">
+            <position x="0" y="132"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="5" name="fowUnseen" texture="0">
+            <position x="0" y="165"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="6" name="cursorResolution" texture="0">
+            <position x="0" y="198"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="20" name="water_1" texture="0">
+            <position x="65" y="0"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="21" name="water_2" texture="0">
+            <position x="65" y="33"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="22" name="water_3" texture="0">
+            <position x="65" y="66"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="23" name="water_4" texture="0">
+            <position x="65" y="99"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="40" name="dirt" texture="0">
+            <position x="130" y="0"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="41" name="tilledDirt" texture="0">
+            <position x="130" y="33"/>
+            <size width="65" height="33"/>
+        </ImageResolution>
+        
+        <ImageResolution id="60" name="treeAlive" texture="0">
+            <position x="195" y="0"/>
+            <size width="65" height="66"/>
+        </ImageResolution>
+
+        <ImageResolution id="61" name="treeDead" texture="0">
+            <position x="195" y="66"/>
+            <size width="65" height="66"/>
+        </ImageResolution>
+
+        
+        <ImageResolution id="1000" name="player" texture="1">
+            <position x="0" y="0"/>
+            <size width="32" height="64"/>
+        </ImageResolution>
+
+        <ImageResolution id="1001" name="farmerjoe_texture" texture="2">
+            <position x="0" y="0"/>
+            <size width="32" height="64"/>
+        </ImageResolution>
+
+        
+        <ImageResolution id="10000" name="ui_corner_tl" texture="3">
+            <position x="0" y="0"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+        
+        <ImageResolution id="10001" name="ui_corner_tr" texture="3">
+            <position x="12" y="0"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+        
+        <ImageResolution id="10002" name="ui_corner_bl" texture="3">
+            <position x="0" y="12"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+
+        <ImageResolution id="10003" name="ui_corner_br" texture="3">
+            <position x="12" y="12"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+
+        <ImageResolution id="10004" name="ui_side_l" texture="3">
+            <position x="0" y="24"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+
+        <ImageResolution id="10005" name="ui_side_r" texture="3">
+            <position x="12" y="36"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+
+        <ImageResolution id="10006" name="ui_side_t" texture="3">
+            <position x="12" y="24"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+
+        <ImageResolution id="10007" name="ui_side_b" texture="3">
+            <position x="0" y="36"/>
+            <size width="12" height="12"/>
+        </ImageResolution>
+
+        <ImageResolution id="10008" name="ui_background" texture="3">
+            <position x="24" y="0"/>
+            <size width="60" height="60"/>
+        </ImageResolution>
+
+        <ImageResolution id="10008" name="ui_item_slot" texture="3">
+            <position x="84" y="0"/>
+            <size width="48" height="48"/>
+        </ImageResolution>
+
+
+        <ImageResolution id="10500" name="ui_avatar_farmer_joe" texture="4">
+            <position x="0" y="0"/>
+            <size width="64" height="128"/>
+        </ImageResolution>
+        
+        <!-- TODO: Make a proper player inventory sprite -->
+        <ImageResolution id="10501" name="ui_avatar_player" texture="1">
+            <position x="0" y="0"/>
+            <size width="32" height="64"/>
+        </ImageResolution>
+
+        
+        <ImageResolution id="110000" name="ui_item_iron_longsword" texture="5">
+            <position x="0" y="0"/>
+            <size width="32" height="32"/>
+        </ImageResolution>
+
+        <ImageResolution id="110001" name="ui_item_frog_sword" texture="5">
+            <position x="16" y="0"/>
+            <size width="32" height="32"/>
+        </ImageResolution>
+    </ImageResolutions>
+    
+</Resolutions>

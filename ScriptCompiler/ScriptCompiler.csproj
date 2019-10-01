@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <LangVersion>7.3</LangVersion>
     <StartupObject>ScriptCompiler.MainClass</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ShaRPG\ShaRPG.csproj" />
+    <ProjectReference Include="..\ForgottenRPG\ForgottenRPG.csproj" />
   </ItemGroup>
 </Project>

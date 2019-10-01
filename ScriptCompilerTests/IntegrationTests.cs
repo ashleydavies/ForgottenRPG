@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ScriptCompiler;
 using ScriptCompiler.Parsing;
-using ShaRPG.VM;
+using ForgottenRPG.VM;
 using Xunit;
 
 namespace ScriptCompilerTests {

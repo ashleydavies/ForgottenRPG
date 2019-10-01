@@ -1,7 +1,7 @@
 language: csharp
-dist: trusty
+dist: bionic
 mono: none
-dotnet: 2.1.402
+dotnet: 2.2
 
 install:
 - dotnet restore
@@ -9,5 +9,3 @@ install:
 script:
 - dotnet build
 - dotnet test ScriptCompilerTests
-
-

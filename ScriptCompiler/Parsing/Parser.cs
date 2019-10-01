@@ -44,7 +44,7 @@ namespace ScriptCompiler.Parsing {
             _infixExpressionParseTable;
 
         public static Parser FromFile(string filename) {
-            return new Parser(File.ReadAllText(filename + ".sscript"));
+            return new Parser(File.ReadAllText(filename + MainClass.ScriptExtension));
         }
 
         public Parser(string contents) {
