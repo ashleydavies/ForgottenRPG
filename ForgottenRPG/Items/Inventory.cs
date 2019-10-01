@@ -6,6 +6,7 @@ using ForgottenRPG.Util.Coordinate;
 namespace ForgottenRPG.Items {
     public enum EquipmentSlot {
         Primary = 0,
+        Headgear = 1,
         Count
     }
 

@@ -21,7 +21,8 @@ namespace ForgottenRPG.GameState {
 
         private static readonly Dictionary<EquipmentSlot, Vector2i> EquipmentPositions =
             new Dictionary<EquipmentSlot, Vector2i> {
-                { EquipmentSlot.Primary, new Vector2i(90, 220) }
+                { EquipmentSlot.Primary, new Vector2i(90, 220) },
+                { EquipmentSlot.Headgear, new Vector2i(120, 30) }
             };
 
         private List<ItemStack> NearbyItems =>
