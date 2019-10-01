@@ -16,7 +16,7 @@ namespace ForgottenRPG.Entity.Components {
         
         // When an entity dies, all its items are dropped nearby on the floor
         public void Message(DiedMessage message) {
-            Inventory.DropAllItems(_itemDropLocation, _entity.Position);
+            Inventory.DropAllItems(_itemDropLocation, Entity.Position);
         }
     }
 }

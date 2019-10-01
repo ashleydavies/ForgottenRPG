@@ -4,32 +4,26 @@ using SFML.Graphics;
 
 namespace ForgottenRPG.Entity.Components {
     public abstract class AbstractComponent : IComponent {
-        protected GameEntity _entity;
+        protected readonly GameEntity Entity;
 
         protected AbstractComponent(GameEntity entity) {
-            _entity = entity;
+            Entity = entity;
         }
 
         public virtual void Render(RenderTarget renderSurface) { }
         public abstract void Update(float delta);
 
-        protected void Dependency<T>() {
-            Dependency(typeof(T));
-        }
-        
-        protected void Dependency(params Type[] types) {
-            foreach (Type type in types) {
-                if (_entity.GetType().GetMethod("GetComponent").MakeGenericMethod(type).Invoke(_entity, null) == null) {
-                    throw new EntityException(
-                        _entity,
-                        $"Component {GetType().Name} has an unresolved dependency on {type.Name}"
-                    );
-                }
+        protected void Dependency<T>() where T : class, IComponent {
+            if (Entity.GetComponent<T>() == null) {
+                throw new EntityException(
+                    Entity,
+                    $"Component {GetType().Name} has an unresolved dependency on {typeof(T).Name}"
+                );
             }
         }
 
         protected void SendMessage<T>(T message) where T : IComponentMessage {
-            _entity.SendMessage(message);
+            Entity.SendMessage(message);
         }
     }
 }
