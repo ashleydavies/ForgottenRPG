@@ -17,7 +17,7 @@ namespace ForgottenRPG.Entity.Components {
             if (Entity.GetComponent<T>() == null) {
                 throw new EntityException(
                     Entity,
-                    $"Component {GetType().Name} has an unresolved dependency on {type.Name}"
+                    $"Component {GetType().Name} has an unresolved dependency on {typeof(T).Name}"
                 );
             }
         }
