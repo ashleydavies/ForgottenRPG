@@ -1,7 +1,7 @@
 ﻿using System.Xml.Linq;
 using ForgottenRPG.Service;
 
-namespace ForgottenRPG.Items {
+namespace ForgottenRPG.Inventories.Items {
     public class MeleeWeapon : AbstractItem, IWeapon {
         public int Damage { get; }
 

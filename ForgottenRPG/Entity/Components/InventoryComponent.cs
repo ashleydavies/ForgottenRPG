@@ -1,5 +1,5 @@
 ﻿using ForgottenRPG.Entity.Components.Messages;
-using ForgottenRPG.Items;
+using ForgottenRPG.Inventories;
 using ForgottenRPG.Map;
 
 namespace ForgottenRPG.Entity.Components {

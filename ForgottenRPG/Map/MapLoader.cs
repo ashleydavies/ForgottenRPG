@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using ForgottenRPG.GameState;
-using ForgottenRPG.Items;
+using ForgottenRPG.Inventories;
 using ForgottenRPG.Service;
 using ForgottenRPG.Util;
 using ForgottenRPG.Util.Coordinate;

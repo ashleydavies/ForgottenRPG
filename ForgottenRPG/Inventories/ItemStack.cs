@@ -1,4 +1,6 @@
-﻿namespace ForgottenRPG.Items {
+﻿using ForgottenRPG.Inventories.Items;
+
+namespace ForgottenRPG.Inventories {
     public class ItemStack {
         public readonly IItem Item;
         public int Count { get; private set; }

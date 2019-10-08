@@ -1,6 +1,6 @@
 ﻿using SFML.Graphics;
 
-namespace ForgottenRPG.Items {
+namespace ForgottenRPG.Inventories.Items {
     public interface IItem {
         int Id { get; }
         string Name { get; }

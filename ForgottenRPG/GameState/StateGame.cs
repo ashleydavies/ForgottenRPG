@@ -5,7 +5,7 @@ using ForgottenRPG.Entity.Components;
 using ForgottenRPG.Entity.Components.Messages;
 using ForgottenRPG.Entity.Dialog;
 using ForgottenRPG.GUI;
-using ForgottenRPG.Items;
+using ForgottenRPG.Inventories;
 using ForgottenRPG.Map;
 using ForgottenRPG.Service;
 using ForgottenRPG.Util;

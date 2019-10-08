@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
-using ForgottenRPG.Items;
+using ForgottenRPG.Inventories;
 using SFML.System;
 
 namespace ForgottenRPG.GameState {

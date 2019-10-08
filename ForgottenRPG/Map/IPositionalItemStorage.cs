@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using ForgottenRPG.Items;
+using ForgottenRPG.Inventories;
 using ForgottenRPG.Util.Coordinate;
 
 namespace ForgottenRPG.Map {

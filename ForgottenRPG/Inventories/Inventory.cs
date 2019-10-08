@@ -3,7 +3,7 @@ using System.Linq;
 using ForgottenRPG.Map;
 using ForgottenRPG.Util.Coordinate;
 
-namespace ForgottenRPG.Items {
+namespace ForgottenRPG.Inventories {
     public enum EquipmentSlot {
         Primary = 0,
         Headgear = 1,

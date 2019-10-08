@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using ForgottenRPG.GUI;
-using ForgottenRPG.Items;
+using ForgottenRPG.Inventories;
 using ForgottenRPG.Map;
 using ForgottenRPG.Service;
 using ForgottenRPG.Util.Coordinate;

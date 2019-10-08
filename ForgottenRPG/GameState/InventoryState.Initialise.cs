@@ -1,5 +1,5 @@
 using ForgottenRPG.GUI;
-using ForgottenRPG.Items;
+using ForgottenRPG.Inventories;
 using ForgottenRPG.Service;
 using SFML.Graphics;
 using SFML.System;

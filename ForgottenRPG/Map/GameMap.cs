@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ForgottenRPG.Entity;
 using ForgottenRPG.GameState;
-using ForgottenRPG.Items;
+using ForgottenRPG.Inventories;
 using ForgottenRPG.Map.Pathfinding;
 using ForgottenRPG.Service;
 using ForgottenRPG.Util;

@@ -2,10 +2,11 @@
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using ForgottenRPG.Inventories.Items;
 using ForgottenRPG.Service;
 using SFML.System;
 
-namespace ForgottenRPG.Items {
+namespace ForgottenRPG.Inventories {
     public class ItemManager {
         public const int SpriteSizeX = 32;
         public const int SpriteSizeY = 32;
