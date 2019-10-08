@@ -4,14 +4,27 @@ using ForgottenRPG.Service;
 
 namespace ForgottenRPG.Entity {
     /// <summary>
-    /// The FactionManager keeps track of the various in-game factions and their relationships with eachother
+    /// The FactionManager keeps track of the various in-game factions and their relationships with each-other
     /// </summary>
     public class FactionManager {
         public class Faction {
+            private class FactionRelationship {
+                public int Relationship;
+                public readonly Faction With;
+
+                public FactionRelationship(int relationship, Faction with) {
+                    Relationship = relationship;
+                    With = with;
+                }
+            }
+
             public readonly string Name;
 
             private readonly int _baseRelationship;
-            private readonly Dictionary<Faction, int> _relationships = new Dictionary<Faction, int>();
+
+            private readonly Dictionary<Faction, FactionRelationship> _relationships
+                = new Dictionary<Faction, FactionRelationship>();
+
             private readonly List<GameEntity> _entities = new List<GameEntity>();
 
             public Faction(string name, int baseRelationship = 0) {
@@ -27,18 +40,27 @@ namespace ForgottenRPG.Entity {
                 _entities.Remove(entity);
             }
 
-            public int GetRelationship(Faction other) {
-                if (_relationships.ContainsKey(other)) return _relationships[other];
-                return _baseRelationship;
+            public bool IsHostile(Faction other) {
+                return RelationshipValue(other) <= HostilityRelationshipValue;
             }
 
+            public int RelationshipValue(Faction other) => GetOrCreateRelationship(other).Relationship;
+
             public void InfluenceRelationship(Faction other, int amount) {
-                if (!_relationships.ContainsKey(other)) _relationships[other] = _baseRelationship;
-                _relationships[other] += amount;
+                GetOrCreateRelationship(other).Relationship += amount;
             }
 
             public override string ToString() {
                 return $"Faction<{Name}>";
+            }
+
+            private FactionRelationship GetOrCreateRelationship(Faction other) {
+                if (!_relationships.ContainsKey(other)) {
+                    _relationships[other] = new FactionRelationship(_baseRelationship, other);
+                    other._relationships[this] = _relationships[other];
+                }
+
+                return _relationships[other];
             }
         }
 
@@ -78,7 +100,7 @@ namespace ForgottenRPG.Entity {
                 factionName = $"{Neutral}_{Guid.NewGuid()}";
                 _factions[factionName] = new Faction(factionName);
             }
-            
+
             _factions[factionName].RegisterEntity(entity);
             _userLookup[entity] = _factions[factionName];
             ServiceLocator.LogService.Log(LogType.Info, $"Registered {entity} to {_factions[factionName]}");
