@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using SFML.Graphics;
 
-namespace ForgottenRPG.Items {
+namespace ForgottenRPG.Inventories.Items {
     public class AbstractItem : IItem {
         private static TextInfo _textInfo = new CultureInfo("en-GB", false).TextInfo;
         public int Id { get; }

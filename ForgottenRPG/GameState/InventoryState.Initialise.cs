@@ -28,7 +28,7 @@ namespace ForgottenRPG.GameState {
             UpdateNearbyItemSprites();
         }
 
-        private void InitialiseInventorySlots(Inventory inventory, Sprite itemSlotSprite) {
+        private void InitialiseInventorySlots(Inventories.Inventory inventory, Sprite itemSlotSprite) {
             for (int y = 0; y < TilesY; y++) {
                 for (int x = 0; x < TilesX; x++) {
                     int pos = y * TilesX + x;

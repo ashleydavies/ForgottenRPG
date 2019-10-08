@@ -4,7 +4,7 @@ using ForgottenRPG.Map;
 
 namespace ForgottenRPG.Entity.Components {
     public class InventoryComponent : AbstractComponent, IMessageHandler<DiedMessage> {
-        public readonly Inventory Inventory = new Inventory();
+        public readonly Inventories.Inventory Inventory = new Inventory();
         
         private readonly IPositionalItemStorage _itemDropLocation;
 

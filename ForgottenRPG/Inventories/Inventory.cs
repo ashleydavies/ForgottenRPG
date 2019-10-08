@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using ForgottenRPG.Inventories.Items;
 using ForgottenRPG.Map;
 using ForgottenRPG.Util.Coordinate;
 
@@ -51,7 +54,7 @@ namespace ForgottenRPG.Inventories {
 
             if (stack.Count > 0) {
                 if (Full) throw new InventoryException("Inventory full, item could not be added");
-                
+
                 _items[_items.ToList().IndexOf(null)] = stack;
             }
         }
@@ -81,6 +84,15 @@ namespace ForgottenRPG.Inventories {
                 if (itemStack != null) {
                     area.DropItem(position, itemStack);
                 }
+            }
+        }
+
+        public static bool CanFitInSlot(EquipmentSlot slot, IItem item) {
+            if (item == null) return true;
+             switch (slot) {
+                case EquipmentSlot.Primary: return item is IWeapon;
+                case EquipmentSlot.Headgear: return item is Headgear;
+                default: return false;
             }
         }
     }

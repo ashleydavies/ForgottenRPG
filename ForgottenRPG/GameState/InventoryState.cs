@@ -11,7 +11,7 @@ using SFML.Window;
 namespace ForgottenRPG.GameState {
     public partial class InventoryState : AbstractGameState {
         private readonly GuiWindow _guiWindow;
-        private readonly Inventory _inventory;
+        private readonly Inventories.Inventory _inventory;
         private readonly SpriteContainer[] _inventoryItemContainers = new SpriteContainer[Inventory.MaxSize];
         private readonly SpriteContainer[] _nearbyItemContainers = new SpriteContainer[NearbyItemsX * NearbyItemsY];
         private readonly SpriteContainer[] _equipmentContainers = new SpriteContainer[EquipmentPositions.Count];
@@ -86,6 +86,7 @@ namespace ForgottenRPG.GameState {
         }
 
         private void EquipmentSlotClicked(EquipmentSlot slot) {
+            if (!Inventory.CanFitInSlot(slot, HeldItemStack.Item)) return;
             HeldItemStack = _inventory.EquipItem(HeldItemStack, slot);
             _equipmentContainers[(int) slot].Sprite = _inventory.EquippedItem(slot)?.Item?.Texture ?? new Sprite();
         }

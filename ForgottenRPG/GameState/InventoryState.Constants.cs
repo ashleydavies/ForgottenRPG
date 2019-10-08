@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq.Expressions;
 using ForgottenRPG.Inventories;
+using ForgottenRPG.Inventories.Items;
 using SFML.System;
 
 namespace ForgottenRPG.GameState {
@@ -22,7 +23,7 @@ namespace ForgottenRPG.GameState {
         private static readonly Dictionary<EquipmentSlot, Vector2i> EquipmentPositions =
             new Dictionary<EquipmentSlot, Vector2i> {
                 { EquipmentSlot.Primary, new Vector2i(90, 220) },
-                { EquipmentSlot.Headgear, new Vector2i(120, 30) }
+                { EquipmentSlot.Headgear, new Vector2i(120, 30) },
             };
 
         private List<ItemStack> NearbyItems =>
