@@ -14,14 +14,14 @@ using ScriptCompiler.Types;
 namespace ScriptCompiler.Visitors {
     public class CodeGenVisitor : Visitor<string>, IRegisterAllocator {
         public const string MagicReturnIdentifier = "!RETURN_VALUE";
-        
-        public StackFrame StackFrame { get; private set; }
+
+        public StackFrame StackFrame { get; private set; } = new StackFrame();
         public readonly Dictionary<string, string> StringLiteralAliases = new Dictionary<string, string>();
         public readonly UserTypeRepository UTRepo = new UserTypeRepository();
         public readonly FunctionTypeRepository FTRepo = new FunctionTypeRepository();
 
         // The instruction and stack pointer registers are always 'occupied'
-        private readonly List<bool> _occupiedRegisters = new List<bool> { true, true };
+        private readonly List<bool> _occupiedRegisters = new List<bool> {true, true};
 
 
         /// <summary>
@@ -40,10 +40,11 @@ namespace ScriptCompiler.Visitors {
             List<FunctionNode> allFunctions = new List<FunctionNode>();
             allFunctions.AddRange(node.FunctionNodes);
             allFunctions.AddRange(importedFiles.SelectMany(n => n.FunctionNodes));
-            
+
             allFunctions.ForEach(f =>
-                FTRepo.Register(f.FunctionName, f.TypeNode.GetSType(UTRepo),
-                    f.ParameterDefinitions.Select(p => SType.FromTypeString(p.type, UTRepo)).ToList()));
+                                     FTRepo.Register(f.FunctionName, f.TypeNode.GetSType(UTRepo),
+                                                     f.ParameterDefinitions
+                                                      .Select(p => SType.FromTypeString(p.type, UTRepo)).ToList()));
 
 
             StringBuilder programBuilder = new StringBuilder();
@@ -85,7 +86,7 @@ namespace ScriptCompiler.Visitors {
                 dependencies.Enqueue(userType);
                 while (dependencies.Count != 0) {
                     string next = dependencies.Dequeue();
-                    bool deps = false;
+                    bool   deps = false;
 
                     var structNode = userTypeNodeMapping[next];
                     foreach (DeclarationStatementNode declNode in structNode.DeclarationNodes) {
@@ -108,8 +109,8 @@ namespace ScriptCompiler.Visitors {
 
         public string Visit(FunctionNode node) {
             // Set up the stack frame for the return location
-            StackFrame = new StackFrame(null);
-            
+            StackFrame = new StackFrame();
+
             var returnType = FTRepo.ReturnType(node.FunctionName);
             if (!ReferenceEquals(returnType, SType.SVoid)) {
                 StackFrame.AddIdentifier(returnType, MagicReturnIdentifier);
@@ -118,35 +119,36 @@ namespace ScriptCompiler.Visitors {
 
             // Set up the stack frame for the function parameters
             node.ParameterDefinitions.ForEach(p =>
-                StackFrame.AddIdentifier(SType.FromTypeString(p.type, UTRepo), p.name));
+                                                  StackFrame.AddIdentifier(
+                                                      SType.FromTypeString(p.type, UTRepo), p.name));
 
             // TODO: Uncomment when the instruction pointer is stored on the memory stack and not the stack machine
             // 'Push' the instruction pointer, which is the same length as an integer
             //StackFrame.Pushed(SType.SInteger);
 
             var functionBuilder = new StringBuilder();
-            
+
             StackFrame = new StackFrame(StackFrame);
 
             functionBuilder.AppendLine(Comment($"LABEL func_{node.FunctionName}",
-                $"Entry point of {node.FunctionName}"));
+                                               $"Entry point of {node.FunctionName}"));
             functionBuilder.AppendLine(VisitStatementBlock(node.CodeBlock.Statements));
-            
+
             var (stackFrame, length) = StackFrame.Purge();
-            StackFrame = stackFrame;
+            StackFrame               = stackFrame!;
             functionBuilder.AppendLine($"SUB r1 {length}");
 
             node.ParameterDefinitions.ForEach(p => StackFrame.Popped(SType.FromTypeString(p.type, UTRepo)));
 
             // AKA RET
             functionBuilder.AppendLine(Comment($"POP r0", $"Return from {node.FunctionName}"));
-            
+
             return functionBuilder.ToString();
         }
 
         public string Visit(ReturnStatementNode node) {
             return Visit(new AssignmentNode(new VariableAccessNode(MagicReturnIdentifier),
-                node.Expression));
+                                            node.Expression));
         }
 
         // General expressions e.g. naked function calls
@@ -173,7 +175,7 @@ namespace ScriptCompiler.Visitors {
             StackFrame.AddIdentifier(type, node.Identifier);
             // Adjust stack pointer
             declarationBuilder.AppendLine(Comment($"ADD r1 {type.Length}",
-                $"Declaration of {node.Identifier}"));
+                                                  $"Declaration of {node.Identifier}"));
 
             // Set up with default value, if any
             if (node.InitialValue != null) {
@@ -220,8 +222,7 @@ namespace ScriptCompiler.Visitors {
 
                 if (ReferenceEquals(type, SType.SString)) {
                     builder.AppendLine($"PRINT {register}");
-                }
-                else if (ReferenceEquals(type, SType.SInteger)) {
+                } else if (ReferenceEquals(type, SType.SInteger)) {
                     builder.AppendLine($"PRINTINT {register}");
                 }
             }

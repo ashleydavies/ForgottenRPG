@@ -16,7 +16,7 @@ namespace ScriptCompiler.Types {
         }
         
         // Do reference equality on basic types; more complicated types will do more complicated forms of equality
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             return false;

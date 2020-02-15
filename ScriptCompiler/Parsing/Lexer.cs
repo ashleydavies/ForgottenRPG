@@ -35,7 +35,7 @@ namespace ScriptCompiler.Parsing {
             _charStack = new Stack<char>(input.ToCharArray().Reverse());
         }
 
-        public LexToken NextToken() {
+        public LexToken? NextToken() {
             while (HasMore() && (PeekNextChar() == '#' || IsWhitespace(PeekNextChar()))) {
                 if (PeekNextChar() == '#') {
                     var line = _scanLine;
