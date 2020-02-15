@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ScriptCompiler.AST;
+﻿using System.Collections.Generic;
 using ScriptCompiler.AST.Statements.Expressions;
 
 namespace ScriptCompiler.Visitors {
