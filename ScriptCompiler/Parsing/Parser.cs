@@ -51,7 +51,7 @@ namespace ScriptCompiler.Parsing {
 
         public Parser(string contents) {
             _contents = contents;
-            _lexer = new Lexer(_contents);
+            _lexer    = new Lexer(_contents);
 
             _prefixExpressionParseTable = new List<PrefixParseRule> {
                 new PrefixParseRule(t => t is IntegerToken, t => new IntegerLiteralNode(((IntegerToken) t).Content)),
@@ -59,6 +59,8 @@ namespace ScriptCompiler.Parsing {
                 new PrefixParseRule(t => t is IdentifierToken,
                                     t => new VariableAccessNode(((IdentifierToken) t).Content)),
                 new PrefixParseRule(t => t is SymbolToken s && s.Symbol == "(", _ => ParseGrouping()),
+                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.ADDR_OPERATOR, _ => new AddressOfNode(ParseExpression())),
+                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.DEREF_OPERATOR, _ => new DereferenceNode(ParseExpression())),
             };
 
             _infixExpressionParseTable = new List<InfixParseRule> {
@@ -70,9 +72,12 @@ namespace ScriptCompiler.Parsing {
                                    (t, left) => new StructAccessNode(left, Expecting<IdentifierToken>().Content),
                                    Precedence.CALL),
                 new InfixParseRule(t => t is SymbolToken s && s.Symbol == "(",
-                                   (t, left) => ParseFunctionCallNode(left), Precedence.CALL),
+                                   (t, left) => ParseFunctionCallNode(left), Precedence.ACCESSOR),
                 new InfixParseRule(t => t is SymbolToken s && s.Symbol == "=",
-                                   (t, left) => new AssignmentNode(left, ParseExpression()), Precedence.ASSIGNMENT)
+                                   (t, left) => new AssignmentNode(left, ParseExpression()), Precedence.ASSIGNMENT),
+                // Translating x->y == (*x).y at this time saves increasing AST complexity
+                new InfixParseRule(t => t is SymbolToken s && s.Symbol == "->",
+                                   (t, left) => new StructAccessNode(new DereferenceNode(left), Expecting<IdentifierToken>().Content), Precedence.ACCESSOR)
             };
         }
 
@@ -127,7 +132,8 @@ namespace ScriptCompiler.Parsing {
                 case IdentifierToken it when it.Content == "return":
                     returnNode = ParseReturnStatementNode();
                     break;
-                case IdentifierToken it when PeekToken(1) is IdentifierToken:
+                case IdentifierToken it
+                    when PeekToken(1) is IdentifierToken || PeekToken(1) is SymbolToken s && s.Symbol == "@":
                     returnNode = ParseDeclarationStatementNode();
                     break;
                 default:
@@ -146,7 +152,11 @@ namespace ScriptCompiler.Parsing {
         }
 
         private DeclarationStatementNode ParseDeclarationStatementNode() {
-            var typeNode           = new ExplicitTypeNode(Expecting<IdentifierToken>().Content);
+            var identifier   = Expecting<IdentifierToken>().Content;
+            var pointerDepth = 0;
+            while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) pointerDepth++;
+            var typeNode           = new ExplicitTypeNode(identifier, pointerDepth);
+            
             var variableIdentifier = Expecting<IdentifierToken>().Content;
 
             // If we have a default value, set it up

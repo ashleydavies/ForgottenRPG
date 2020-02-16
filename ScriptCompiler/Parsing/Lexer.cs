@@ -16,7 +16,7 @@ namespace ScriptCompiler.Parsing {
 
         private static readonly Dictionary<char, char[]> MultiCharSymbols = new Dictionary<char, char[]> {
             {'+', new [] { '=', '+' } },
-            {'-', new [] { '=', '-' } },
+            {'-', new [] { '=', '-', '>' } },
             {'*', new [] { '=', '*' } },
             {'/', new [] { '=', '/' } },
             {'>', new [] { '=', '>' } },
@@ -163,7 +163,10 @@ namespace ScriptCompiler.Parsing {
             }
 
             _scanPosition++;
-            if (_charStack.Peek() == '\n') _scanLine++;
+            if (_charStack.Peek() == '\n') {
+                _scanLine++;
+                _scanPosition = 0;
+            }
 
             return _charStack.Pop();
         }

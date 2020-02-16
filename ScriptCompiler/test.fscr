@@ -43,6 +43,9 @@ func Player getPlayer() {
     Player@ playerRef = @player;
     playerRef->health = 10;
     
+    Player@@ playerRefRef = @playerRef;
+    (^playerRefRef)->health = 10;
+    
     return player;
 }
 

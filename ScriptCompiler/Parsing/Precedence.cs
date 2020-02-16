@@ -8,6 +8,7 @@
         COMPARISON,
         TERM,
         FACTOR,
+        ACCESSOR,
         UNARY,
         CALL,
         MAX
