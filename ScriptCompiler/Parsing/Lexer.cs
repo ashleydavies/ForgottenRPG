@@ -29,7 +29,7 @@ namespace ScriptCompiler.Parsing {
         private int _scanPosition;
         private bool _unpopped = false;
         private char _unpoppedChar;
-        private readonly Stack<char> _charStack;
+        private Stack<char> _charStack;
 
         public Lexer(string input) {
             _charStack = new Stack<char>(input.ToCharArray().Reverse());

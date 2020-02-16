@@ -50,7 +50,7 @@ namespace ScriptCompiler.Types {
                     return SString;
                 case "void":
                     return SVoid;
-                case string _ when utr.ExistsType(nodeTypeString):
+                case { } when utr.ExistsType(nodeTypeString):
                     return utr[nodeTypeString];
             }
 

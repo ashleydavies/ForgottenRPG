@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using ScriptCompiler.Types;
 
-namespace ScriptCompiler.Visitors {
+namespace ScriptCompiler.Types {
     public class FunctionTypeRepository {
         private readonly Dictionary<string, (SType returnType, List<SType> @params)> repository
             = new Dictionary<string, (SType returnType, List<SType> @params)>();

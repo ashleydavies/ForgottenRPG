@@ -8,6 +8,7 @@ using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.AST.Statements.Expressions.Arithmetic;
+using ScriptCompiler.CodeGeneration;
 using ScriptCompiler.Visitors;
 
 namespace ScriptCompiler.Parsing {
@@ -76,7 +77,8 @@ namespace ScriptCompiler.Parsing {
         }
 
         public string Compile() {
-            return new CodeGenVisitor().Visit(Parse());
+            // TODO: ToString() is not correct here, but just done to get a first iteration working.
+            return new CodeGenerator().Generate(Parse()).ToString();
         }
 
         public ProgramNode Parse() {

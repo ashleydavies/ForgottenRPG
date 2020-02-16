@@ -30,8 +30,8 @@ namespace ScriptCompiler.Visitors {
             StackFrame = new StackFrame();
             List<ProgramNode> importedFiles =
                 node.ImportNodes.Select(f => Parser.FromFile(f.FileName).Parse()).ToList();
-            List<string> programStrings = new StringLiteralCollectorVisitor().Visit(node);
-            importedFiles.ForEach(p => programStrings.AddRange(new StringLiteralCollectorVisitor().Visit(p)));
+            List<string> programStrings = new StringCollectorVisitor().Visit(node);
+            importedFiles.ForEach(p => programStrings.AddRange(new StringCollectorVisitor().Visit(p)));
 
             InitialiseUTRepo(node, importedFiles);
 

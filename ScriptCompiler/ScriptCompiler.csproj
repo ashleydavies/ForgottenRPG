@@ -5,6 +5,7 @@
     <StartupObject>ScriptCompiler.MainClass</StartupObject>
     <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\ForgottenRPG\ForgottenRPG.csproj" />

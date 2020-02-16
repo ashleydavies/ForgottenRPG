@@ -15,6 +15,10 @@ namespace ScriptCompiler.AST {
             return SType.FromTypeString(TypeString, utr, PointerDepth);
         }
 
+        public bool IsOfUnknownType(UserTypeRepository utr) {
+            return ReferenceEquals(GetSType(utr), SType.SNoType);
+        }
+
         public override List<ASTNode> Children() {
             return new List<ASTNode>();
         }

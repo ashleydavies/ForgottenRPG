@@ -11,7 +11,7 @@ namespace ScriptCompilerTests {
     public class StringLiteralCollectorVisitorTest {
         [Fact]
         public void ExtractsCorrectString() {
-            var result = new StringLiteralCollectorVisitor().Visit(
+            var result = new StringCollectorVisitor().Visit(
                 new ProgramNode(
                     new List<ImportNode>(),
                     new List<StructNode>(),

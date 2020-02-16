@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
 
-namespace ScriptCompiler.AST {
+namespace ScriptCompiler.AST.Statements {
     public class PrintStatementNode : StatementNode {
         public readonly ExpressionNode Expression;
 
