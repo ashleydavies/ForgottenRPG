@@ -1,16 +1,26 @@
+using System;
+using ScriptCompiler.Visitors;
+
 namespace ScriptCompiler.CodeGeneration.Assembly {
-    public class Register : Location {
-        public static Register InstructionPointer = new Register(0);
-        public static Register StackPointer = new Register(1);
+    public class Register : Location, IDisposable {
+        public readonly int Number;
 
-        private readonly int _number;
+        private readonly RegisterManager? _registerManager;
 
-        public Register(int number) {
-            _number = number;
+        public Register(int number, RegisterManager registerManager) : this(number) {
+            _registerManager = registerManager;
+        }
+
+        private Register(int number) {
+            Number = number;
         }
 
         public override string ToString() {
-            return $"r{_number}";
+            return $"r{Number}";
+        }
+
+        public void Dispose() {
+            _registerManager?.ClearRegister(this);
         }
     }
 }

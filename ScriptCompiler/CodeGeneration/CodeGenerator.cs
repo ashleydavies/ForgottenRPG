@@ -20,11 +20,11 @@ namespace ScriptCompiler.CodeGeneration {
     public class CodeGenerator {
         private readonly FunctionTypeRepository _functionTypeRepository = new FunctionTypeRepository();
         private readonly UserTypeRepository _userTypeRepository = new UserTypeRepository();
-        private readonly Dictionary<string, StringLabel> StringPoolAliases = new Dictionary<string, StringLabel>();
+        private readonly Dictionary<string, StringLabel> _stringPoolAliases = new Dictionary<string, StringLabel>();
 
         public List<Instruction> Generate(ProgramNode program) {
             List<Instruction> instructions = new List<Instruction>();
-            var programNodes = HandleImports(program);
+            var               programNodes = HandleImports(program);
 
             InitialiseUserTypeRepo(programNodes);
             InitialiseFunctionTypeRepo(programNodes);
@@ -32,24 +32,29 @@ namespace ScriptCompiler.CodeGeneration {
 
             // Begin data section
             instructions.Add(Section.DataSection);
-            
+
             // Add strings to data section
-            foreach (var (_, stringLabel) in StringPoolAliases) {
+            foreach (var (_, stringLabel) in _stringPoolAliases) {
                 instructions.Add(new StringInstruction(stringLabel));
             }
-            
+
             // Begin code section
             instructions.Add(Section.CodeSection);
-            
-            // Main statement
-            // TODO
-            
+
+            // Main statements
+            instructions.AddRange(
+                new StatementBlockGenerationVisitor(
+                    _functionTypeRepository,
+                    _userTypeRepository,
+                    _stringPoolAliases).VisitStatementBlock(program.StatementNodes)
+            );
+
             // Jump to the end to avoid falling to function definitions
             instructions.Add(new JmpInstruction(Label.EndLabel).WithComment("Standard termination"));
-            
+
             // Function definitions
             // TODO
-            
+
             instructions.Add(new LabelInstruction(Label.EndLabel));
 
             return new List<Instruction>();
@@ -59,7 +64,7 @@ namespace ScriptCompiler.CodeGeneration {
             List<string> stringPool  = allProgramNodes.SelectMany(p => new StringCollectorVisitor().Visit(p)).ToList();
             var          stringIndex = 0;
             foreach (var entry in stringPool) {
-                StringPoolAliases[entry] = new StringLabel(stringIndex++, entry);
+                _stringPoolAliases[entry] = new StringLabel(stringIndex++, entry);
             }
         }
 
