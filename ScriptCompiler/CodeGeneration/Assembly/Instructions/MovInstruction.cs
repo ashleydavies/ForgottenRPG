@@ -8,7 +8,7 @@ namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
             _to = to;
         }
 
-        public override string ToString() {
+        protected override string AsString() {
             return $"MOV {_to} {_from}";
         }
     }
