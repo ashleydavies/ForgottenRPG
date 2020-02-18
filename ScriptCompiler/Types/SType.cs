@@ -14,6 +14,10 @@ namespace ScriptCompiler.Types {
         public SType(int length = 1) {
             Length = length;
         }
+
+        public bool IsUnknownType() {
+            return ReferenceEquals(this, SNoType);
+        }
         
         // Do reference equality on basic types; more complicated types will do more complicated forms of equality
         public override bool Equals(object? obj) {

@@ -1,9 +1,9 @@
 ﻿namespace ScriptCompiler.AST.Statements.Expressions {
     public class IntegerLiteralNode : NumericLiteralNode {
-        public readonly int value;
+        public readonly int Value;
 
         public IntegerLiteralNode(int value) {
-            this.value = value;
+            this.Value = value;
         }
     }
 }

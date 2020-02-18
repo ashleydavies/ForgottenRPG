@@ -57,7 +57,7 @@ namespace ScriptCompiler.CodeGeneration {
 
             instructions.Add(new LabelInstruction(Label.EndLabel));
 
-            return new List<Instruction>();
+            return instructions;
         }
 
         private void InitialiseStringPool(List<ProgramNode> allProgramNodes) {

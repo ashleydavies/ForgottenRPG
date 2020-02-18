@@ -83,7 +83,7 @@ namespace ScriptCompiler.Parsing {
 
         public string Compile() {
             // TODO: ToString() is not correct here, but just done to get a first iteration working.
-            return new CodeGenerator().Generate(Parse()).ToString();
+            return string.Join('\n', new CodeGenerator().Generate(Parse()).Select(p => p.ToString()));
         }
 
         public ProgramNode Parse() {

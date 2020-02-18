@@ -180,7 +180,7 @@ namespace ScriptCompiler.Visitors {
 
         public (List<string>, Register) Visit(IntegerLiteralNode node) {
             var register = _codeGenVisitor.GetRegister();
-            return (new List<string> { $"MOV {register} {node.value}" }, register);
+            return (new List<string> { $"MOV {register} {node.Value}" }, register);
         }
 
         public (List<string>, Register) Visit(AdditionNode node) {
