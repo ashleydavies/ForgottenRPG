@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using ForgottenRPG.VM;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements.Expressions;
+using ScriptCompiler.AST.Statements.Expressions.Arithmetic;
 using ScriptCompiler.CodeGeneration.Assembly;
 using ScriptCompiler.CodeGeneration.Assembly.Instructions;
 using ScriptCompiler.CompileUtil;
 using ScriptCompiler.Types;
 using ScriptCompiler.Visitors;
+using SFML.Window;
 using Register = ScriptCompiler.CodeGeneration.Assembly.Register;
 
 namespace ScriptCompiler.CodeGeneration {
@@ -46,15 +49,15 @@ namespace ScriptCompiler.CodeGeneration {
 
             // Copy the variable value onto the stack
             using var readLocation = _regManager.NewRegister();
-            instructions.Add(new MovInstruction(readLocation, StackPointer));
-            instructions.Add(new SubInstruction(readLocation, offset));
+            instructions.Add(new MovInstruction(readLocation, StackPointer).WithComment($"Begin access {node.Identifier}"));
+            instructions.Add(new AddInstruction(readLocation, offset));
             for (int i = 0; i < type.Length; i++) {
                 // Use that register to copy across the object
-                instructions.Add(PushStack(SType.SInteger));
-                instructions.Add(new AddInstruction(readLocation, 1));
                 instructions.Add(new MemCopyInstruction(StackPointer, readLocation));
+                instructions.Add(new AddInstruction(readLocation, 1));
+                instructions.Add(PushStack(SType.SInteger));
             }
-            
+
             return instructions;
         }
 
@@ -75,6 +78,70 @@ namespace ScriptCompiler.CodeGeneration {
                 new MemWriteInstruction(StackPointer, _stringPoolAliases[node.String]),
                 PushStack(SType.SInteger)
             };
+        }
+
+        public List<Instruction> Visit(AdditionNode node) {
+            var instructions = new List<Instruction>();
+            var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
+            instructions.AddRange(opInstructions);
+            instructions.Add(new AddInstruction(left, right));
+            instructions.Add(new MemWriteInstruction(StackPointer, left));
+            instructions.Add(PushStack(SType.SInteger));
+            left.Dispose();
+            right.Dispose();
+            return instructions;
+        }
+
+        public List<Instruction> Visit(SubtractionNode node) {
+            var instructions = new List<Instruction>();
+            var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
+            instructions.AddRange(opInstructions);
+            instructions.Add(new SubInstruction(left, right));
+            instructions.Add(new MemWriteInstruction(StackPointer, left));
+            instructions.Add(PushStack(SType.SInteger));
+            left.Dispose();
+            right.Dispose();
+            return instructions;
+        }
+
+        public List<Instruction> Visit(MultiplicationNode node) {
+            var instructions = new List<Instruction>();
+            var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
+            instructions.AddRange(opInstructions);
+            instructions.Add(new MulInstruction(left, right));
+            instructions.Add(new MemWriteInstruction(StackPointer, left));
+            instructions.Add(PushStack(SType.SInteger));
+            left.Dispose();
+            right.Dispose();
+            return instructions;
+        }
+
+        public List<Instruction> Visit(DivisionNode node) {
+            var instructions = new List<Instruction>();
+            var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
+            instructions.AddRange(opInstructions);
+            instructions.Add(new DivInstruction(left, right));
+            instructions.Add(new MemWriteInstruction(StackPointer, left));
+            instructions.Add(PushStack(SType.SInteger));
+            left.Dispose();
+            right.Dispose();
+            return instructions;
+        }
+
+        /// <summary>
+        /// Generates the setup for a binary operator for a single word operation
+        /// </summary>
+        public (List<Instruction>, Register, Register) GenerateSingleWordBinOpSetup(BinaryOperatorNode node) {
+            List<Instruction> instructions  = new List<Instruction>();
+            var               leftRegister  = _regManager.NewRegister();
+            var               rightRegister = _regManager.NewRegister();
+            instructions.AddRange(Generate(node.Left));
+            instructions.Add(PopStack(SType.SInteger));
+            instructions.Add(new MemReadInstruction(leftRegister, StackPointer));
+            instructions.AddRange(Generate(node.Right));
+            instructions.Add(PopStack(SType.SInteger));
+            instructions.Add(new MemReadInstruction(rightRegister, StackPointer));
+            return (instructions, leftRegister, rightRegister);
         }
 
         private Instruction PushStack(SType type) {
