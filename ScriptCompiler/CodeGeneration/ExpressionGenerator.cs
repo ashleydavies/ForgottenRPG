@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using ForgottenRPG.VM;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.AST.Statements.Expressions.Arithmetic;
@@ -9,7 +8,6 @@ using ScriptCompiler.CodeGeneration.Assembly.Instructions;
 using ScriptCompiler.CompileUtil;
 using ScriptCompiler.Types;
 using ScriptCompiler.Visitors;
-using SFML.Window;
 using Register = ScriptCompiler.CodeGeneration.Assembly.Register;
 
 namespace ScriptCompiler.CodeGeneration {
