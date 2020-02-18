@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using ScriptCompiler.AST;
@@ -9,7 +7,6 @@ using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.AST.Statements.Expressions.Arithmetic;
 using ScriptCompiler.CodeGeneration;
-using ScriptCompiler.Visitors;
 
 namespace ScriptCompiler.Parsing {
     public class Parser {

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ScriptCompiler.Types {
+﻿namespace ScriptCompiler.Types {
     public class SType {
         public static readonly SType SVoid = new SType(0);
         public static readonly SType SNoType = new SType();

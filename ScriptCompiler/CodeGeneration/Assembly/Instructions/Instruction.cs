@@ -1,5 +1,3 @@
-using ForgottenRPG.VM;
-
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
     public abstract class Instruction {
         private string? _comment;

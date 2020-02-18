@@ -1,6 +1,3 @@
-using System;
-using ScriptCompiler.Visitors;
-
 namespace ScriptCompiler.CodeGeneration.Assembly {
     public class NumericConstant : Value {
         private readonly int _amount;

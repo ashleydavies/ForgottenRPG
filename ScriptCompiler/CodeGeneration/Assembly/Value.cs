@@ -1,5 +1,3 @@
-using System.Net.Http.Headers;
-
 namespace ScriptCompiler.CodeGeneration.Assembly {
     public abstract class Value {
         public abstract override string ToString();

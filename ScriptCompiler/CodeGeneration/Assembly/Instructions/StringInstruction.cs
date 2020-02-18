@@ -7,7 +7,8 @@ namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
         }
 
         protected override string AsString() {
-            return $"STRING {_stringLabel} {_stringLabel.Contents}";
+            // Trim off the starting ! from the label as that is not used in the string instruction right now
+            return $"STRING {_stringLabel.ToString().TrimStart('!')} {_stringLabel.Contents}";
         }
     }
 }

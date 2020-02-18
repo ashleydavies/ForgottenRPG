@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using ForgottenRPG.VM;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.CodeGeneration.Assembly;
@@ -61,6 +61,18 @@ namespace ScriptCompiler.CodeGeneration {
         public List<Instruction> Visit(IntegerLiteralNode node) {
             return new List<Instruction> {
                 new MemWriteInstruction(StackPointer, node.Value),
+                PushStack(SType.SInteger)
+            };
+        }
+
+        public List<Instruction> Visit(StringLiteralNode node) {
+            if (!_stringPoolAliases.ContainsKey(node.String)) {
+                // TODO: Exception upgrade
+                throw new ArgumentException();
+            }
+
+            return new List<Instruction> {
+                new MemWriteInstruction(StackPointer, _stringPoolAliases[node.String]),
                 PushStack(SType.SInteger)
             };
         }

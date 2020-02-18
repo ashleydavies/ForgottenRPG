@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using ForgottenRPG.VM;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
@@ -121,7 +118,11 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public List<Instruction> Visit(ExpressionNode node) {
-            return new List<Instruction>();
+            // Process the expression and then discard the result
+            var type = TypeIdentifier.Identify(node);
+            var instructions = ExpressionGenerator.Generate(node);
+            instructions.Add(PopStack(TypeIdentifier.Identify(node)));
+            return instructions;
         }
 
         private Instruction PushStack(SType type) {

@@ -1,5 +1,4 @@
 using System;
-using ScriptCompiler.Visitors;
 
 namespace ScriptCompiler.CodeGeneration.Assembly {
     public class Register : Location, IDisposable {

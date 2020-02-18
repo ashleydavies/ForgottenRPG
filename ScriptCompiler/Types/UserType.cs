@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Drawing;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using ScriptCompiler.AST;
 
 namespace ScriptCompiler.Types {

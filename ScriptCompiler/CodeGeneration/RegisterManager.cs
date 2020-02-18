@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using ScriptCompiler.CodeGeneration.Assembly;
 
 namespace ScriptCompiler.CodeGeneration {
