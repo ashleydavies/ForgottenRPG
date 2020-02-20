@@ -4,6 +4,9 @@ using ScriptCompiler.Types;
 
 namespace ScriptCompiler.CompileUtil {
     public class StackFrame {
+        // Used to track the portion of the stack frame reserved for the return value for a function to populate.
+        // Accessed by the code generator for the `return` statement.
+        public const string ReturnIdentifier = "!RETURN";
         // Sometimes we want to push inaccessible variables to the stack, such as a return address during preparation
         //  for entering a function. These affect the access to stack variables (they are all now further down the
         //  stack) and therefore we need to keep track of how much we've "nudged" these things onto the stack

@@ -17,7 +17,7 @@ namespace ScriptCompiler.CodeGeneration {
         private readonly Dictionary<string, StringLabel> _stringPoolAliases;
         private readonly RegisterManager _regManager = new RegisterManager();
 
-        private StackFrame _stackFrame = new StackFrame();
+        private StackFrame _stackFrame;
 
         private Register StackPointer => _regManager.StackPointer;
 
@@ -29,10 +29,12 @@ namespace ScriptCompiler.CodeGeneration {
 
         public StatementBlockGenerationVisitor(FunctionTypeRepository functionTypeRepository,
                                                UserTypeRepository userTypeRepository,
-                                               Dictionary<string, StringLabel> stringPoolAliases) {
+                                               Dictionary<string, StringLabel> stringPoolAliases,
+                                               StackFrame stackFrame = null) {
             _functionTypeRepository = functionTypeRepository;
             _userTypeRepository     = userTypeRepository;
             _stringPoolAliases      = stringPoolAliases;
+            _stackFrame             = stackFrame ?? new StackFrame();
         }
 
         public List<Instruction> VisitStatementBlock(List<StatementNode> statements) {
@@ -76,7 +78,7 @@ namespace ScriptCompiler.CodeGeneration {
                     instructions.Add(new SubInstruction(writeLocation, 1));
                     instructions.Add(new MemCopyInstruction(writeLocation, StackPointer));
                 }
-                
+
                 // We dealt with the stack push from the expression, so let the stack frame know
                 _stackFrame.Popped(type);
             } else {
@@ -97,10 +99,10 @@ namespace ScriptCompiler.CodeGeneration {
             if (expressionType.Length != 1) {
                 throw new CompileException("Unable to print multi-word expression", 0, 0);
             }
-            
+
             var instructions = ExpressionGenerator.Generate(node.Expression);
             instructions.Add(PopStack(expressionType));
-            
+
             using var register = _regManager.NewRegister();
             instructions.Add(new MemReadInstruction(register, StackPointer));
 
@@ -109,7 +111,7 @@ namespace ScriptCompiler.CodeGeneration {
             } else if (ReferenceEquals(expressionType, SType.SString)) {
                 instructions.Add(new PrintInstruction(register));
             }
-            
+
             return instructions;
         }
 
@@ -119,7 +121,7 @@ namespace ScriptCompiler.CodeGeneration {
 
         public List<Instruction> Visit(ExpressionNode node) {
             // Process the expression and then discard the result
-            var type = TypeIdentifier.Identify(node);
+            var type         = TypeIdentifier.Identify(node);
             var instructions = ExpressionGenerator.Generate(node);
             instructions.Add(PopStack(TypeIdentifier.Identify(node)));
             return instructions;

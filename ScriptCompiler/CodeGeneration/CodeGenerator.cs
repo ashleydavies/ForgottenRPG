@@ -3,9 +3,11 @@ using System.Linq;
 using ScriptCompiler.AST;
 using ScriptCompiler.CodeGeneration.Assembly;
 using ScriptCompiler.CodeGeneration.Assembly.Instructions;
+using ScriptCompiler.CompileUtil;
 using ScriptCompiler.Parsing;
 using ScriptCompiler.Types;
 using ScriptCompiler.Visitors;
+using Register = ScriptCompiler.CodeGeneration.Assembly.Register;
 
 namespace ScriptCompiler.CodeGeneration {
     /// <summary>
@@ -48,9 +50,53 @@ namespace ScriptCompiler.CodeGeneration {
             instructions.Add(new JmpInstruction(Label.EndLabel).WithComment("Standard termination"));
 
             // Function definitions
-            // TODO
+            foreach (var functionNode in programNodes.SelectMany(n => n.FunctionNodes)) {
+                instructions.AddRange(GenerateFunction(functionNode));
+            }
 
             instructions.Add(new LabelInstruction(Label.EndLabel));
+
+            return instructions;
+        }
+
+        private List<Instruction> GenerateFunction(FunctionNode functionNode) {
+            var instructions = new List<Instruction>();
+            // Set up the stack frame for the return location
+            var stackFrame      = new StackFrame();
+            var registerManager = new RegisterManager();
+
+            var returnType = _functionTypeRepository.ReturnType(functionNode.Name);
+            if (!ReferenceEquals(returnType, SType.SVoid)) {
+                stackFrame.AddIdentifier(returnType, StackFrame.ReturnIdentifier);
+                stackFrame = new StackFrame(stackFrame);
+            }
+
+            // Set up the stack frame for the function parameters
+            foreach (var (type, name) in functionNode.ParameterDefinitions) {
+                stackFrame.AddIdentifier(SType.FromTypeString(type, _userTypeRepository), name);
+            }
+
+            // The return pointer
+            stackFrame.Pushed(SType.SInteger);
+
+            stackFrame = new StackFrame(stackFrame);
+            instructions.Add(new LabelInstruction(new Label($"func_{functionNode.Name}"))
+                                 .WithComment($"Entry point of {functionNode.Name}"));
+            instructions.AddRange(new StatementBlockGenerationVisitor(
+                                      _functionTypeRepository,
+                                      _userTypeRepository,
+                                      _stringPoolAliases,
+                                      stackFrame
+                                  ).VisitStatementBlock(functionNode.CodeBlock.Statements));
+
+            // Pop the stack
+            int length;
+            (stackFrame, length) = stackFrame.Purge();
+            stackFrame           = stackFrame!;
+            instructions.Add(new SubInstruction(registerManager.StackPointer, length)
+                                 .WithComment("Pop function locals"));
+            instructions.Add(new JmpInstruction(registerManager.StackPointer)
+                                 .WithComment($"Return from {functionNode.Name}"));
 
             return instructions;
         }
@@ -88,7 +134,7 @@ namespace ScriptCompiler.CodeGeneration {
         private void InitialiseFunctionTypeRepo(List<ProgramNode> allProgramNodes) {
             var functionNodes = allProgramNodes.SelectMany(p => p.FunctionNodes);
             foreach (var f in functionNodes) {
-                _functionTypeRepository.Register(f.FunctionName, f.TypeNode.GetSType(_userTypeRepository),
+                _functionTypeRepository.Register(f.Name, f.TypeNode.GetSType(_userTypeRepository),
                                                  f.ParameterTypes(_userTypeRepository));
             }
         }

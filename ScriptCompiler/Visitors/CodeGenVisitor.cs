@@ -40,7 +40,7 @@ namespace ScriptCompiler.Visitors {
             allFunctions.AddRange(importedFiles.SelectMany(n => n.FunctionNodes));
 
             allFunctions.ForEach(f =>
-                                     FTRepo.Register(f.FunctionName, f.TypeNode.GetSType(UTRepo),
+                                     FTRepo.Register(f.Name, f.TypeNode.GetSType(UTRepo),
                                                      f.ParameterDefinitions
                                                       .Select(p => SType.FromTypeString(p.type, UTRepo)).ToList()));
 
@@ -109,7 +109,7 @@ namespace ScriptCompiler.Visitors {
             // Set up the stack frame for the return location
             StackFrame = new StackFrame();
 
-            var returnType = FTRepo.ReturnType(node.FunctionName);
+            var returnType = FTRepo.ReturnType(node.Name);
             if (!ReferenceEquals(returnType, SType.SVoid)) {
                 StackFrame.AddIdentifier(returnType, MagicReturnIdentifier);
                 StackFrame = new StackFrame(StackFrame);
@@ -128,8 +128,8 @@ namespace ScriptCompiler.Visitors {
 
             StackFrame = new StackFrame(StackFrame);
 
-            functionBuilder.AppendLine(Comment($"LABEL func_{node.FunctionName}",
-                                               $"Entry point of {node.FunctionName}"));
+            functionBuilder.AppendLine(Comment($"LABEL func_{node.Name}",
+                                               $"Entry point of {node.Name}"));
             functionBuilder.AppendLine(VisitStatementBlock(node.CodeBlock.Statements));
 
             var (stackFrame, length) = StackFrame.Purge();
@@ -139,7 +139,7 @@ namespace ScriptCompiler.Visitors {
             node.ParameterDefinitions.ForEach(p => StackFrame.Popped(SType.FromTypeString(p.type, UTRepo)));
 
             // AKA RET
-            functionBuilder.AppendLine(Comment($"POP r0", $"Return from {node.FunctionName}"));
+            functionBuilder.AppendLine(Comment($"POP r0", $"Return from {node.Name}"));
 
             return functionBuilder.ToString();
         }

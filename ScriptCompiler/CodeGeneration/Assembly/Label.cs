@@ -8,7 +8,7 @@ namespace ScriptCompiler.CodeGeneration.Assembly {
         }
 
         public override string ToString() {
-            return $"{_label}";
+            return $"${_label}";
         }
     }
 }

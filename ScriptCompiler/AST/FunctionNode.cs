@@ -4,14 +4,14 @@ using ScriptCompiler.Types;
 
 namespace ScriptCompiler.AST {
     public class FunctionNode : ASTNode {
-        public readonly string FunctionName;
+        public readonly string Name;
         public readonly ExplicitTypeNode TypeNode;
         public readonly CodeBlockNode CodeBlock;
         public readonly List<(string type, string name)> ParameterDefinitions;
 
         public FunctionNode(string functionName, ExplicitTypeNode typeNode, CodeBlockNode codeBlock,
                             List<(string type, string name)> parameterDefinitions) {
-            FunctionName         = functionName;
+            Name         = functionName;
             TypeNode             = typeNode;
             CodeBlock            = codeBlock;
             ParameterDefinitions = parameterDefinitions;

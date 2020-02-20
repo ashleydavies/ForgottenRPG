@@ -7,7 +7,8 @@ namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
         }
 
         protected override string AsString() {
-            return $"LABEL {_label}";
+            // Trim the starting $ of the label
+            return $"LABEL {_label.ToString().TrimStart('$')}";
         }
     }
 }
