@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.AST.Statements.Expressions.Arithmetic;
@@ -38,7 +39,7 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public override List<Instruction> Visit(ASTNode node) {
-            throw new System.NotImplementedException();
+            throw new System.NotImplementedException(node.GetType().FullName);
         }
 
         public List<Instruction> Visit(VariableAccessNode node) {
@@ -56,6 +57,32 @@ namespace ScriptCompiler.CodeGeneration {
                 instructions.Add(PushStack(SType.SInteger));
             }
 
+            return instructions;
+        }
+
+        public List<Instruction> Visit(FunctionCallNode node) {
+            var instructions = new List<Instruction>();
+            
+            // Push space for the return value
+            instructions.Add(PushStack(_functionTypeRepository.ReturnType(node.FunctionName)));
+            
+            // Push the parameters
+            foreach (var expressionNode in node.Args) {
+                // Our contract with Generate is they will push the result onto the stack... exactly what we want!
+                instructions.AddRange(Generate(expressionNode));
+            }
+            
+            // Push the current instruction pointer
+            var returnLabel = new Label($"return_{Guid.NewGuid()}");
+            // Push the return address to the stack
+            instructions.Add(new MemWriteInstruction(_regManager.StackPointer, returnLabel));
+            // TODO: Check this logic? Make sure all stack operations make sense
+            instructions.Add(new AddInstruction(_regManager.StackPointer, 1));
+            instructions.Add(new JmpInstruction(new Label($"func_{node.FunctionName}")));
+            // The return address
+            instructions.Add(new LabelInstruction(returnLabel));
+            
+            // Conveniently, our contract is to put the result on the top of the stack... Where it already is :)
             return instructions;
         }
 

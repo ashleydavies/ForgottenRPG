@@ -103,8 +103,9 @@ namespace ScriptCompiler {
                     _labels[components[1]] = _instructionId.ToString();
                     break;
                 case "jmp":
+                    HandleLoadToStack(components[1]);
                     AddInstruction(ScriptVM.Instruction.Jmp);
-                    AddInstruction("RESOLVELABEL" + components[1]);
+                    //AddInstruction("RESOLVELABEL" + components[1]);
                     break;
                 case "jeq":
                     AddInstruction(ScriptVM.Instruction.JmpEQ);

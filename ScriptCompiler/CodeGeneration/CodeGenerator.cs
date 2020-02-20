@@ -80,7 +80,7 @@ namespace ScriptCompiler.CodeGeneration {
             stackFrame.Pushed(SType.SInteger);
 
             stackFrame = new StackFrame(stackFrame);
-            instructions.Add(new LabelInstruction(new Label($"func_{functionNode.Name}"))
+            instructions.Add(new LabelInstruction(functionNode.Label)
                                  .WithComment($"Entry point of {functionNode.Name}"));
             instructions.AddRange(new StatementBlockGenerationVisitor(
                                       _functionTypeRepository,
@@ -90,12 +90,12 @@ namespace ScriptCompiler.CodeGeneration {
                                   ).VisitStatementBlock(functionNode.CodeBlock.Statements));
 
             // Pop the stack
-            int length;
-            (stackFrame, length) = stackFrame.Purge();
-            stackFrame           = stackFrame!;
+            var (_, length) = stackFrame.Purge();
             instructions.Add(new SubInstruction(registerManager.StackPointer, length)
                                  .WithComment("Pop function locals"));
-            instructions.Add(new JmpInstruction(registerManager.StackPointer)
+            // Pop the instruction pointer and return to it
+            instructions.Add(new SubInstruction(registerManager.StackPointer, 1));
+            instructions.Add(new MemReadInstruction(registerManager.InstructionPointer, registerManager.StackPointer)
                                  .WithComment($"Return from {functionNode.Name}"));
 
             return instructions;

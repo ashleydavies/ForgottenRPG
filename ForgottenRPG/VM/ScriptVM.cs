@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define DEBUG_MEM
+using System;
 using System.Collections.Generic;
 using ForgottenRPG.Service;
 
@@ -166,7 +167,7 @@ namespace ForgottenRPG.VM {
         }
 
         private void Jump(bool doJump) {
-            int instructionPointer = ReadInstructionByte();
+            int instructionPointer = PopStack(); //ReadInstructionByte();
             if (doJump) {
                 _registers[InstructionRegister] = instructionPointer;
             }

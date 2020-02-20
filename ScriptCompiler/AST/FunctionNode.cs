@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using ScriptCompiler.CodeGeneration.Assembly;
 using ScriptCompiler.Types;
 
 namespace ScriptCompiler.AST {
@@ -9,9 +10,11 @@ namespace ScriptCompiler.AST {
         public readonly CodeBlockNode CodeBlock;
         public readonly List<(string type, string name)> ParameterDefinitions;
 
+        public Label Label => new Label($"func_{Name}");
+
         public FunctionNode(string functionName, ExplicitTypeNode typeNode, CodeBlockNode codeBlock,
                             List<(string type, string name)> parameterDefinitions) {
-            Name         = functionName;
+            Name                 = functionName;
             TypeNode             = typeNode;
             CodeBlock            = codeBlock;
             ParameterDefinitions = parameterDefinitions;
