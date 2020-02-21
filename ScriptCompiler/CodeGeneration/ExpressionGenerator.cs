@@ -23,6 +23,9 @@ namespace ScriptCompiler.CodeGeneration {
         private StackFrame _stackFrame;
 
         private Register StackPointer => _regManager.StackPointer;
+        
+        private TypeIdentifier TypeIdentifier => new TypeIdentifier(
+            _functionTypeRepository, _userTypeRepository, _stackFrame);
 
         public ExpressionGenerator(FunctionTypeRepository functionTypeRepository, UserTypeRepository userTypeRepository,
                                    Dictionary<string, StringLabel> stringPoolAliases, StackFrame stackFrame,
@@ -81,6 +84,11 @@ namespace ScriptCompiler.CodeGeneration {
             instructions.Add(new JmpInstruction(new Label($"func_{node.FunctionName}")));
             // The return address
             instructions.Add(new LabelInstruction(returnLabel));
+            // Pop the arguments
+            foreach (var expressionNode in node.Args) {
+                // Our contract with Generate is they will push the result onto the stack... exactly what we want!
+                instructions.Add(PopStack(TypeIdentifier.Identify(expressionNode)));
+            }
             
             // Conveniently, our contract is to put the result on the top of the stack... Where it already is :)
             return instructions;

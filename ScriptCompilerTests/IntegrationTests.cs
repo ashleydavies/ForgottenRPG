@@ -46,6 +46,18 @@ namespace ScriptCompilerTests {
         }
 
         [Fact]
+        public void CanHandleBasicFunctionReturns() {
+            ExecuteCode("func int test() { return 2; } print test();");
+            Assert.Equal(new List<string> {"2"}, _output);
+        }
+
+        [Fact]
+        public void CanHandleStringFunctionReturns() {
+            ExecuteCode("func string test() { return 'five'; } print test();");
+            Assert.Equal(new List<string> {"five"}, _output);
+        }
+
+        [Fact]
         public void CanPrintVariables() {
             ExecuteCode("int x = 5; print x;");
             Assert.Equal(new List<string> {"5"}, _output);
@@ -85,6 +97,12 @@ namespace ScriptCompilerTests {
         public void CanCallFunctionsWithManyStackVariables() {
             ExecuteCode("int z; func void a(int b, string c, int d) { print b * d; print c; } int m = 5; int b; string c; a(10, 'hello', 5);");
             Assert.Equal(new List<string> {"50", "hello"}, _output);
+        }
+
+        [Fact]
+        public void CanCallFunctionsWithManyStackVariablesAndReturns() {
+            ExecuteCode("int z; func int a(int b, string c, int d) { print b * d; print c; return 10; } int m = 5; int b; string c; print a(10, 'hello', 5);");
+            Assert.Equal(new List<string> {"50", "hello", "10"}, _output);
         }
         
         private void ExecuteCode(string code) {

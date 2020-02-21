@@ -1,14 +1,16 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Net.NetworkInformation;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.CodeGeneration.Assembly;
 using ScriptCompiler.CodeGeneration.Assembly.Instructions;
-using ScriptCompiler.CompileUtil;
 using ScriptCompiler.Types;
 using ScriptCompiler.Visitors;
 using Register = ScriptCompiler.CodeGeneration.Assembly.Register;
+using StackFrame = ScriptCompiler.CompileUtil.StackFrame;
 
 namespace ScriptCompiler.CodeGeneration {
     public class StatementBlockGenerationVisitor : Visitor<List<Instruction>> {
@@ -116,7 +118,29 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public List<Instruction> Visit(ReturnStatementNode node) {
-            return new List<Instruction>();
+            var instructions = new List<Instruction>();
+            
+            instructions.AddRange(ExpressionGenerator.Generate(node.Expression));
+            
+            // Copy the result over to the return position
+            var (type, offset) = _stackFrame.Lookup(StackFrame.ReturnIdentifier);
+            
+            using var copyRegister = _regManager.NewRegister();
+            // Ret1 | Ret2 | Ret3 | Stk1 | Stk2 | Stk3 | Res1 | Res2 | Res3 | 0
+            //                                                                ^ Initial stack pointer
+            // ^ StackPointer + offset
+            //                       ^ StackPointer + offset + type.Length
+            instructions.Add(new MovInstruction(copyRegister, StackPointer));
+            instructions.Add(new AddInstruction(copyRegister, offset + type.Length));
+
+            for (int i = 0; i < type.Length; i++) {
+                instructions.Add(new SubInstruction(StackPointer, 1));
+                instructions.Add(new SubInstruction(copyRegister, 1));
+                instructions.Add(new MemCopyInstruction(copyRegister, StackPointer));
+            }
+            
+            _stackFrame.Popped(type);
+            return instructions;
         }
 
         public List<Instruction> Visit(ExpressionNode node) {

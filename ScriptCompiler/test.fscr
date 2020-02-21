@@ -1,10 +1,5 @@
-func int test(int a) {
-    print "hello";
-    print a;
+func int test(int a, int b) {
     return 5;
 }
 
-test(1);
-test(2);
-test(3);
-print test(4);
+print test(4, 6);
