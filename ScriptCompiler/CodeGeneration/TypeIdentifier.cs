@@ -43,12 +43,25 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public SType Visit(StructAccessNode node) {
-            SType userType = Visit(node.Left as dynamic);
+            SType userType = Identify(node.Left);
             if (userType is UserType uT) {
                 return uT.TypeOfField(node.Field);
             }
 
             throw new CompileException($"Unexpected type {userType} in struct access", 0, 0);
+        }
+
+        public SType Visit(AddressOfNode node) {
+            SType exprType = Identify(node.Expression);
+            return new ReferenceType(exprType);
+        }
+
+        public SType Visit(DereferenceNode node) {
+            SType exprType = Identify(node.Expression);
+            if (!(exprType is ReferenceType refType)) {
+                throw new CompileException($"Attempt to dereference non-pointer type {exprType}", 0, 0);
+            }
+            return refType.ContainedType;
         }
 
         public SType Visit(BinaryOperatorNode node) {

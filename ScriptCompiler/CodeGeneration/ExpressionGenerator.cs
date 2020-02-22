@@ -27,6 +27,9 @@ namespace ScriptCompiler.CodeGeneration {
         private TypeIdentifier TypeIdentifier => new TypeIdentifier(
             _functionTypeRepository, _userTypeRepository, _stackFrame);
 
+        private AddressabilityChecker AddressabilityChecker => new AddressabilityChecker(
+            _functionTypeRepository, _userTypeRepository, _stackFrame);
+
         public ExpressionGenerator(FunctionTypeRepository functionTypeRepository, UserTypeRepository userTypeRepository,
                                    Dictionary<string, StringLabel> stringPoolAliases, StackFrame stackFrame,
                                    RegisterManager regManager) {
@@ -111,6 +114,19 @@ namespace ScriptCompiler.CodeGeneration {
                 new MemWriteInstruction(StackPointer, _stringPoolAliases[node.String]),
                 PushStack(SType.SInteger)
             };
+        }
+
+        public List<Instruction> Visit(AddressOfNode node) {
+            if (!AddressabilityChecker.Check(node.Expression)) {
+                throw new CompileException("Attempt to take the address of an unaddressable expression", 0, 0);
+            }
+            // TODO: Implement
+            return new List<Instruction>();
+        }
+        
+        public List<Instruction> Visit(DereferenceNode node) {
+            // TODO: Implement
+            return new List<Instruction>();
         }
 
         public List<Instruction> Visit(AdditionNode node) {

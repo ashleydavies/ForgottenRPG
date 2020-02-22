@@ -3,3 +3,8 @@ func int test(int a, int b) {
 }
 
 print test(4, 6);
+
+int x = 5;
+int @xaddr = @x;
+int y = !xaddr;
+print y;
