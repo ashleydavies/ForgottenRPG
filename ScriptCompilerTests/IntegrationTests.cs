@@ -104,6 +104,31 @@ namespace ScriptCompilerTests {
             ExecuteCode("int z; func int a(int b, string c, int d) { print b * d; print c; return 10; } int m = 5; int b; string c; print a(10, 'hello', 5);");
             Assert.Equal(new List<string> {"50", "hello", "10"}, _output);
         }
+
+        /*
+         TODO: Enable once struct access expression generation works
+        [Fact]
+        public void CanHandleAssignmentsToSimpleStructs() {
+            ExecuteCode(@"
+struct Player {
+    int health;
+    int mana;
+}
+
+Player a;
+Player b;
+
+print a.health = 10;
+print a.mana = 20;
+print b.health = 30;
+b = a;
+print a.health;
+print a.mana;
+print b.health;
+print b.mana;");
+            Assert.Equal(new List<string> {"10", "20", "30", "10", "20", "10", "20"}, _output);
+        }
+        */
         
         private void ExecuteCode(string code) {
             var compiled = new Parser(code).Compile();

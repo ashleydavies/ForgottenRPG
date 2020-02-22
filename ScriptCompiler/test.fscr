@@ -6,7 +6,11 @@ struct Player {
 Player a;
 Player b;
 
-a.health = 10;
-a.mana = 20;
-b.health = 30;
+print "Setting a.health to 10";
+print a.health = 10;
+print "Setting a.mana to 20";
+print a.mana = 20;
+print "Setting b.health to 30";
+print b.health = 30;
+print "Setting b to a";
 b = a;
