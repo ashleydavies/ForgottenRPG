@@ -116,6 +116,11 @@ namespace ScriptCompiler.CodeGeneration {
             };
         }
 
+        public List<Instruction> Visit(AssignmentNode node) {
+            // TODO: Implement
+            return new List<Instruction>();
+        }
+
         public List<Instruction> Visit(AddressOfNode node) {
             if (!AddressabilityChecker.Check(node.Expression)) {
                 throw new CompileException("Attempt to take the address of an unaddressable expression", 0, 0);

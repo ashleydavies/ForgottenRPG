@@ -64,6 +64,15 @@ namespace ScriptCompiler.CodeGeneration {
             return refType.ContainedType;
         }
 
+        public SType Visit(AssignmentNode node) {
+            var valueType = Identify(node.Value);
+            var destType = Identify(node.Destination);
+            if (!Equals(valueType, destType)) {
+                throw new CompileException($"Mismatching types in assignment (from {valueType} to {destType}", 0, 0);
+            }
+            return valueType;
+        }
+
         public SType Visit(BinaryOperatorNode node) {
             var typeL = Identify(node.Left);
             var typeR = Identify(node.Right);

@@ -219,7 +219,9 @@ namespace ForgottenRPG.VM {
                 var output = "";
                 for (int i = MemoryPage.PageSize; i <= _maxMem; i++) {
                     var (pN, oN) =  GetPageAndOffset(i);
-                    output       += $"{i}: {_memory[pN]?.ReadAddress(oN) ?? 0}; ";
+                    var sep = ":";
+                    if (_registers[StackPointerRegister] == i) sep = "=";
+                    output       += $"{i}{sep} {_memory[pN]?.ReadAddress(oN) ?? 0}; ";
                 }
 
                 Console.WriteLine(output);
@@ -242,7 +244,9 @@ namespace ForgottenRPG.VM {
             var output = "";
             for (int i = MemoryPage.PageSize; i <= _maxMem; i++) {
                 var (pN, oN) =  GetPageAndOffset(i);
-                output       += $"{i}: {_memory[pN]?.ReadAddress(oN) ?? 0}; ";
+                var sep = ":";
+                if (_registers[StackPointerRegister] == i) sep = "=";
+                output       += $"{i}{sep} {_memory[pN]?.ReadAddress(oN) ?? 0}; ";
             }
 
             Console.WriteLine(output);
