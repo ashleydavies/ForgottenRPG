@@ -30,6 +30,9 @@ namespace ScriptCompiler.CodeGeneration {
         private AddressabilityChecker AddressabilityChecker => new AddressabilityChecker(
             _functionTypeRepository, _userTypeRepository, _stackFrame);
 
+        private LValueIdentifier LValueIdentifier => new LValueIdentifier(
+            _functionTypeRepository, _userTypeRepository, _stackFrame, _regManager);
+
         public ExpressionGenerator(FunctionTypeRepository functionTypeRepository, UserTypeRepository userTypeRepository,
                                    Dictionary<string, StringLabel> stringPoolAliases, StackFrame stackFrame,
                                    RegisterManager regManager) {
@@ -117,9 +120,19 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public List<Instruction> Visit(AssignmentNode node) {
-            // TODO: Implement
-            
-            return new List<Instruction>();
+            var nodeType = TypeIdentifier.Identify(node);
+            var (instructions, pointerReg) = LValueIdentifier.Generate(node.Destination);
+            instructions[0].WithComment("Begin assignment");
+            using (pointerReg) {
+                instructions.AddRange(Generate(node.Value));
+                instructions.Add(new SubInstruction(StackPointer, nodeType.Length));
+                for (int i = 0; i < nodeType.Length; i++) {
+                    instructions.Add(new MemCopyInstruction(pointerReg, StackPointer));
+                    instructions.Add(new AddInstruction(pointerReg, 1));
+                    instructions.Add(new AddInstruction(StackPointer, 1));
+                }
+            }
+            return instructions;
         }
 
         public List<Instruction> Visit(AddressOfNode node) {
