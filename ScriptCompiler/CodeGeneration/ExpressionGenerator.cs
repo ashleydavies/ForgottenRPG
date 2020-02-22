@@ -118,6 +118,7 @@ namespace ScriptCompiler.CodeGeneration {
 
         public List<Instruction> Visit(AssignmentNode node) {
             // TODO: Implement
+            
             return new List<Instruction>();
         }
 
