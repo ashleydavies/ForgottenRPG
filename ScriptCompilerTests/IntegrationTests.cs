@@ -129,7 +129,7 @@ print b.mana;");
 
         [Fact]
         public void FunctionsCanReturnStructs() {
-            ExecuteCode("struct player { int health; int mana; } func player a(int b, string c, int d) { print b * d; print c; player p; p.mana = 30; } print a(10, 'hello', 5).mana;");
+            ExecuteCode("struct player { int health; int mana; } func player a(int b, string c, int d) { print b * d; print c; player p; p.mana = 30; return p; } print a(10, 'hello', 5).mana;");
             Assert.Equal(new List<string> {"50", "hello", "30"}, _output);
         }
         
