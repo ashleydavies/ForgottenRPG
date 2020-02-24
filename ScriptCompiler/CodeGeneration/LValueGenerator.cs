@@ -8,7 +8,7 @@ using ScriptCompiler.Types;
 using ScriptCompiler.Visitors;
 
 namespace ScriptCompiler.CodeGeneration {
-    public class LValueIdentifier : Visitor<(List<Instruction>, Assembly.Register)> {
+    public class LValueGenerator : Visitor<(List<Instruction>, Assembly.Register)> {
         private readonly FunctionTypeRepository _functionTypeRepository;
         private readonly UserTypeRepository _userTypeRepository;
         private readonly StackFrame _stackFrame;
@@ -17,7 +17,7 @@ namespace ScriptCompiler.CodeGeneration {
         private TypeIdentifier TypeIdentifier => new TypeIdentifier(
             _functionTypeRepository, _userTypeRepository, _stackFrame);
 
-        public LValueIdentifier(FunctionTypeRepository functionTypeRepository, UserTypeRepository userTypeRepository,
+        public LValueGenerator(FunctionTypeRepository functionTypeRepository, UserTypeRepository userTypeRepository,
                                 StackFrame stackFrame, RegisterManager regManager) {
             _functionTypeRepository = functionTypeRepository;
             _userTypeRepository     = userTypeRepository;

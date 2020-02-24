@@ -5,6 +5,7 @@
         public static readonly SType SInteger = new SType();
         public static readonly SType SChar = new SType();
         public static readonly SType SString = new ReferenceType(SChar);
+        public static readonly SType SGenericPtr = new ReferenceType(SNoType);
 
         public readonly int Length;
 

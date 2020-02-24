@@ -30,7 +30,7 @@ namespace ScriptCompiler.CodeGeneration {
         private AddressabilityChecker AddressabilityChecker => new AddressabilityChecker(
             _functionTypeRepository, _userTypeRepository, _stackFrame);
 
-        private LValueIdentifier LValueIdentifier => new LValueIdentifier(
+        private LValueGenerator LValueGenerator => new LValueGenerator(
             _functionTypeRepository, _userTypeRepository, _stackFrame, _regManager);
 
         public ExpressionGenerator(FunctionTypeRepository functionTypeRepository, UserTypeRepository userTypeRepository,
@@ -48,7 +48,7 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public override List<Instruction> Visit(ASTNode node) {
-            throw new System.NotImplementedException(node.GetType().FullName);
+            throw new NotImplementedException(node.GetType().FullName);
         }
 
         public List<Instruction> Visit(VariableAccessNode node) {
@@ -122,7 +122,7 @@ namespace ScriptCompiler.CodeGeneration {
 
         public List<Instruction> Visit(AssignmentNode node) {
             var nodeType = TypeIdentifier.Identify(node);
-            var (instructions, pointerReg) = LValueIdentifier.Generate(node.Destination);
+            var (instructions, pointerReg) = LValueGenerator.Generate(node.Destination);
             instructions[0].WithComment("Begin assignment");
             using (pointerReg) {
                 instructions.AddRange(Generate(node.Value));
@@ -170,13 +170,20 @@ namespace ScriptCompiler.CodeGeneration {
                 throw new CompileException("Attempt to take the address of an unaddressable expression", 0, 0);
             }
 
-            // TODO: Implement
-            return new List<Instruction>();
+            var (instructions, reg) = LValueGenerator.Generate(node.Expression);
+            instructions.Add(new MemWriteInstruction(StackPointer, reg));
+            instructions.Add(PushStack(SType.SGenericPtr));
+            return instructions;
         }
 
         public List<Instruction> Visit(DereferenceNode node) {
-            // TODO: Implement
-            return new List<Instruction>();
+            var instructions = Generate(node.Expression);
+            using var copyReg = _regManager.NewRegister();
+            instructions.Add(PopStack(SType.SGenericPtr));
+            instructions.Add(new MemReadInstruction(copyReg, StackPointer));
+            instructions.Add(new MemCopyInstruction(StackPointer, copyReg));
+            instructions.Add(PushStack(SType.SGenericPtr));
+            return instructions;
         }
 
         public List<Instruction> Visit(AdditionNode node) {

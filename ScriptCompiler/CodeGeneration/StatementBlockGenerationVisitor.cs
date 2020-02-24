@@ -108,10 +108,10 @@ namespace ScriptCompiler.CodeGeneration {
             using var register = _regManager.NewRegister();
             instructions.Add(new MemReadInstruction(register, StackPointer));
 
-            if (ReferenceEquals(expressionType, SType.SInteger)) {
-                instructions.Add(new PrintIntInstruction(register));
-            } else if (ReferenceEquals(expressionType, SType.SString)) {
+            if (ReferenceEquals(expressionType, SType.SString)) {
                 instructions.Add(new PrintInstruction(register));
+            } else {
+                instructions.Add(new PrintIntInstruction(register));
             }
 
             return instructions;

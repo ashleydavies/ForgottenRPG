@@ -126,6 +126,12 @@ print b.health;
 print b.mana;");
             Assert.Equal(new List<string> {"10", "20", "30", "10", "20", "10", "20"}, _output);
         }
+
+        [Fact]
+        public void FunctionsCanReturnStructs() {
+            ExecuteCode("struct player { int health; int mana; } func player a(int b, string c, int d) { print b * d; print c; player p; p.mana = 30; } print a(10, 'hello', 5).mana;");
+            Assert.Equal(new List<string> {"50", "hello", "30"}, _output);
+        }
         
         private void ExecuteCode(string code) {
             var compiled = new Parser(code).Compile();
