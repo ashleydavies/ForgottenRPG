@@ -56,8 +56,8 @@ namespace ScriptCompiler.Parsing {
                 new PrefixParseRule(t => t is IdentifierToken,
                                     t => new VariableAccessNode(((IdentifierToken) t).Content)),
                 new PrefixParseRule(t => t is SymbolToken s && s.Symbol == "(", _ => ParseGrouping()),
-                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.ADDR_OPERATOR, _ => new AddressOfNode(ParseExpression())),
-                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.DEREF_OPERATOR, _ => new DereferenceNode(ParseExpression())),
+                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.ADDR_OPERATOR, _ => new AddressOfNode(ParseExpressionPrecedence(Precedence.FACTOR))),
+                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.DEREF_OPERATOR, _ => new DereferenceNode(ParseExpressionPrecedence(Precedence.FACTOR))),
             };
 
             _infixExpressionParseTable = new List<InfixParseRule> {
@@ -253,6 +253,9 @@ namespace ScriptCompiler.Parsing {
         private FunctionNode ParseFunctionNode() {
             Expecting<IdentifierToken>(t => t.Content == "func");
             var typeToken = Expecting<IdentifierToken>();
+            int pointerDepth = 0;
+            while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) pointerDepth++;
+            
             var nameToken = Expecting<IdentifierToken>();
             Expecting<SymbolToken>(t => t.Symbol == "(");
 
@@ -269,7 +272,7 @@ namespace ScriptCompiler.Parsing {
 
             Expecting<SymbolToken>(t => t.Symbol == ")");
             var block = ParseCodeBlock();
-            return new FunctionNode(nameToken.Content, new ExplicitTypeNode(typeToken.Content), block,
+            return new FunctionNode(nameToken.Content, new ExplicitTypeNode(typeToken.Content, pointerDepth), block,
                                     paramDefinitions);
         }
 

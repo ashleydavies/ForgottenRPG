@@ -10,11 +10,12 @@ namespace ScriptCompiler.CodeGeneration {
         private readonly FunctionTypeRepository _functionTypeRepository;
         private readonly UserTypeRepository _userTypeRepository;
         private readonly StackFrame _stackFrame;
-        
-        public TypeIdentifier(FunctionTypeRepository functionTypeRepository, UserTypeRepository userTypeRepository, StackFrame stackFrame) {
+
+        public TypeIdentifier(FunctionTypeRepository functionTypeRepository, UserTypeRepository userTypeRepository,
+                              StackFrame stackFrame) {
             _functionTypeRepository = functionTypeRepository;
-            _userTypeRepository = userTypeRepository;
-            _stackFrame = stackFrame;
+            _userTypeRepository     = userTypeRepository;
+            _stackFrame             = stackFrame;
         }
 
         public SType Identify(ASTNode node) {
@@ -24,7 +25,7 @@ namespace ScriptCompiler.CodeGeneration {
         public override SType Visit(ASTNode node) {
             throw new NotImplementedException(node.GetType().FullName);
         }
-        
+
         public SType Visit(FunctionCallNode node) {
             return _functionTypeRepository.ReturnType(node.FunctionName);
         }
@@ -61,15 +62,18 @@ namespace ScriptCompiler.CodeGeneration {
             if (!(exprType is ReferenceType refType)) {
                 throw new CompileException($"Attempt to dereference non-pointer type {exprType}", 0, 0);
             }
+
             return refType.ContainedType;
         }
 
         public SType Visit(AssignmentNode node) {
             var valueType = Identify(node.Value);
-            var destType = Identify(node.Destination);
+            var destType  = Identify(node.Destination);
             if (!Equals(valueType, destType)) {
-                throw new CompileException($"Mismatching types in assignment (from {valueType} to {destType}", 0, 0);
+                throw new CompileException($"Mismatching types in assignment (from {valueType.Name} to {destType.Name}",
+                                           0, 0);
             }
+
             return valueType;
         }
 
@@ -80,7 +84,7 @@ namespace ScriptCompiler.CodeGeneration {
             if (ReferenceEquals(typeL, typeR)) {
                 return typeL;
             }
-            
+
             throw new Exception();
         }
     }

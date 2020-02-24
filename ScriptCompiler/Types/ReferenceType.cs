@@ -1,8 +1,10 @@
 ﻿namespace ScriptCompiler.Types {
     public class ReferenceType : SType {
         public readonly SType ContainedType;
-        
-        public ReferenceType(SType containedType) {
+
+        public ReferenceType(SType containedType) : this("@" + containedType.Name, containedType) { }
+
+        public ReferenceType(string name, SType containedType) : base(name) {
             ContainedType = containedType;
         }
 

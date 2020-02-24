@@ -1,11 +1,18 @@
+func int @malloc(int size) {
+    int @heapBase = 4096 * 100;
+    return 0;
+}
+
 int x = 5;
 int @y = @x;
 print y;
 print "A";
-print !y;
 print "B";
 string bob = "Hello World";
+string fred = "Goodbye World";
 string @m = @bob;
 string @@n = @m;
 string @@@p = @n;
-print !!!p;
+!!!p = fred;
+print bob;
+

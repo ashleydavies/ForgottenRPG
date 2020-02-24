@@ -53,7 +53,9 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public (List<Instruction>, Assembly.Register) Visit(DereferenceNode node) {
-            throw new NotImplementedException();
+            var (instructions, reg) = Generate(node.Expression);
+            instructions.Add(new MemReadInstruction(reg, reg));
+            return (instructions, reg);
         }
     }
 }
