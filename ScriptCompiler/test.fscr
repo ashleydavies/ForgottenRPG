@@ -14,3 +14,7 @@ print "Setting b.health to 30";
 print b.health = 30;
 print "Setting b to a";
 b = a;
+print a.health;
+print a.mana;
+print b.health;
+print b.mana;

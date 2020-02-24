@@ -23,7 +23,7 @@ namespace ScriptCompiler.CodeGeneration {
         private StackFrame _stackFrame;
 
         private Register StackPointer => _regManager.StackPointer;
-        
+
         private TypeIdentifier TypeIdentifier => new TypeIdentifier(
             _functionTypeRepository, _userTypeRepository, _stackFrame);
 
@@ -57,7 +57,8 @@ namespace ScriptCompiler.CodeGeneration {
 
             // Copy the variable value onto the stack
             using var readLocation = _regManager.NewRegister();
-            instructions.Add(new MovInstruction(readLocation, StackPointer).WithComment($"Begin access {node.Identifier}"));
+            instructions.Add(
+                new MovInstruction(readLocation, StackPointer).WithComment($"Begin access {node.Identifier}"));
             instructions.Add(new AddInstruction(readLocation, offset));
             for (int i = 0; i < type.Length; i++) {
                 // Use that register to copy across the object
@@ -71,16 +72,16 @@ namespace ScriptCompiler.CodeGeneration {
 
         public List<Instruction> Visit(FunctionCallNode node) {
             var instructions = new List<Instruction>();
-            
+
             // Push space for the return value
             instructions.Add(PushStack(_functionTypeRepository.ReturnType(node.FunctionName)));
-            
+
             // Push the parameters
             foreach (var expressionNode in node.Args) {
                 // Our contract with Generate is they will push the result onto the stack... exactly what we want!
                 instructions.AddRange(Generate(expressionNode));
             }
-            
+
             // Push the current instruction pointer
             var returnLabel = new Label($"return_{Guid.NewGuid()}");
             // Push the return address to the stack
@@ -95,7 +96,7 @@ namespace ScriptCompiler.CodeGeneration {
                 // Our contract with Generate is they will push the result onto the stack... exactly what we want!
                 instructions.Add(PopStack(TypeIdentifier.Identify(expressionNode)));
             }
-            
+
             // Conveniently, our contract is to put the result on the top of the stack... Where it already is :)
             return instructions;
         }
@@ -132,6 +133,35 @@ namespace ScriptCompiler.CodeGeneration {
                     instructions.Add(new AddInstruction(StackPointer, 1));
                 }
             }
+
+            return instructions;
+        }
+
+        public List<Instruction> Visit(StructAccessNode node) {
+            var instructions = Generate(node.Left);
+            var structType   = TypeIdentifier.Identify(node.Left);
+
+            if (!(structType is UserType userStructType)) {
+                throw new CompileException($"Unable to access field {node.Field} of non-struct type {structType}", 0,
+                                           0);
+            }
+
+            // The entire struct is now on the stack
+            instructions.Add(PopStack(userStructType));
+
+            using var copyRegister = _regManager.NewRegister();
+
+            instructions.Add(new MovInstruction(copyRegister, StackPointer));
+            instructions.Add(new AddInstruction(copyRegister, userStructType.OffsetOfField(node.Field)));
+
+            var typeOfField = userStructType.TypeOfField(node.Field);
+            for (int i = 0; i < typeOfField.Length; i++) {
+                instructions.Add(new MemCopyInstruction(StackPointer, copyRegister));
+                instructions.Add(new AddInstruction(StackPointer, 1));
+                instructions.Add(new AddInstruction(copyRegister, 1));
+            }
+            
+            _stackFrame.Pushed(typeOfField);
             return instructions;
         }
 
@@ -139,10 +169,11 @@ namespace ScriptCompiler.CodeGeneration {
             if (!AddressabilityChecker.Check(node.Expression)) {
                 throw new CompileException("Attempt to take the address of an unaddressable expression", 0, 0);
             }
+
             // TODO: Implement
             return new List<Instruction>();
         }
-        
+
         public List<Instruction> Visit(DereferenceNode node) {
             // TODO: Implement
             return new List<Instruction>();

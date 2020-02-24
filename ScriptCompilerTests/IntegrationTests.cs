@@ -105,8 +105,6 @@ namespace ScriptCompilerTests {
             Assert.Equal(new List<string> {"50", "hello", "10"}, _output);
         }
 
-        /*
-         TODO: Enable once struct access expression generation works
         [Fact]
         public void CanHandleAssignmentsToSimpleStructs() {
             ExecuteCode(@"
@@ -128,7 +126,6 @@ print b.health;
 print b.mana;");
             Assert.Equal(new List<string> {"10", "20", "30", "10", "20", "10", "20"}, _output);
         }
-        */
         
         private void ExecuteCode(string code) {
             var compiled = new Parser(code).Compile();
