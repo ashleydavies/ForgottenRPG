@@ -1,18 +1,5 @@
-func int @malloc(int size) {
-    int @heapBase = 4096 * 100;
-    return 0;
+func int testA() {
+    return 5;
 }
 
-int x = 5;
-int @y = @x;
-print y;
-print "A";
-print "B";
-string bob = "Hello World";
-string fred = "Goodbye World";
-string @m = @bob;
-string @@n = @m;
-string @@@p = @n;
-!!!p = fred;
-print bob;
-
+print testA() + testA() + testA() + testA() * testA();

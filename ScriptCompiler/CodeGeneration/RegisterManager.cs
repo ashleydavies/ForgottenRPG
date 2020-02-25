@@ -6,8 +6,10 @@ namespace ScriptCompiler.CodeGeneration {
         // The first two registers are always reserved
         public readonly Register InstructionPointer;
         public readonly Register StackPointer;
+        private const int ReservedRegCount = 2;
 
         private readonly List<bool> _registersInUse = new List<bool>();
+        private readonly HashSet<Register> _locals = new HashSet<Register>();
 
         public RegisterManager() {
             InstructionPointer = NewRegister();
@@ -19,20 +21,31 @@ namespace ScriptCompiler.CodeGeneration {
             while (true) {
                 if (_registersInUse.Count <= reg) {
                     _registersInUse.Add(true);
-                    return new Register(reg, this);
+                    break;
                 }
 
                 if (_registersInUse[reg] == false) {
                     _registersInUse[reg] = true;
-                    return new Register(reg, this);
+                    break;
                 }
 
                 reg++;
             }
+
+            var register = new Register(reg, this);
+            if (reg >= ReservedRegCount) {
+                _locals.Add(register);
+            }
+            return register;
         }
         
         public void ClearRegister(Register register) {
+            _locals.Remove(register);
             _registersInUse[register.Number] = false;
+        }
+
+        public HashSet<Register> GetLocals() {
+            return new HashSet<Register>(_locals);
         }
     }
 }

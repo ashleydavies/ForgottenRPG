@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.AST.Statements.Expressions.Arithmetic;
@@ -72,7 +73,17 @@ namespace ScriptCompiler.CodeGeneration {
 
         public List<Instruction> Visit(FunctionCallNode node) {
             var instructions = new List<Instruction>();
+            var returnType = _functionTypeRepository.ReturnType(node.FunctionName);
 
+            // ToList as we need deterministic iteration order
+            var locals = _regManager.GetLocals().ToList();
+            // Push local registers
+            foreach (var register in locals) {
+                instructions.Add(new MemWriteInstruction(StackPointer, register)
+                                     .WithComment($"Back up local {register}"));
+                instructions.Add(PushStack(SType.SInteger));
+            }
+            
             // Push space for the return value
             instructions.Add(PushStack(_functionTypeRepository.ReturnType(node.FunctionName)));
 
@@ -95,6 +106,27 @@ namespace ScriptCompiler.CodeGeneration {
             foreach (var expressionNode in node.Args) {
                 // Our contract with Generate is they will push the result onto the stack... exactly what we want!
                 instructions.Add(PopStack(TypeIdentifier.Identify(expressionNode)));
+            }
+
+            // If there are any locals...
+            if (locals.Count > 0) {
+                // Move down below return type
+                instructions.Add(new SubInstruction(StackPointer, returnType.Length));
+                // Pop local registers
+                locals.Reverse();
+                foreach (var register in locals) {
+                    instructions.Add(PopStack(SType.SInteger));
+                    instructions.Add(new MemReadInstruction(register, StackPointer));
+                }
+                // Now copy the return type
+                var copyReg = _regManager.NewRegister();
+                instructions.Add(new MovInstruction(copyReg, StackPointer));
+                instructions.Add(new AddInstruction(copyReg, locals.Count));
+                for (int i = 0; i < returnType.Length; i++) {
+                    instructions.Add(new MemCopyInstruction(StackPointer, copyReg));
+                    instructions.Add(new AddInstruction(StackPointer, 1));
+                    instructions.Add(new AddInstruction(copyReg, 1));
+                }
             }
 
             // Conveniently, our contract is to put the result on the top of the stack... Where it already is :)
