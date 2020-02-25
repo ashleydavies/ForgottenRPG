@@ -73,7 +73,7 @@ namespace ScriptCompiler.CodeGeneration {
 
         public List<Instruction> Visit(FunctionCallNode node) {
             var instructions = new List<Instruction>();
-            var returnType = _functionTypeRepository.ReturnType(node.FunctionName);
+            var returnType   = _functionTypeRepository.ReturnType(node.FunctionName);
 
             // ToList as we need deterministic iteration order
             var locals = _regManager.GetLocals().ToList();
@@ -83,7 +83,7 @@ namespace ScriptCompiler.CodeGeneration {
                                      .WithComment($"Back up local {register}"));
                 instructions.Add(PushStack(SType.SInteger));
             }
-            
+
             // Push space for the return value
             instructions.Add(PushStack(_functionTypeRepository.ReturnType(node.FunctionName)));
 
@@ -118,6 +118,7 @@ namespace ScriptCompiler.CodeGeneration {
                     instructions.Add(PopStack(SType.SInteger));
                     instructions.Add(new MemReadInstruction(register, StackPointer));
                 }
+
                 // Now copy the return type
                 var copyReg = _regManager.NewRegister();
                 instructions.Add(new MovInstruction(copyReg, StackPointer));
@@ -192,7 +193,7 @@ namespace ScriptCompiler.CodeGeneration {
                 instructions.Add(new AddInstruction(StackPointer, 1));
                 instructions.Add(new AddInstruction(copyRegister, 1));
             }
-            
+
             _stackFrame.Pushed(typeOfField);
             return instructions;
         }
@@ -209,8 +210,8 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public List<Instruction> Visit(DereferenceNode node) {
-            var instructions = Generate(node.Expression);
-            using var copyReg = _regManager.NewRegister();
+            var       instructions = Generate(node.Expression);
+            using var copyReg      = _regManager.NewRegister();
             instructions.Add(PopStack(SType.SGenericPtr));
             instructions.Add(new MemReadInstruction(copyReg, StackPointer));
             instructions.Add(new MemCopyInstruction(StackPointer, copyReg));
@@ -270,14 +271,14 @@ namespace ScriptCompiler.CodeGeneration {
         /// Generates the setup for a binary operator for a single word operation
         /// </summary>
         public (List<Instruction>, Register, Register) GenerateSingleWordBinOpSetup(BinaryOperatorNode node) {
-            List<Instruction> instructions  = new List<Instruction>();
-            var               leftRegister  = _regManager.NewRegister();
-            var               rightRegister = _regManager.NewRegister();
+            List<Instruction> instructions = new List<Instruction>();
             instructions.AddRange(Generate(node.Left));
             instructions.Add(PopStack(SType.SInteger));
+            var leftRegister = _regManager.NewRegister();
             instructions.Add(new MemReadInstruction(leftRegister, StackPointer));
             instructions.AddRange(Generate(node.Right));
             instructions.Add(PopStack(SType.SInteger));
+            var rightRegister = _regManager.NewRegister();
             instructions.Add(new MemReadInstruction(rightRegister, StackPointer));
             return (instructions, leftRegister, rightRegister);
         }
