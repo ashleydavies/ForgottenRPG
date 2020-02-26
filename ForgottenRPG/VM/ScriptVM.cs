@@ -229,7 +229,7 @@ namespace ForgottenRPG.VM {
                 Console.WriteLine(output);
             }
 #endif
-
+    
             return _memory[page].ReadAddress(offset);
         }
 
