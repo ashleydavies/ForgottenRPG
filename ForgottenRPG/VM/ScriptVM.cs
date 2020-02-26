@@ -13,6 +13,7 @@ namespace ForgottenRPG.VM {
         private readonly Flags _flagRegister;
         private readonly Stack<int> _stack;
         private readonly Dictionary<int, IMemoryPage> _memory = new Dictionary<int, IMemoryPage>();
+        private readonly int _stackPointerBase;
         public Action<string> PrintMethod { get; set; } = s => ServiceLocator.LogService.Log(LogType.Info, "VM : " + s);
 
         public ScriptVM(List<int> bytes) {
@@ -35,9 +36,10 @@ namespace ForgottenRPG.VM {
             // Lock the pages for writing so programs can't overwrite instruction data
             instructionPages.ForEach(x => x.Lock());
 
+            _stackPointerBase = instructionPages.Count * MemoryPage.PageSize;
             _registers = new Dictionary<int, int> {
                 [InstructionRegister]  = bytes[0],
-                [StackPointerRegister] = instructionPages.Count * MemoryPage.PageSize
+                [StackPointerRegister] = _stackPointerBase
             };
 
             _flagRegister = new Flags();
@@ -213,11 +215,11 @@ namespace ForgottenRPG.VM {
             var (page, offset) = GetPageAndOffset(index);
             if (!_memory.ContainsKey(page)) _memory[page] = new MemoryPage();
 #if DEBUG_MEM
-            if (index >= 4096) {
+            if (index >= _stackPointerBase) {
                 Console.WriteLine($"Reading {_memory[page].ReadAddress(offset)} from {index}");
                 _maxMem = Math.Max(_maxMem, index);
                 var output = "";
-                for (int i = MemoryPage.PageSize; i <= _maxMem; i++) {
+                for (int i = _stackPointerBase; i <= _maxMem; i++) {
                     var (pN, oN) =  GetPageAndOffset(i);
                     var sep = ":";
                     if (_registers[StackPointerRegister] == i) sep = "=";
@@ -242,7 +244,7 @@ namespace ForgottenRPG.VM {
             Console.WriteLine($"Writing {value} to {index}");
             _maxMem = Math.Max(_maxMem, index);
             var output = "";
-            for (int i = MemoryPage.PageSize; i <= _maxMem; i++) {
+            for (int i = _stackPointerBase; i <= _maxMem; i++) {
                 var (pN, oN) =  GetPageAndOffset(i);
                 var sep = ":";
                 if (_registers[StackPointerRegister] == i) sep = "=";
