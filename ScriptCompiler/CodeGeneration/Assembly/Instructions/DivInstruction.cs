@@ -1,15 +1,13 @@
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
-    public class DivInstruction : Instruction {
-        private readonly Location _toLocation;
-        private readonly Value _value;
-
-        public DivInstruction(Location toLocation, Value value) {
-            _toLocation = toLocation;
-            _value     = value;
-        }
+    public class DivInstruction : BinaryArithmeticInstruction {
+        public DivInstruction(Location toLocation, Value value) : base(toLocation, value) { }
 
         protected override string AsString() {
-            return $"DIV {_toLocation} {_value}";
+            return $"DIV {ToLocation} {Value}";
+        }
+
+        public override bool IsNoop() {
+            return Value is NumericConstant nc && nc == 1;
         }
     }
 }

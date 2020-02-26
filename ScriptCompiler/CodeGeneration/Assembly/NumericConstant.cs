@@ -1,13 +1,17 @@
 namespace ScriptCompiler.CodeGeneration.Assembly {
     public class NumericConstant : Value {
-        private readonly int _amount;
+        public readonly int Amount;
 
         public NumericConstant(int amount) {
-            _amount = amount;
+            Amount = amount;
         }
 
         public override string ToString() {
-            return $"{_amount}";
+            return $"{Amount}";
+        }
+        
+        public static implicit operator int(NumericConstant nc) {
+            return nc.Amount;
         }
     }
 }

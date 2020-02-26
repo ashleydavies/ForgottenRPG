@@ -1,15 +1,13 @@
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
-    public class MulInstruction : Instruction {
-        private readonly Location _toLocation;
-        private readonly Value _value;
-
-        public MulInstruction(Location toLocation, Value value) {
-            _toLocation = toLocation;
-            _value     = value;
-        }
+    public class MulInstruction : BinaryArithmeticInstruction {
+        public MulInstruction(Location toLocation, Value value) : base(toLocation, value) { }
 
         protected override string AsString() {
-            return $"MUL {_toLocation} {_value}";
+            return $"MUL {ToLocation} {Value}";
+        }
+
+        public override bool IsNoop() {
+            return Value is NumericConstant nc && nc == 1;
         }
     }
 }
