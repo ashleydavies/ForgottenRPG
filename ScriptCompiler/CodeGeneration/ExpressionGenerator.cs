@@ -120,7 +120,7 @@ namespace ScriptCompiler.CodeGeneration {
                 }
 
                 // Now copy the return type
-                var copyReg = _regManager.NewRegister();
+                using var copyReg = _regManager.NewRegister();
                 instructions.Add(new MovInstruction(copyReg, StackPointer));
                 instructions.Add(new AddInstruction(copyReg, locals.Count));
                 for (int i = 0; i < returnType.Length; i++) {
@@ -204,8 +204,11 @@ namespace ScriptCompiler.CodeGeneration {
             }
 
             var (instructions, reg) = LValueGenerator.Generate(node.Expression);
-            instructions.Add(new MemWriteInstruction(StackPointer, reg));
-            instructions.Add(PushStack(SType.SGenericPtr));
+            using (reg) {
+                instructions.Add(new MemWriteInstruction(StackPointer, reg));
+                instructions.Add(PushStack(SType.SGenericPtr));
+            }
+
             return instructions;
         }
 
