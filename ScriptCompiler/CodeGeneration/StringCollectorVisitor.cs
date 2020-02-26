@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using ScriptCompiler.AST;
+﻿using System.Collections.Generic;
 using ScriptCompiler.AST.Statements.Expressions;
 
 namespace ScriptCompiler.Visitors {
-    public class StringLiteralCollectorVisitor : EverythingVisitor<List<string>> {
+    public class StringCollectorVisitor : EverythingVisitor<List<string>> {
         protected override List<string> Base() {
             return new List<string>();
         }

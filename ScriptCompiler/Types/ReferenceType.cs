@@ -1,8 +1,10 @@
 ﻿namespace ScriptCompiler.Types {
     public class ReferenceType : SType {
         public readonly SType ContainedType;
-        
-        public ReferenceType(SType containedType) {
+
+        public ReferenceType(SType containedType) : this("@" + containedType.Name, containedType) { }
+
+        public ReferenceType(string name, SType containedType) : base(name) {
             ContainedType = containedType;
         }
 
@@ -10,10 +12,10 @@
             return Equals(ContainedType, other.ContainedType);
         }
 
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((ReferenceType) obj);
         }
 

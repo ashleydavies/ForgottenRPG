@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.AST.Statements.Expressions.Arithmetic;
-using ScriptCompiler.Visitors;
+using ScriptCompiler.CodeGeneration;
 
 namespace ScriptCompiler.Parsing {
     public class Parser {
@@ -17,9 +16,9 @@ namespace ScriptCompiler.Parsing {
             public readonly Precedence Precedence;
 
             public InfixParseRule(Predicate<LexToken> predicate, Func<LexToken, ExpressionNode, ExpressionNode> rule,
-                Precedence precedence) {
-                Predicate = predicate;
-                Rule = rule;
+                                  Precedence precedence) {
+                Predicate  = predicate;
+                Rule       = rule;
                 Precedence = precedence;
             }
         }
@@ -30,7 +29,7 @@ namespace ScriptCompiler.Parsing {
 
             public PrefixParseRule(Predicate<LexToken> predicate, Func<LexToken, ExpressionNode> rule) {
                 Predicate = predicate;
-                Rule = rule;
+                Rule      = rule;
             }
         }
 
@@ -49,43 +48,50 @@ namespace ScriptCompiler.Parsing {
 
         public Parser(string contents) {
             _contents = contents;
+            _lexer    = new Lexer(_contents);
 
             _prefixExpressionParseTable = new List<PrefixParseRule> {
                 new PrefixParseRule(t => t is IntegerToken, t => new IntegerLiteralNode(((IntegerToken) t).Content)),
                 new PrefixParseRule(t => t is StringToken, t => new StringLiteralNode(((StringToken) t).Content)),
                 new PrefixParseRule(t => t is IdentifierToken,
-                    t => new VariableAccessNode(((IdentifierToken) t).Content)),
+                                    t => new VariableAccessNode(((IdentifierToken) t).Content)),
                 new PrefixParseRule(t => t is SymbolToken s && s.Symbol == "(", _ => ParseGrouping()),
+                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.ADDR_OPERATOR, _ => new AddressOfNode(ParseExpressionPrecedence(Precedence.FACTOR))),
+                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.DEREF_OPERATOR, _ => new DereferenceNode(ParseExpressionPrecedence(Precedence.FACTOR))),
             };
 
             _infixExpressionParseTable = new List<InfixParseRule> {
                 new InfixParseRule(t => t is SymbolToken s && new List<string> {"-", "+"}.Contains(s.Symbol),
-                    (t, left) => ParseBinaryExpressionNode(left, t as SymbolToken), Precedence.TERM),
+                                   (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.TERM),
                 new InfixParseRule(t => t is SymbolToken s && new List<string> {"*", "/"}.Contains(s.Symbol),
-                    (t, left) => ParseBinaryExpressionNode(left, t as SymbolToken), Precedence.FACTOR),
+                                   (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.FACTOR),
                 new InfixParseRule(t => t is SymbolToken s && s.Symbol == ".",
-                    (t, left) => new StructAccessNode(left, Expecting<IdentifierToken>().Content), Precedence.CALL),
+                                   (t, left) => new StructAccessNode(left, Expecting<IdentifierToken>().Content),
+                                   Precedence.CALL),
                 new InfixParseRule(t => t is SymbolToken s && s.Symbol == "(",
-                    (t, left) => ParseFunctionCallNode(left), Precedence.CALL),
+                                   (t, left) => ParseFunctionCallNode(left), Precedence.ACCESSOR),
                 new InfixParseRule(t => t is SymbolToken s && s.Symbol == "=",
-                    (t, left) => new AssignmentNode(left, ParseExpression()), Precedence.ASSIGNMENT)
+                                   (t, left) => new AssignmentNode(left, ParseExpression()), Precedence.ASSIGNMENT),
+                // Translating x->y == (*x).y at this time saves increasing AST complexity
+                new InfixParseRule(t => t is SymbolToken s && s.Symbol == "->",
+                                   (t, left) => new StructAccessNode(new DereferenceNode(left), Expecting<IdentifierToken>().Content), Precedence.ACCESSOR)
             };
         }
 
         public string Compile() {
-            return new CodeGenVisitor().Visit(Parse());
+            // TODO: ToString() is not correct here, but just done to get a first iteration working.
+            return string.Join('\n', new CodeGenerator().Generate(Parse()).Select(p => p.ToString()));
         }
 
         public ProgramNode Parse() {
-            _lexer = new Lexer(_contents);
             return ParseProgram();
         }
 
         private ProgramNode ParseProgram() {
-            var structs = new List<StructNode>();
-            var functions = new List<FunctionNode>();
-            var statements = new List<StatementNode>();
-            var imports = new List<ImportNode>();
+            var structs          = new List<StructNode>();
+            var functions        = new List<FunctionNode>();
+            var statements       = new List<StatementNode>();
+            var imports          = new List<ImportNode>();
             var importProcessing = true;
 
             while (_cachedTokens.Count > 0 || _lexer.HasMore() && PeekToken() != null) {
@@ -123,7 +129,8 @@ namespace ScriptCompiler.Parsing {
                 case IdentifierToken it when it.Content == "return":
                     returnNode = ParseReturnStatementNode();
                     break;
-                case IdentifierToken it when PeekToken(1) is IdentifierToken:
+                case IdentifierToken it
+                    when PeekToken(1) is IdentifierToken || PeekToken(1) is SymbolToken s && s.Symbol == "@":
                     returnNode = ParseDeclarationStatementNode();
                     break;
                 default:
@@ -142,7 +149,11 @@ namespace ScriptCompiler.Parsing {
         }
 
         private DeclarationStatementNode ParseDeclarationStatementNode() {
-            var typeNode = new ExplicitTypeNode(Expecting<IdentifierToken>().Content);
+            var identifier   = Expecting<IdentifierToken>().Content;
+            var pointerDepth = 0;
+            while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) pointerDepth++;
+            var typeNode           = new ExplicitTypeNode(identifier, pointerDepth);
+            
             var variableIdentifier = Expecting<IdentifierToken>().Content;
 
             // If we have a default value, set it up
@@ -159,13 +170,13 @@ namespace ScriptCompiler.Parsing {
         }
 
         private ExpressionNode ParseExpressionPrecedence(Precedence precedence) {
-            var token = NextToken();
+            var token      = NextToken()!;
             var expression = GetMatchingPrefixRule(token).Rule(token);
 
             token = PeekToken();
             while (GetMatchingInfixRule(token, precedence) != null) {
-                expression = GetMatchingInfixRule(token, precedence).Rule(NextToken(), expression);
-                token = PeekToken();
+                expression = GetMatchingInfixRule(token, precedence).Rule(NextToken()!, expression);
+                token      = PeekToken();
             }
 
             return expression;
@@ -188,18 +199,13 @@ namespace ScriptCompiler.Parsing {
         }
 
         private ExpressionNode ParseBinaryExpressionNode(ExpressionNode leftSide, SymbolToken binOp) {
-            switch (binOp.Symbol) {
-                case "+":
-                    return new AdditionNode(leftSide, ParseExpressionPrecedence(Precedence.TERM));
-                case "-":
-                    return new SubtractionNode(leftSide, ParseExpressionPrecedence(Precedence.TERM));
-                case "*":
-                    return new MultiplicationNode(leftSide, ParseExpressionPrecedence(Precedence.FACTOR));
-                case "/":
-                    return new DivisionNode(leftSide, ParseExpressionPrecedence(Precedence.FACTOR));
-            }
-
-            throw new NotImplementedException();
+            return binOp.Symbol switch {
+                "+" => new AdditionNode(leftSide, ParseExpressionPrecedence(Precedence.TERM)),
+                "-" => new SubtractionNode(leftSide, ParseExpressionPrecedence(Precedence.TERM)),
+                "*" => new MultiplicationNode(leftSide, ParseExpressionPrecedence(Precedence.FACTOR)),
+                "/" => new DivisionNode(leftSide, ParseExpressionPrecedence(Precedence.FACTOR)),
+                _   => throw new NotImplementedException(),
+            };
         }
 
         private PrefixParseRule GetMatchingPrefixRule(LexToken token) {
@@ -208,7 +214,7 @@ namespace ScriptCompiler.Parsing {
 
         private InfixParseRule GetMatchingInfixRule(LexToken token, Precedence precedence) {
             return _infixExpressionParseTable.FindAll(rule => rule.Precedence > precedence)
-                .FindAll(rule => rule.Predicate(token)).FirstOrDefault();
+                                             .FindAll(rule => rule.Predicate(token)).FirstOrDefault();
         }
 
         private ExpressionNode ParseGrouping() {
@@ -247,6 +253,9 @@ namespace ScriptCompiler.Parsing {
         private FunctionNode ParseFunctionNode() {
             Expecting<IdentifierToken>(t => t.Content == "func");
             var typeToken = Expecting<IdentifierToken>();
+            int pointerDepth = 0;
+            while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) pointerDepth++;
+            
             var nameToken = Expecting<IdentifierToken>();
             Expecting<SymbolToken>(t => t.Symbol == "(");
 
@@ -263,8 +272,8 @@ namespace ScriptCompiler.Parsing {
 
             Expecting<SymbolToken>(t => t.Symbol == ")");
             var block = ParseCodeBlock();
-            return new FunctionNode(nameToken.Content, new ExplicitTypeNode(typeToken.Content), block,
-                paramDefinitions);
+            return new FunctionNode(nameToken.Content, new ExplicitTypeNode(typeToken.Content, pointerDepth), block,
+                                    paramDefinitions);
         }
 
         private CodeBlockNode ParseCodeBlock() {
@@ -280,8 +289,8 @@ namespace ScriptCompiler.Parsing {
             return new CodeBlockNode(statements);
         }
 
-        private T Expecting<T>(Func<T, bool> predicate = null) where T : class {
-            LexToken token = NextToken();
+        private T Expecting<T>(Func<T, bool>? predicate = null) where T : class {
+            LexToken token = NextToken()!;
 
             if (!(token is T tToken))
                 throw token.CreateException($"Unexpected token '{token}' (expecting {typeof(T)})");
@@ -320,7 +329,7 @@ namespace ScriptCompiler.Parsing {
             return false;
         }
 
-        private LexToken NextToken() {
+        private LexToken? NextToken() {
             if (_cachedTokens.Count == 0) return _lexer.NextToken();
 
             LexToken cached = _cachedTokens[0];
@@ -332,8 +341,9 @@ namespace ScriptCompiler.Parsing {
             if (_cachedTokens.Count > depth) return _cachedTokens[depth];
 
             for (int i = 0; i <= depth - _cachedTokens.Count; i++) {
-                _cachedTokens.Add(_lexer.NextToken());
+                _cachedTokens.Add(_lexer.NextToken()!);
             }
+
             return _cachedTokens[depth];
         }
     }

@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using ScriptCompiler.Types;
 
 namespace ScriptCompiler.CompileUtil {
     public class StackFrame {
+        // Used to track the portion of the stack frame reserved for the return value for a function to populate.
+        // Accessed by the code generator for the `return` statement.
+        public const string ReturnIdentifier = "!RETURN";
         // Sometimes we want to push inaccessible variables to the stack, such as a return address during preparation
         //  for entering a function. These affect the access to stack variables (they are all now further down the
         //  stack) and therefore we need to keep track of how much we've "nudged" these things onto the stack
         public int Length { get; private set; }
-        private readonly StackFrame _parent;
+        private readonly StackFrame? _parent;
         private readonly Dictionary<string, (SType type, int )> _variableTable;
 
         public StackFrame(StackFrame parent) : this() {
@@ -23,7 +22,7 @@ namespace ScriptCompiler.CompileUtil {
             _variableTable = new Dictionary<string, (SType, int)>();
         }
 
-        public (StackFrame parent, int length) Purge() {
+        public (StackFrame? parent, int length) Purge() {
             var expectedLength = _variableTable.Values.Sum(v => v.type.Length);
             
             if (Length != expectedLength) {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Xml.Schema;
-using ScriptCompiler.AST;
+﻿using ScriptCompiler.AST;
 
 namespace ScriptCompiler.Visitors {
     public abstract class EverythingVisitor<T> : Visitor<T> {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Text.RegularExpressions;
+using static ScriptCompiler.Parsing.Consts;
 
 namespace ScriptCompiler.Parsing {
     public class Lexer {
@@ -11,12 +11,12 @@ namespace ScriptCompiler.Parsing {
         private static readonly char[] Symbols = {
             '+', '-', '*', '/', '=', ';',
             '<', '>', '[', ']', '{', '}',
-            '(', ')', '.', ','
+            '(', ')', '.', ',', ADDR_CHAR, DEREF_CHAR
         };
 
         private static readonly Dictionary<char, char[]> MultiCharSymbols = new Dictionary<char, char[]> {
             {'+', new [] { '=', '+' } },
-            {'-', new [] { '=', '-' } },
+            {'-', new [] { '=', '-', '>' } },
             {'*', new [] { '=', '*' } },
             {'/', new [] { '=', '/' } },
             {'>', new [] { '=', '>' } },
@@ -29,13 +29,13 @@ namespace ScriptCompiler.Parsing {
         private int _scanPosition;
         private bool _unpopped = false;
         private char _unpoppedChar;
-        private readonly Stack<char> _charStack;
+        private Stack<char> _charStack;
 
         public Lexer(string input) {
             _charStack = new Stack<char>(input.ToCharArray().Reverse());
         }
 
-        public LexToken NextToken() {
+        public LexToken? NextToken() {
             while (HasMore() && (PeekNextChar() == '#' || IsWhitespace(PeekNextChar()))) {
                 if (PeekNextChar() == '#') {
                     var line = _scanLine;
@@ -163,7 +163,10 @@ namespace ScriptCompiler.Parsing {
             }
 
             _scanPosition++;
-            if (_charStack.Peek() == '\n') _scanLine++;
+            if (_charStack.Peek() == '\n') {
+                _scanLine++;
+                _scanPosition = 0;
+            }
 
             return _charStack.Pop();
         }
@@ -246,6 +249,10 @@ namespace ScriptCompiler.Parsing {
 
         public SymbolToken(int line, int position, string symbol) : base(line, position) {
             Symbol = symbol;
+        }
+
+        public bool IsChar(char symbol) {
+            return symbol.ToString() == Symbol;
         }
 
         protected override string StringRepresentation() {

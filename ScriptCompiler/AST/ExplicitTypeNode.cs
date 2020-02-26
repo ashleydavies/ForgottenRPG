@@ -4,13 +4,19 @@ using ScriptCompiler.Types;
 namespace ScriptCompiler.AST {
     public class ExplicitTypeNode : ASTNode {
         public readonly string TypeString;
+        public readonly int PointerDepth;
         
-        public ExplicitTypeNode(string typeString) {
+        public ExplicitTypeNode(string typeString, int pointerDepth = 0) {
             TypeString = typeString;
+            PointerDepth = pointerDepth;
         }
 
         public SType GetSType(UserTypeRepository utr) {
-            return SType.FromTypeString(TypeString, utr);
+            return SType.FromTypeString(TypeString, utr, PointerDepth);
+        }
+
+        public bool IsOfUnknownType(UserTypeRepository utr) {
+            return ReferenceEquals(GetSType(utr), SType.SNoType);
         }
 
         public override List<ASTNode> Children() {

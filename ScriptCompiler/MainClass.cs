@@ -30,6 +30,7 @@ namespace ScriptCompiler {
                 Console.WriteLine("Completed output:");
 
                 string bytecodeString = string.Join(",", compiled);
+                Console.WriteLine($"{compiled.Count} words in total");
                 
                 Console.WriteLine(bytecodeString);
                 
@@ -47,6 +48,7 @@ namespace ScriptCompiler {
                 
                 Console.WriteLine("Assembled code:");
                 Console.WriteLine(bytecodeString);
+                Console.WriteLine($"{assembled.Count} words in total");
 
                 List<int> bytecode = bytecodeString.Split(',').Select(int.Parse).ToList();
                 new ScriptVM(bytecode).Execute();

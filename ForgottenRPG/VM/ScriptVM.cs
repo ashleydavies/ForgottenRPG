@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define DEBUG_MEM
+using System;
 using System.Collections.Generic;
 using ForgottenRPG.Service;
 
@@ -12,6 +13,7 @@ namespace ForgottenRPG.VM {
         private readonly Flags _flagRegister;
         private readonly Stack<int> _stack;
         private readonly Dictionary<int, IMemoryPage> _memory = new Dictionary<int, IMemoryPage>();
+        private readonly int _stackPointerBase;
         public Action<string> PrintMethod { get; set; } = s => ServiceLocator.LogService.Log(LogType.Info, "VM : " + s);
 
         public ScriptVM(List<int> bytes) {
@@ -27,20 +29,21 @@ namespace ForgottenRPG.VM {
                     _memory[page] = memoryPage;
                     instructionPages.Add(memoryPage);
                 }
-                
+
                 _memory[page].WriteAddress(offset, bytes[i]);
             }
-            
+
             // Lock the pages for writing so programs can't overwrite instruction data
             instructionPages.ForEach(x => x.Lock());
-            
+
+            _stackPointerBase = instructionPages.Count * MemoryPage.PageSize;
             _registers = new Dictionary<int, int> {
-                [InstructionRegister] = bytes[0],
-                [StackPointerRegister] = instructionPages.Count * MemoryPage.PageSize
+                [InstructionRegister]  = bytes[0],
+                [StackPointerRegister] = _stackPointerBase
             };
-            
+
             _flagRegister = new Flags();
-            _stack = new Stack<int>();
+            _stack        = new Stack<int>();
         }
 
         public void Execute() {
@@ -156,17 +159,17 @@ namespace ForgottenRPG.VM {
         private string StringFromMemory(int userDataId) {
             // Add one as the first byte is the initial instruction register
             int len = ReadMemory(userDataId);
-            
+
             char[] userString = new char[len];
             for (int i = 0; i < len; i++) {
                 userString[i] = Convert.ToChar(ReadMemory(userDataId + 1 + i));
             }
-            
+
             return new string(userString);
         }
 
         private void Jump(bool doJump) {
-            int instructionPointer = ReadInstructionByte();
+            int instructionPointer = PopStack(); //ReadInstructionByte();
             if (doJump) {
                 _registers[InstructionRegister] = instructionPointer;
             }
@@ -174,23 +177,23 @@ namespace ForgottenRPG.VM {
 
         private void SetFlags(int basedOn) {
             if (basedOn == 0) {
-                _flagRegister.EQ = true;
+                _flagRegister.EQ  = true;
                 _flagRegister.GTE = true;
                 _flagRegister.LTE = true;
-                _flagRegister.GT = false;
-                _flagRegister.LT = false;
+                _flagRegister.GT  = false;
+                _flagRegister.LT  = false;
             } else if (basedOn > 0) {
-                _flagRegister.EQ = false;
+                _flagRegister.EQ  = false;
                 _flagRegister.GTE = true;
                 _flagRegister.LTE = false;
-                _flagRegister.GT = true;
-                _flagRegister.LT = false;
+                _flagRegister.GT  = true;
+                _flagRegister.LT  = false;
             } else {
-                _flagRegister.EQ = false;
+                _flagRegister.EQ  = false;
                 _flagRegister.GTE = false;
                 _flagRegister.LTE = true;
-                _flagRegister.GT = false;
-                _flagRegister.LT = true;
+                _flagRegister.GT  = false;
+                _flagRegister.LT  = true;
             }
         }
 
@@ -211,13 +214,45 @@ namespace ForgottenRPG.VM {
         private int ReadMemory(int index) {
             var (page, offset) = GetPageAndOffset(index);
             if (!_memory.ContainsKey(page)) _memory[page] = new MemoryPage();
+#if DEBUG_MEM
+            if (index >= _stackPointerBase) {
+                Console.WriteLine($"Reading {_memory[page].ReadAddress(offset)} from {index}");
+                _maxMem = Math.Max(_maxMem, index);
+                var output = "";
+                for (int i = _stackPointerBase; i <= _maxMem; i++) {
+                    var (pN, oN) =  GetPageAndOffset(i);
+                    var sep = ":";
+                    if (_registers[StackPointerRegister] == i) sep = "=";
+                    output       += $"{i}{sep} {_memory[pN]?.ReadAddress(oN) ?? 0}; ";
+                }
+
+                Console.WriteLine(output);
+            }
+#endif
+    
             return _memory[page].ReadAddress(offset);
         }
+
+        private int _maxMem = 0;
 
         private void WriteMemory(int index, int value) {
             var (page, offset) = GetPageAndOffset(index);
             if (!_memory.ContainsKey(page)) _memory[page] = new MemoryPage();
             _memory[page].WriteAddress(offset, value);
+
+#if DEBUG_MEM
+            Console.WriteLine($"Writing {value} to {index}");
+            _maxMem = Math.Max(_maxMem, index);
+            var output = "";
+            for (int i = _stackPointerBase; i <= _maxMem; i++) {
+                var (pN, oN) =  GetPageAndOffset(i);
+                var sep = ":";
+                if (_registers[StackPointerRegister] == i) sep = "=";
+                output       += $"{i}{sep} {_memory[pN]?.ReadAddress(oN) ?? 0}; ";
+            }
+
+            Console.WriteLine(output);
+#endif
         }
 
         private (int, int) GetPageAndOffset(int memIndex) {

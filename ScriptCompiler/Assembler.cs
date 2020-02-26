@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using ForgottenRPG.VM;
 
@@ -104,8 +103,9 @@ namespace ScriptCompiler {
                     _labels[components[1]] = _instructionId.ToString();
                     break;
                 case "jmp":
+                    HandleLoadToStack(components[1]);
                     AddInstruction(ScriptVM.Instruction.Jmp);
-                    AddInstruction("RESOLVELABEL" + components[1]);
+                    //AddInstruction("RESOLVELABEL" + components[1]);
                     break;
                 case "jeq":
                     AddInstruction(ScriptVM.Instruction.JmpEQ);
@@ -185,6 +185,12 @@ namespace ScriptCompiler {
                     HandleLoadToStack(components[2]);
                     AddInstruction(ScriptVM.Instruction.MemRead);
                     HandleSaveFromStack(components[1]);
+                    break;
+                case "memcopy":
+                    HandleLoadToStack(components[1]);
+                    HandleLoadToStack(components[2]);
+                    AddInstruction(ScriptVM.Instruction.MemRead);
+                    AddInstruction(ScriptVM.Instruction.MemWrite);
                     break;
             }
         }

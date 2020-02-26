@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using ScriptCompiler.AST.Statements.Expressions;
 
-namespace ScriptCompiler.AST.Statements {
+namespace ScriptCompiler.AST.Statements.Expressions {
     public class AssignmentNode : ExpressionNode {
         public readonly ExpressionNode Destination;
         public readonly ExpressionNode Value;
