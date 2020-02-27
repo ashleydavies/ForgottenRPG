@@ -136,7 +136,7 @@ namespace ScriptCompiler.CodeGeneration {
 
         public List<Instruction> Visit(IntegerLiteralNode node) {
             return new List<Instruction> {
-                new MemWriteInstruction(StackPointer, node.Value),
+                new MemWriteInstruction(StackPointer, (int) node.Value),
                 PushStack(SType.SInteger)
             };
         }

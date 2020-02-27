@@ -1,6 +1,6 @@
 ﻿namespace ForgottenRPG.VM {
     public interface IMemoryPage {
-        int ReadAddress(int offset);
-        void WriteAddress(int offset, int value);
+        int ReadAddress(uint offset);
+        void WriteAddress(uint offset, int value);
     }
 }
