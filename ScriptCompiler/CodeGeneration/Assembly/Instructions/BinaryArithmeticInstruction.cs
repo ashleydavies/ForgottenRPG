@@ -1,7 +1,3 @@
-using System.Net.Http.Headers;
-using Microsoft.VisualBasic;
-using ScriptCompiler.Parsing;
-
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
     public abstract class BinaryArithmeticInstruction : Instruction {
         public readonly Value Value;
