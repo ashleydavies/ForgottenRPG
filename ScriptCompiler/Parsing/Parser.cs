@@ -56,8 +56,10 @@ namespace ScriptCompiler.Parsing {
                 new PrefixParseRule(t => t is IdentifierToken,
                                     t => new VariableAccessNode(((IdentifierToken) t).Content)),
                 new PrefixParseRule(t => t is SymbolToken s && s.Symbol == "(", _ => ParseGrouping()),
-                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.ADDR_OPERATOR, _ => new AddressOfNode(ParseExpressionPrecedence(Precedence.FACTOR))),
-                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.DEREF_OPERATOR, _ => new DereferenceNode(ParseExpressionPrecedence(Precedence.FACTOR))),
+                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.ADDR_OPERATOR,
+                                    _ => new AddressOfNode(ParseExpressionPrecedence(Precedence.FACTOR))),
+                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.DEREF_OPERATOR,
+                                    _ => new DereferenceNode(ParseExpressionPrecedence(Precedence.FACTOR))),
             };
 
             _infixExpressionParseTable = new List<InfixParseRule> {
@@ -74,13 +76,16 @@ namespace ScriptCompiler.Parsing {
                                    (t, left) => new AssignmentNode(left, ParseExpression()), Precedence.ASSIGNMENT),
                 // Translating x->y == (*x).y at this time saves increasing AST complexity
                 new InfixParseRule(t => t is SymbolToken s && s.Symbol == "->",
-                                   (t, left) => new StructAccessNode(new DereferenceNode(left), Expecting<IdentifierToken>().Content), Precedence.ACCESSOR)
+                                   (t, left) =>
+                                       new StructAccessNode(new DereferenceNode(left),
+                                                            Expecting<IdentifierToken>().Content), Precedence.ACCESSOR)
             };
         }
 
         public string Compile() {
-            // TODO: ToString() is not correct here, but just done to get a first iteration working.
-            return string.Join('\n', new CodeGenerator().Generate(Parse()).Select(p => p.ToString()));
+            return string.Join('\n', Optimiser.Optimise(
+                                   new CodeGenerator().Generate(Parse())
+                               ).Select(p => p.ToString()));
         }
 
         public ProgramNode Parse() {
@@ -152,8 +157,8 @@ namespace ScriptCompiler.Parsing {
             var identifier   = Expecting<IdentifierToken>().Content;
             var pointerDepth = 0;
             while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) pointerDepth++;
-            var typeNode           = new ExplicitTypeNode(identifier, pointerDepth);
-            
+            var typeNode = new ExplicitTypeNode(identifier, pointerDepth);
+
             var variableIdentifier = Expecting<IdentifierToken>().Content;
 
             // If we have a default value, set it up
@@ -252,10 +257,10 @@ namespace ScriptCompiler.Parsing {
 
         private FunctionNode ParseFunctionNode() {
             Expecting<IdentifierToken>(t => t.Content == "func");
-            var typeToken = Expecting<IdentifierToken>();
+            var typeToken    = Expecting<IdentifierToken>();
             int pointerDepth = 0;
             while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) pointerDepth++;
-            
+
             var nameToken = Expecting<IdentifierToken>();
             Expecting<SymbolToken>(t => t.Symbol == "(");
 

@@ -20,7 +20,7 @@ namespace ScriptCompiler {
                 Console.WriteLine("Enter the path to the file to compile/assemble");
                 fileName = Console.ReadLine();
             }
-            
+
             if (args[0] == "compile") {
                 Console.WriteLine(Parser.FromFile(fileName).Compile());
             } else if (args[0] == "assemble") {
@@ -31,28 +31,43 @@ namespace ScriptCompiler {
 
                 string bytecodeString = string.Join(",", compiled);
                 Console.WriteLine($"{compiled.Count} words in total");
-                
+
                 Console.WriteLine(bytecodeString);
-                
+
                 List<int> bytecode = bytecodeString.Split(',').Select(int.Parse).ToList();
 
                 ScriptVM scriptVm = new ScriptVM(bytecode);
                 scriptVm.Execute();
+            } else if (args[0] == "compile-assemble") {
+                var compiled = Parser.FromFile(fileName).Compile();
+                Console.WriteLine("Compiled code:");
+                Console.WriteLine(compiled);
+
+                var assembled =
+                    new Assembler(compiled.Split(new[] {Environment.NewLine}, StringSplitOptions.None).ToList())
+                        .Compile();
+                string bytecodeString = string.Join(",", assembled);
+
+                Console.WriteLine("Assembled code:");
+                Console.WriteLine(bytecodeString);
+                Console.WriteLine($"{assembled.Count} words in total");
             } else if (args[0] == "execute") {
                 var compiled = Parser.FromFile(fileName).Compile();
                 Console.WriteLine("Compiled code:");
                 Console.WriteLine(compiled);
 
-                var assembled = new Assembler(compiled.Split(new []{ Environment.NewLine }, StringSplitOptions.None).ToList()).Compile();
+                var assembled =
+                    new Assembler(compiled.Split(new[] {Environment.NewLine}, StringSplitOptions.None).ToList())
+                        .Compile();
                 string bytecodeString = string.Join(",", assembled);
-                
+
                 Console.WriteLine("Assembled code:");
                 Console.WriteLine(bytecodeString);
                 Console.WriteLine($"{assembled.Count} words in total");
 
                 List<int> bytecode = bytecodeString.Split(',').Select(int.Parse).ToList();
                 new ScriptVM(bytecode).Execute();
-            }else {
+            } else {
                 Console.WriteLine($"Unexpected argument {args[0]}");
             }
         }

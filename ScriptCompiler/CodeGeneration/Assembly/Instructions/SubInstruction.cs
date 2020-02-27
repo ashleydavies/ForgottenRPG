@@ -1,15 +1,13 @@
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
-    public class SubInstruction : Instruction {
-        private readonly Location _fromLocation;
-        private readonly Value _amount;
-
-        public SubInstruction(Location toLocation, Value amount) {
-            _fromLocation = toLocation;
-            _amount       = amount;
-        }
+    public class SubInstruction : BinaryArithmeticInstruction {
+        public SubInstruction(Location toLocation, Value amount) : base(toLocation, amount) { }
 
         protected override string AsString() {
-            return $"SUB {_fromLocation} {_amount}";
+            return $"SUB {ToLocation} {Value}";
+        }
+
+        public override bool IsNoop() {
+            return Value is NumericConstant nc && nc == 0;
         }
     }
 }
