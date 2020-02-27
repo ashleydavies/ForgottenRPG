@@ -6,6 +6,10 @@ using static ScriptCompiler.Parsing.Consts;
 
 namespace ScriptCompiler.Parsing {
     public class Lexer {
+        private const string CommentSymbol = "//";
+        private const string MultiLineCommentStart = "/*";
+        private const string MultiLineCommentEnd = "*/";
+
         private static readonly char[] StringDelimeters = {'\'', '"'};
 
         private static readonly char[] Symbols = {
@@ -15,19 +19,19 @@ namespace ScriptCompiler.Parsing {
         };
 
         private static readonly Dictionary<char, char[]> MultiCharSymbols = new Dictionary<char, char[]> {
-            {'+', new [] { '=', '+' } },
-            {'-', new [] { '=', '-', '>' } },
-            {'*', new [] { '=', '*' } },
-            {'/', new [] { '=', '/' } },
-            {'>', new [] { '=', '>' } },
-            {'<', new [] { '=', '<' } },
-            {'=', new [] { '=' } },
-            {'!', new [] { '=' } }
+            {'+', new[] {'=', '+'}},
+            {'-', new[] {'=', '-', '>'}},
+            {'*', new[] {'=', '*', '/'}},
+            {'/', new[] {'=', '/', '*'}},
+            {'>', new[] {'=', '>'}},
+            {'<', new[] {'=', '<'}},
+            {'=', new[] {'='}},
+            {'!', new[] {'='}}
         };
 
         private int _scanLine = 1;
         private int _scanPosition;
-        private bool _unpopped = false;
+        private bool _unpopped;
         private char _unpoppedChar;
         private Stack<char> _charStack;
 
@@ -36,18 +40,36 @@ namespace ScriptCompiler.Parsing {
         }
 
         public LexToken? NextToken() {
-            while (HasMore() && (PeekNextChar() == '#' || IsWhitespace(PeekNextChar()))) {
-                if (PeekNextChar() == '#') {
-                    var line = _scanLine;
-                    while (_scanLine == line && HasMore()) SkipChar();
-                } else {
-                    SkipChar();
-                }
+            while (HasMore() && IsWhitespace(PeekNextChar())) {
+                SkipChar();
             }
-            
+
             if (!HasMore()) return null;
 
             var next = PeekNextChar();
+
+            if (IsSymbol(next)) {
+                var symbol = LexSymbol();
+                if (symbol.Symbol == CommentSymbol) {
+                    // Skip to the next line if we encounter a single line comment
+                    var line = _scanLine;
+                    while (_scanLine == line && HasMore()) SkipChar();
+                    return NextToken();
+                }
+
+                if (symbol.Symbol == MultiLineCommentStart) {
+                    while (HasMore()) {
+                        if (IsSymbol(PeekNextChar()) && LexSymbol().Symbol == MultiLineCommentEnd) {
+                            return NextToken();
+                        }
+                        SkipChar();
+                    }
+
+                    throw new LexException("Non-terminated multi-line comment", _scanLine, _scanPosition);
+                }
+
+                return symbol;
+            }
 
             if (IsStringDelimeter(next)) {
                 return LexString();
@@ -55,10 +77,6 @@ namespace ScriptCompiler.Parsing {
 
             if (IsIdentifierStart(next)) {
                 return LexIdentifier();
-            }
-
-            if (IsSymbol(next)) {
-                return LexSymbol();
             }
 
             if (IsNumber(next)) {
@@ -69,7 +87,7 @@ namespace ScriptCompiler.Parsing {
         }
 
         private LexToken LexString() {
-            int scanL = _scanLine, scanP = _scanPosition;
+            int  scanL = _scanLine, scanP = _scanPosition;
             char delim = NextChar();
 
             var (content, terminated) = TakeUntil(c => c == delim);
@@ -89,16 +107,16 @@ namespace ScriptCompiler.Parsing {
                                        TakeUntil(c => !IsIdentifierCharacter(c)).str);
         }
 
-        private LexToken LexSymbol() {
-            char first = NextChar();
+        private SymbolToken LexSymbol() {
+            char   first  = NextChar();
             string symbol = first.ToString();
-            
+
             if (MultiCharSymbols.ContainsKey(first)) {
                 if (MultiCharSymbols[first].Contains(PeekNextChar())) {
                     symbol += NextChar();
                 }
             }
-            
+
             return new SymbolToken(_scanLine,
                                    _scanPosition,
                                    symbol);
@@ -147,7 +165,7 @@ namespace ScriptCompiler.Parsing {
         }
 
         private void UnpopChar(char unpop) {
-            _unpopped = true;
+            _unpopped     = true;
             _unpoppedChar = unpop;
         }
 
@@ -189,7 +207,7 @@ namespace ScriptCompiler.Parsing {
         private readonly int _position;
 
         protected LexToken(int line, int position) {
-            _line = line;
+            _line     = line;
             _position = position;
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using ScriptCompiler;
 using ScriptCompiler.Parsing;
@@ -125,6 +126,12 @@ print a.mana;
 print b.health;
 print b.mana;");
             Assert.Equal(new List<string> {"10", "20", "30", "10", "20", "10", "20"}, _output);
+        }
+
+        [Fact]
+        public void CommentsWorkAsExpected() {
+            ExecuteCode("print /* 'Hello World' */ 'Goodbye World' /* Test */; // Test");
+            Assert.Equal(new List<string> {"Goodbye World"}, _output);
         }
 
         [Fact]
