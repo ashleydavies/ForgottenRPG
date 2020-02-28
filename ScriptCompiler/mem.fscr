@@ -1,8 +1,10 @@
 func int @malloc(int size) {
     int @mallocBase = 2147483648;
-    
+    if !mallocBase {
+        print "Malloc initialisation in progress";
+    }
     // TODO: We need conditionals and arbitrary pointer arithmetic before we can proceed...
     return mallocBase;
-    }
+}
 
 print !malloc(5);

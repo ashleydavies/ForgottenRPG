@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Permissions;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
@@ -127,30 +128,32 @@ namespace ScriptCompiler.Parsing {
         private StatementNode ParseStatementNode() {
             StatementNode returnNode;
 
-            switch (PeekToken()) {
-                case IdentifierToken it when it.Content == "print":
-                    returnNode = ParsePrintStatementNode();
-                    break;
-                case IdentifierToken it when it.Content == "return":
-                    returnNode = ParseReturnStatementNode();
-                    break;
-                case IdentifierToken it
-                    when PeekToken(1) is IdentifierToken || PeekToken(1) is SymbolToken s && s.Symbol == "@":
-                    returnNode = ParseDeclarationStatementNode();
-                    break;
-                default:
+            returnNode = PeekToken() switch {
+                IdentifierToken it when it.Content == "if"     => ParseConditionalStatementNode(),
+                IdentifierToken it when it.Content == "print"  => ParsePrintStatementNode(),
+                IdentifierToken it when it.Content == "return" => ParseReturnStatementNode(),
+                IdentifierToken it when PeekToken(1) is IdentifierToken ||
+                                        PeekToken(1) is SymbolToken s && s.Symbol == "@"
+                => ParseDeclarationStatementNode(),
+                _ => ((Func<StatementNode>) (() => {
                     Console.WriteLine($"Dropping to naked expression parsing for {PeekToken()} {PeekToken(1)}");
-                    returnNode = ParseExpression();
-                    break;
-            }
+                    return ParseExpression();
+                }))(),
+            };
 
-            Expecting<SymbolToken>(t => t.Symbol == ";");
             return returnNode;
+        }
+
+        private StatementNode ParseConditionalStatementNode() {
+            Expecting<IdentifierToken>(t => t.Content == "if");
+            return new IfStatementNode(ParseExpression(), ParseCodeBlock());
         }
 
         private StatementNode ParseReturnStatementNode() {
             Expecting<IdentifierToken>(t => t.Content == "return");
-            return new ReturnStatementNode(ParseExpression());
+            var returnStatementNode = new ReturnStatementNode(ParseExpression());
+            Expecting<SymbolToken>(t => t.Symbol == ";");
+            return returnStatementNode;
         }
 
         private DeclarationStatementNode ParseDeclarationStatementNode() {
@@ -164,9 +167,11 @@ namespace ScriptCompiler.Parsing {
             // If we have a default value, set it up
             if (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "=")) {
                 ExpressionNode initialVal = ParseExpression();
+                Expecting<SymbolToken>(t => t.Symbol == ";");
                 return new DeclarationStatementNode(typeNode, variableIdentifier, initialVal);
             }
 
+            Expecting<SymbolToken>(t => t.Symbol == ";");
             return new DeclarationStatementNode(typeNode, variableIdentifier);
         }
 
@@ -230,7 +235,9 @@ namespace ScriptCompiler.Parsing {
 
         private PrintStatementNode ParsePrintStatementNode() {
             Expecting<IdentifierToken>(t => t.Content == "print");
-            return new PrintStatementNode(ParseExpression());
+            var printStatementNode = new PrintStatementNode(ParseExpression());
+            Expecting<SymbolToken>(t => t.Symbol == ";");
+            return printStatementNode;
         }
 
         private StructNode ParseStructNode() {
@@ -242,17 +249,17 @@ namespace ScriptCompiler.Parsing {
 
             while (!PeekMatch<SymbolToken>(t => t.Symbol == "}")) {
                 declarations.Add(ParseDeclarationStatementNode());
-                Expecting<SymbolToken>(t => t.Symbol == ";");
             }
 
             Expecting<SymbolToken>(t => t.Symbol == "}");
-
             return new StructNode(nameToken.Content, declarations);
         }
 
         private ImportNode ParseImportStatementNode() {
             Expecting<IdentifierToken>(t => t.Content == "import");
-            return new ImportNode(Expecting<StringToken>().Content);
+            var importStatementNode = new ImportNode(Expecting<StringToken>().Content);
+            Expecting<SymbolToken>(t => t.Symbol == ";");
+            return importStatementNode;
         }
 
         private FunctionNode ParseFunctionNode() {
