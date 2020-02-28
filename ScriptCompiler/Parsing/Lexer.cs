@@ -125,7 +125,7 @@ namespace ScriptCompiler.Parsing {
         private LexToken LexNumber() {
             return new IntegerToken(_scanLine,
                                     _scanPosition,
-                                    int.Parse(TakeUntil(c => !IsNumber(c)).str));
+                                    uint.Parse(TakeUntil(c => !IsNumber(c)).str));
         }
 
         private (string str, bool terminated) TakeUntil(Predicate<char> condition) {
@@ -235,9 +235,9 @@ namespace ScriptCompiler.Parsing {
     }
 
     public class IntegerToken : LexToken {
-        public readonly int Content;
+        public readonly uint Content;
 
-        public IntegerToken(int line, int position, int content) : base(line, position) {
+        public IntegerToken(int line, int position, uint content) : base(line, position) {
             Content = content;
         }
 

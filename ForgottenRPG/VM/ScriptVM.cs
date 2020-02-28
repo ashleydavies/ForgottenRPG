@@ -12,17 +12,17 @@ namespace ForgottenRPG.VM {
         private readonly Dictionary<int, int> _registers;
         private readonly Flags _flagRegister;
         private readonly Stack<int> _stack;
-        private readonly Dictionary<int, IMemoryPage> _memory = new Dictionary<int, IMemoryPage>();
-        private readonly int _stackPointerBase;
+        private readonly Dictionary<uint, IMemoryPage> _memory = new Dictionary<uint, IMemoryPage>();
+        private readonly uint _stackPointerBase;
         public Action<string> PrintMethod { get; set; } = s => ServiceLocator.LogService.Log(LogType.Info, "VM : " + s);
 
         public ScriptVM(List<int> bytes) {
             _bytes = bytes;
             // Copy the bytes to memory
             List<MemoryPage> instructionPages = new List<MemoryPage>();
-            for (int i = 0; i < bytes.Count; i++) {
-                int page   = i / MemoryPage.PageSize;
-                int offset = i % MemoryPage.PageSize;
+            for (uint i = 0; i < bytes.Count; i++) {
+                uint page   = i / MemoryPage.PageSize;
+                uint offset = i % MemoryPage.PageSize;
 
                 if (!_memory.ContainsKey(page)) {
                     var memoryPage = new MemoryPage();
@@ -30,16 +30,16 @@ namespace ForgottenRPG.VM {
                     instructionPages.Add(memoryPage);
                 }
 
-                _memory[page].WriteAddress(offset, bytes[i]);
+                _memory[page].WriteAddress(offset, bytes[(int) i]);
             }
 
             // Lock the pages for writing so programs can't overwrite instruction data
             instructionPages.ForEach(x => x.Lock());
 
-            _stackPointerBase = instructionPages.Count * MemoryPage.PageSize;
+            _stackPointerBase = (uint) instructionPages.Count * MemoryPage.PageSize;
             _registers = new Dictionary<int, int> {
                 [InstructionRegister]  = bytes[0],
-                [StackPointerRegister] = _stackPointerBase
+                [StackPointerRegister] = (int) _stackPointerBase
             };
 
             _flagRegister = new Flags();
@@ -211,15 +211,17 @@ namespace ForgottenRPG.VM {
         private int PeekStack() => _stack.Peek();
         private int PopStack() => _stack.Pop();
 
-        private int ReadMemory(int index) {
+        private int ReadMemory(int sindex) {
+            // Treat memory addresses as unsigned integers
+            var index = (uint) sindex;
             var (page, offset) = GetPageAndOffset(index);
             if (!_memory.ContainsKey(page)) _memory[page] = new MemoryPage();
 #if DEBUG_MEM
             if (index >= _stackPointerBase) {
                 Console.WriteLine($"Reading {_memory[page].ReadAddress(offset)} from {index}");
-                _maxMem = Math.Max(_maxMem, index);
+                _maxMem = Math.Max(_maxMem, (uint) _registers[StackPointerRegister]);
                 var output = "";
-                for (int i = _stackPointerBase; i <= _maxMem; i++) {
+                for (uint i = _stackPointerBase; i <= _maxMem; i++) {
                     var (pN, oN) =  GetPageAndOffset(i);
                     var sep = ":";
                     if (_registers[StackPointerRegister] == i) sep = "=";
@@ -233,18 +235,19 @@ namespace ForgottenRPG.VM {
             return _memory[page].ReadAddress(offset);
         }
 
-        private int _maxMem = 0;
+        private uint _maxMem = 0;
 
-        private void WriteMemory(int index, int value) {
+        private void WriteMemory(int sindex, int value) {
+            var index = (uint) sindex;
             var (page, offset) = GetPageAndOffset(index);
             if (!_memory.ContainsKey(page)) _memory[page] = new MemoryPage();
             _memory[page].WriteAddress(offset, value);
 
 #if DEBUG_MEM
             Console.WriteLine($"Writing {value} to {index}");
-            _maxMem = Math.Max(_maxMem, index);
+            _maxMem = Math.Max(_maxMem, (uint) _registers[StackPointerRegister]);
             var output = "";
-            for (int i = _stackPointerBase; i <= _maxMem; i++) {
+            for (uint i = _stackPointerBase; i <= _maxMem; i++) {
                 var (pN, oN) =  GetPageAndOffset(i);
                 var sep = ":";
                 if (_registers[StackPointerRegister] == i) sep = "=";
@@ -255,7 +258,7 @@ namespace ForgottenRPG.VM {
 #endif
         }
 
-        private (int, int) GetPageAndOffset(int memIndex) {
+        private (uint, uint) GetPageAndOffset(uint memIndex) {
             return (memIndex / MemoryPage.PageSize, memIndex % MemoryPage.PageSize);
         }
 
