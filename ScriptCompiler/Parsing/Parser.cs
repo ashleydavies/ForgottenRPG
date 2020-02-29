@@ -137,7 +137,9 @@ namespace ScriptCompiler.Parsing {
                 => ParseDeclarationStatementNode(),
                 _ => ((Func<StatementNode>) (() => {
                     Console.WriteLine($"Dropping to naked expression parsing for {PeekToken()} {PeekToken(1)}");
-                    return ParseExpression();
+                    var expressionNode = ParseExpression();
+                    Expecting<SymbolToken>(t => t.Symbol == ";");
+                    return expressionNode;
                 }))(),
             };
 

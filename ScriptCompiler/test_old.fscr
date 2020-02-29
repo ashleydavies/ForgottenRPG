@@ -1,4 +1,4 @@
-import "extern"
+import "extern";
 
 struct Player {
     int health;
