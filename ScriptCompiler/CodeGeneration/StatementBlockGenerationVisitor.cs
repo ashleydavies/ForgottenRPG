@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -117,10 +118,32 @@ namespace ScriptCompiler.CodeGeneration {
             return instructions;
         }
 
-        public List<Instruction> Visit(ReturnStatementNode node) {
+        public List<Instruction> Visit(IfStatementNode node) {
             var instructions = new List<Instruction>();
             
+            // We expect this to add a bool to the stack
             instructions.AddRange(ExpressionGenerator.Generate(node.Expression));
+            
+            var endLabel = new Label(Guid.NewGuid().ToString());
+            
+            instructions.Add(PopStack(SType.SBool));
+            using var resultReg = _regManager.NewRegister();
+            using var cmpReg = _regManager.NewRegister();
+            
+            instructions.Add(new MemReadInstruction(resultReg, StackPointer));
+            instructions.Add(new MovInstruction(cmpReg, 1));
+            instructions.Add(new CmpInstruction(resultReg, cmpReg));
+            instructions.Add(new JmpNeqInstruction(endLabel));
+            
+            instructions.AddRange(VisitStatementBlock(node.Block.Statements));
+
+            instructions.Add(new LabelInstruction(endLabel));
+            
+            return instructions;
+        }
+
+        public List<Instruction> Visit(ReturnStatementNode node) {
+            var instructions = ExpressionGenerator.Generate(node.Expression);
             
             // Copy the result over to the return position
             var (type, offset) = _stackFrame.Lookup(StackFrame.ReturnIdentifier);

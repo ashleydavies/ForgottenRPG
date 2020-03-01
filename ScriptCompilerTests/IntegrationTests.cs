@@ -145,6 +145,12 @@ print b.mana;");
             ExecuteCode("print 5 == 5; print 6 == 6; print 5 == 10; print 'hello' == 'hello'; print 'hello' == 'fred';");
             Assert.Equal(new List<string> {"1", "1", "0", "1", "0"}, _output);
         }
+
+        [Fact]
+        public void IfStatementsWorkAsExpected() {
+            ExecuteCode("if 1 == 1 { print 'Hello World'; } if 1 == 2 { print 'Goodbye World'; } if 'hello' == 'hello' { print 'String'; } if 5 + 5 == 10 - 5 + 5 { print 'Maths'; }");
+            Assert.Equal(new List<string> { "Hello World", "String", "Maths"}, _output);
+        }
         
         private void ExecuteCode(string code) {
             var compiled = new Parser(code).Compile();
