@@ -5,7 +5,9 @@ using System.Linq;
 using ScriptCompiler;
 using ScriptCompiler.Parsing;
 using ForgottenRPG.VM;
+using NUnit.Framework;
 using Xunit;
+using Assert = Xunit.Assert;
 
 namespace ScriptCompilerTests {
     public class IntegrationTests {
@@ -13,97 +15,97 @@ namespace ScriptCompilerTests {
         [Fact]
         public void CanPrintHelloWorld() {
             ExecuteCode("print 'Hello, world!';");
-            Assert.Equal(new List<string> {"Hello, world!"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"Hello, world!"}, _output);
         }
 
         [Fact]
         public void CanPrintIntegers() {
             ExecuteCode("print 5;");
-            Assert.Equal(new List<string> {"5"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"5"}, _output);
         }
 
         [Fact]
         public void CanDoSimpleExpressions() {
             ExecuteCode("print 5 + 5; print 5 + 10; print 5 - 5; print 0 - 5; print 3 * 2; print 6 / 2;");
-            Assert.Equal(new List<string> {"10", "15", "0", "-5", "6", "3"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"10", "15", "0", "-5", "6", "3"}, _output);
         }
 
         [Fact]
         public void RespectsPrecedenceOfTermsAndFactors() {
             ExecuteCode("print 5 + 2 * 6 / 3 - 4 + 8 * (2 + 1) / (3 + 1 - 1);");
-            Assert.Equal(new List<string> {"13"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"13"}, _output);
         }
 
         [Fact]
         public void CanCallFunctionsCorrectly() {
             ExecuteCode("func void test() { print '2'; } print '1'; test(); print '3';");
-            Assert.Equal(new List<string> {"1", "2", "3"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"1", "2", "3"}, _output);
         }
 
         [Fact]
         public void CanDoNestedFunctionCalls() {
             ExecuteCode("func void test() { print '2'; test2(); } print '1'; test(); print '4'; func void test2() { print '3'; }");
-            Assert.Equal(new List<string> {"1", "2", "3", "4"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"1", "2", "3", "4"}, _output);
         }
 
         [Fact]
         public void CanHandleBasicFunctionReturns() {
             ExecuteCode("func int test() { return 2; } print test();");
-            Assert.Equal(new List<string> {"2"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"2"}, _output);
         }
 
         [Fact]
         public void CanHandleStringFunctionReturns() {
             ExecuteCode("func string test() { return 'five'; } print test();");
-            Assert.Equal(new List<string> {"five"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"five"}, _output);
         }
 
         [Fact]
         public void CanPrintVariables() {
             ExecuteCode("int x = 5; print x;");
-            Assert.Equal(new List<string> {"5"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"5"}, _output);
         }
 
         [Fact]
         public void CanPrintStringVariables() {
             ExecuteCode("string x = 'hello'; print x;");
-            Assert.Equal(new List<string> {"hello"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"hello"}, _output);
         }
 
         [Fact]
         public void AccessesCorrectVariable() {
             ExecuteCode("int x = 5; int y = 6; int z = 8; string bob = 'hello'; print y;");
-            Assert.Equal(new List<string> {"6"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"6"}, _output);
         }
 
         [Fact]
         public void CanAccessMultipleVariables() {
             ExecuteCode("int x = 5; int y = 6; int z = 8; string bob = 'hello'; print y + z * x;");
-            Assert.Equal(new List<string> {"46"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"46"}, _output);
         }
 
         [Fact]
         public void CanCallFunctionsWithParameters() {
             ExecuteCode("func void a(int b) { print b; } a(5);");
-            Assert.Equal(new List<string> {"5"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"5"}, _output);
         }
 
         [Fact]
         public void CanCallFunctionsWithManyParameters() {
             ExecuteCode("func void a(int b, string c, int d) { print b * d; print c; } a(10, 'hello', 5);");
-            Assert.Equal(new List<string> {"50", "hello"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"50", "hello"}, _output);
         }
 
         [Fact]
         public void CanCallFunctionsWithManyStackVariables() {
             ExecuteCode("int z; func void a(int b, string c, int d) { print b * d; print c; } int m = 5; int b; string c; a(10, 'hello', 5);");
-            Assert.Equal(new List<string> {"50", "hello"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"50", "hello"}, _output);
         }
 
         [Fact]
         public void CanCallFunctionsWithManyStackVariablesAndReturns() {
             ExecuteCode("int z; func int a(int b, string c, int d) { print b * d; print c; return 10; } int m = 5; int b; string c; print a(10, 'hello', 5);");
-            Assert.Equal(new List<string> {"50", "hello", "10"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"50", "hello", "10"}, _output);
         }
 
         [Fact]
@@ -125,31 +127,37 @@ print a.health;
 print a.mana;
 print b.health;
 print b.mana;");
-            Assert.Equal(new List<string> {"10", "20", "30", "10", "20", "10", "20"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"10", "20", "30", "10", "20", "10", "20"}, _output);
         }
 
         [Fact]
         public void CommentsWorkAsExpected() {
             ExecuteCode("print /* 'Hello World' */ 'Goodbye World' /* Test */; // Test");
-            Assert.Equal(new List<string> {"Goodbye World"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"Goodbye World"}, _output);
         }
 
         [Fact]
         public void FunctionsCanReturnStructs() {
             ExecuteCode("struct player { int health; int mana; } func player a(int b, string c, int d) { print b * d; print c; player p; p.mana = 30; return p; } print a(10, 'hello', 5).mana;");
-            Assert.Equal(new List<string> {"50", "hello", "30"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"50", "hello", "30"}, _output);
         }
 
         [Fact]
         public void EqualityWorksAsExpected() {
             ExecuteCode("print 5 == 5; print 6 == 6; print 5 == 10; print 'hello' == 'hello'; print 'hello' == 'fred';");
-            Assert.Equal(new List<string> {"1", "1", "0", "1", "0"}, _output);
+            CollectionAssert.AreEqual(new List<string> {"1", "1", "0", "1", "0"}, _output);
         }
 
         [Fact]
         public void IfStatementsWorkAsExpected() {
             ExecuteCode("if 1 == 1 { print 'Hello World'; } if 1 == 2 { print 'Goodbye World'; } if 'hello' == 'hello' { print 'String'; } if 5 + 5 == 10 - 5 + 5 { print 'Maths'; }");
-            Assert.Equal(new List<string> { "Hello World", "String", "Maths"}, _output);
+            CollectionAssert.AreEqual(new List<string> { "Hello World", "String", "Maths"}, _output);
+        }
+
+        [Fact]
+        public void ConditionalsWorkAsExpected() {
+            ExecuteCode("print 1 > 1; print 1 >= 1; print 1 < 1; print 1 <= 1; print 1 == 1; print 1 != 1; print 2 > 1; print 0 < 1; print 1 >= 0; print 1 <= 5;");
+            CollectionAssert.AreEqual(new List<string> {"0", "1", "0", "1", "1", "0", "1", "1", "1", "1"}, _output);
         }
         
         private void ExecuteCode(string code) {

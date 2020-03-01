@@ -163,8 +163,9 @@ namespace ScriptCompiler {
                     HandleSaveFromStack(components[1]);
                     break;
                 case "cmp":
-                    HandleLoadToStack(components[1]);
+                    // flip operands so that cmp(a, b) for, e.g., GT, is processed as a > b not b > a
                     HandleLoadToStack(components[2]);
+                    HandleLoadToStack(components[1]);
                     AddInstruction(ScriptVm.Instruction.Cmp);
                     break;
                 case "print":

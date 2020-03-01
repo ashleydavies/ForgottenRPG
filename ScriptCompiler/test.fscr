@@ -1,16 +1,1 @@
-struct Player {
-    int health;
-    int mana;
-}
-
-Player a;
-Player b;
-
-print a.health = 10;
-print a.mana = 20;
-print b.health = 30;
-b = a;
-print a.health;
-print a.mana;
-print b.health;
-print b.mana;
+print 2 > 1;
