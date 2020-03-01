@@ -1,10 +1,41 @@
+// The malloc heap works as follows:
+// mallocBase                    -> first 'page' of malloced data
+// mallocStatus (mallocBase - 1) -> whether malloc is initialised or not
+// mallocHead   (mallocBase - 2) -> state of malloc 'head'  (i.e. first page that has never been allocated)
 func int @malloc(int size) {
-    int @mallocBase = 2147483648;
-    if !mallocBase {
+    int @mallocBase   = 2147483648;
+    int @mallocStatus = mallocBase - 1;
+    int @mallocHead   = mallocBase - 2;
+    int pageLength     = 1024;
+    
+    if !mallocStatus == 0 {
         print "Malloc initialisation in progress";
+        !mallocStatus = 1;
+        !mallocHead   = 0;
     }
-    // TODO: We need conditionals and arbitrary pointer arithmetic before we can proceed...
-    return mallocBase;
+    
+    // Allocate the first space that has never  been used
+    int @allocatedPageStart = mallocBase + (!mallocHead * pageLength);
+    
+    // Move along the unused page counter
+    int thisPageLength = (size / pageLength) + 1;
+    !mallocHead = !mallocHead + thisPageLength;
+    
+    // Return the pointer we calculated for their page
+    print "Next free page:";
+    print !mallocHead;
+    return allocatedPageStart;
 }
 
-print !malloc(5);
+struct Player {
+    int health;
+    int mana;
+}
+
+Player @x = malloc(2);
+Player @y = malloc(2);
+
+x->health = 5;
+y->health = 10;
+print x->health;
+print y->health;

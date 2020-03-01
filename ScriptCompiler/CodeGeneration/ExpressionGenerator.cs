@@ -213,12 +213,24 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public List<Instruction> Visit(DereferenceNode node) {
+            var pointerType   = TypeIdentifier.Identify(node.Expression);
+            var referenceType = (pointerType as ReferenceType);
+            if (referenceType == null) {
+                throw new CompileException($"Unable to dereference expression of type {pointerType}", 0, 0);
+            }
+
             var       instructions = Generate(node.Expression);
             using var copyReg      = _regManager.NewRegister();
             instructions.Add(PopStack(SType.SGenericPtr));
             instructions.Add(new MemReadInstruction(copyReg, StackPointer));
-            instructions.Add(new MemCopyInstruction(StackPointer, copyReg));
-            instructions.Add(PushStack(SType.SGenericPtr));
+            var type = referenceType.ContainedType;
+            for (int i = 0; i < type.Length; i++) {
+                instructions.Add(new MemCopyInstruction(StackPointer, copyReg));
+                instructions.Add(new AddInstruction(StackPointer, 1));
+                instructions.Add(new AddInstruction(copyReg, 1));
+            }
+            _stackFrame.Pushed(type);
+            
             return instructions;
         }
 
@@ -226,7 +238,7 @@ namespace ScriptCompiler.CodeGeneration {
             var (instructions, left, right) = GenerateSingleWordBinOpSetup(node);
             instructions.Add(new CmpInstruction(left, right));
             var endLabel = new Label(Guid.NewGuid().ToString());
-            var eqLabel = new Label(Guid.NewGuid().ToString());
+            var eqLabel  = new Label(Guid.NewGuid().ToString());
             instructions.Add(new JmpEqInstruction(eqLabel));
             // Neq case
             instructions.Add(new MemWriteInstruction(StackPointer, 0));

@@ -131,12 +131,10 @@ namespace ScriptCompiler.CodeGeneration {
             using var cmpReg = _regManager.NewRegister();
             
             instructions.Add(new MemReadInstruction(resultReg, StackPointer));
-            instructions.Add(new MovInstruction(cmpReg, 1));
+            instructions.Add(new MovInstruction(cmpReg, 0));
             instructions.Add(new CmpInstruction(resultReg, cmpReg));
-            instructions.Add(new JmpNeqInstruction(endLabel));
-            
+            instructions.Add(new JmpEqInstruction(endLabel));
             instructions.AddRange(VisitStatementBlock(node.Block.Statements));
-
             instructions.Add(new LabelInstruction(endLabel));
             
             return instructions;
