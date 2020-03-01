@@ -229,17 +229,43 @@ namespace ScriptCompiler.CodeGeneration {
                 instructions.Add(new AddInstruction(StackPointer, 1));
                 instructions.Add(new AddInstruction(copyReg, 1));
             }
+
             _stackFrame.Pushed(type);
-            
+
             return instructions;
         }
 
         public List<Instruction> Visit(EqualityOperatorNode node) {
+            return VisitComparisonOperator(node, label => new JmpEqInstruction(label));
+        }
+
+        public List<Instruction> Visit(InequalityOperatorNode node) {
+            return VisitComparisonOperator(node, label => new JmpNeqInstruction(label));
+        }
+
+        public List<Instruction> Visit(GreaterThanOperatorNode node) {
+            return VisitComparisonOperator(node, label => new JmpGtInstruction(label));
+        }
+
+        public List<Instruction> Visit(LessThanOperatorNode node) {
+            return VisitComparisonOperator(node, label => new JmpLtInstruction(label));
+        }
+
+        public List<Instruction> Visit(GreaterThanEqualOperatorNode node) {
+            return VisitComparisonOperator(node, label => new JmpGteInstruction(label));
+        }
+
+        public List<Instruction> Visit(LessThanEqualOperatorNode node) {
+            return VisitComparisonOperator(node, label => new JmpLteInstruction(label));
+        }
+
+        private List<Instruction> VisitComparisonOperator(BinaryOperatorNode node,
+                                                          Func<Label, Instruction> operationGenerator) {
             var (instructions, left, right) = GenerateSingleWordBinOpSetup(node);
             instructions.Add(new CmpInstruction(left, right));
             var endLabel = new Label(Guid.NewGuid().ToString());
             var eqLabel  = new Label(Guid.NewGuid().ToString());
-            instructions.Add(new JmpEqInstruction(eqLabel));
+            instructions.Add(operationGenerator(eqLabel));
             // Neq case
             instructions.Add(new MemWriteInstruction(StackPointer, 0));
             instructions.Add(new JmpInstruction(endLabel));
@@ -269,7 +295,8 @@ namespace ScriptCompiler.CodeGeneration {
             return VisitArithmeticOperator(node, (left, right) => new DivInstruction(left, right));
         }
 
-        public List<Instruction> VisitArithmeticOperator(BinaryOperatorNode node, Func<Register, Register, Instruction> operationGenerator) {
+        public List<Instruction> VisitArithmeticOperator(BinaryOperatorNode node,
+                                                         Func<Register, Register, Instruction> operationGenerator) {
             var instructions = new List<Instruction>();
             var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
             instructions.AddRange(opInstructions);

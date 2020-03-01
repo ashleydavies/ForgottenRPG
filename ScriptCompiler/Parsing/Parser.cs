@@ -70,7 +70,7 @@ namespace ScriptCompiler.Parsing {
                                    (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.Factor),
                 new InfixParseRule(t => t is SymbolToken s && new List<string> {"==", "!="}.Contains(s.Symbol),
                                    (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.Equality),
-                new InfixParseRule(t => t is SymbolToken s && new List<string> {">", "<"}.Contains(s.Symbol),
+                new InfixParseRule(t => t is SymbolToken s && new List<string> {">", "<", ">=", "<="}.Contains(s.Symbol),
                                    (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.Comparison),
                 new InfixParseRule(t => t is SymbolToken s && s.Symbol == ".",
                                    (t, left) => new StructAccessNode(left, Expecting<IdentifierToken>().Content),
@@ -224,6 +224,8 @@ namespace ScriptCompiler.Parsing {
                 "!=" => new InequalityOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Equality)),
                 ">" => new GreaterThanOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Comparison)),
                 "<" => new LessThanOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Comparison)),
+                ">=" => new GreaterThanEqualOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Comparison)),
+                "<=" => new LessThanEqualOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Comparison)),
                 _   => throw new NotImplementedException(),
             };
         }
