@@ -254,46 +254,26 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public List<Instruction> Visit(AdditionNode node) {
-            var instructions = new List<Instruction>();
-            var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
-            instructions.AddRange(opInstructions);
-            instructions.Add(new AddInstruction(left, right));
-            instructions.Add(new MemWriteInstruction(StackPointer, left));
-            instructions.Add(PushStack(SType.SInteger));
-            left.Dispose();
-            right.Dispose();
-            return instructions;
+            return VisitArithmeticOperator(node, (left, right) => new AddInstruction(left, right));
         }
 
         public List<Instruction> Visit(SubtractionNode node) {
-            var instructions = new List<Instruction>();
-            var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
-            instructions.AddRange(opInstructions);
-            instructions.Add(new SubInstruction(left, right));
-            instructions.Add(new MemWriteInstruction(StackPointer, left));
-            instructions.Add(PushStack(SType.SInteger));
-            left.Dispose();
-            right.Dispose();
-            return instructions;
+            return VisitArithmeticOperator(node, (left, right) => new SubInstruction(left, right));
         }
 
         public List<Instruction> Visit(MultiplicationNode node) {
-            var instructions = new List<Instruction>();
-            var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
-            instructions.AddRange(opInstructions);
-            instructions.Add(new MulInstruction(left, right));
-            instructions.Add(new MemWriteInstruction(StackPointer, left));
-            instructions.Add(PushStack(SType.SInteger));
-            left.Dispose();
-            right.Dispose();
-            return instructions;
+            return VisitArithmeticOperator(node, (left, right) => new MulInstruction(left, right));
         }
 
         public List<Instruction> Visit(DivisionNode node) {
+            return VisitArithmeticOperator(node, (left, right) => new DivInstruction(left, right));
+        }
+
+        public List<Instruction> VisitArithmeticOperator(BinaryOperatorNode node, Func<Register, Register, Instruction> operationGenerator) {
             var instructions = new List<Instruction>();
             var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
             instructions.AddRange(opInstructions);
-            instructions.Add(new DivInstruction(left, right));
+            instructions.Add(operationGenerator(left, right));
             instructions.Add(new MemWriteInstruction(StackPointer, left));
             instructions.Add(PushStack(SType.SInteger));
             left.Dispose();
