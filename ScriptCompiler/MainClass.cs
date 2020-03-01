@@ -36,7 +36,7 @@ namespace ScriptCompiler {
 
                 List<int> bytecode = bytecodeString.Split(',').Select(int.Parse).ToList();
 
-                ScriptVM scriptVm = new ScriptVM(bytecode);
+                ScriptVm scriptVm = new ScriptVm(bytecode);
                 scriptVm.Execute();
             } else if (args[0] == "compile-assemble") {
                 var compiled = Parser.FromFile(fileName).Compile();
@@ -66,7 +66,7 @@ namespace ScriptCompiler {
                 Console.WriteLine($"{assembled.Count} words in total");
 
                 List<int> bytecode = bytecodeString.Split(',').Select(int.Parse).ToList();
-                new ScriptVM(bytecode).Execute();
+                new ScriptVm(bytecode).Execute();
             } else {
                 Console.WriteLine($"Unexpected argument {args[0]}");
             }

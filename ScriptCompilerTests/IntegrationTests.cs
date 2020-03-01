@@ -139,6 +139,12 @@ print b.mana;");
             ExecuteCode("struct player { int health; int mana; } func player a(int b, string c, int d) { print b * d; print c; player p; p.mana = 30; return p; } print a(10, 'hello', 5).mana;");
             Assert.Equal(new List<string> {"50", "hello", "30"}, _output);
         }
+
+        [Fact]
+        public void EqualityWorksAsExpected() {
+            ExecuteCode("print 5 == 5; print 6 == 6; print 5 == 10; print 'hello' == 'hello'; print 'hello' == 'fred';");
+            Assert.Equal(new List<string> {"1", "1", "0", "1", "0"}, _output);
+        }
         
         private void ExecuteCode(string code) {
             var compiled = new Parser(code).Compile();
@@ -146,7 +152,7 @@ print b.mana;");
                 new Assembler(compiled.Split(new[] {Environment.NewLine}, StringSplitOptions.None).ToList()).Compile();
             var bytecodeString = string.Join(",", assembled);
             List<int> bytecode = bytecodeString.Split(',').Select(int.Parse).ToList();
-            var vm = new ScriptVM(bytecode);
+            var vm = new ScriptVm(bytecode);
             vm.PrintMethod = str => _output.Add(str);
             vm.Execute();
         }

@@ -77,6 +77,10 @@ namespace ScriptCompiler.CodeGeneration {
             return valueType;
         }
 
+        public SType Visit(ComparatorNode node) {
+            return SType.SBool;
+        }
+
         public SType Visit(BinaryOperatorNode node) {
             var typeL = Identify(node.Left);
             var typeR = Identify(node.Right);

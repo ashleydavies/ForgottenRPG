@@ -222,6 +222,25 @@ namespace ScriptCompiler.CodeGeneration {
             return instructions;
         }
 
+        public List<Instruction> Visit(EqualityOperatorNode node) {
+            var (instructions, left, right) = GenerateSingleWordBinOpSetup(node);
+            instructions.Add(new CmpInstruction(left, right));
+            var endLabel = new Label(Guid.NewGuid().ToString());
+            var eqLabel = new Label(Guid.NewGuid().ToString());
+            instructions.Add(new JmpEqInstruction(eqLabel));
+            // Neq case
+            instructions.Add(new MemWriteInstruction(StackPointer, 0));
+            instructions.Add(new JmpInstruction(endLabel));
+            // Eq case
+            instructions.Add(new LabelInstruction(eqLabel));
+            instructions.Add(new MemWriteInstruction(StackPointer, 1));
+            instructions.Add(new LabelInstruction(endLabel));
+            instructions.Add(PushStack(SType.SInteger));
+            left.Dispose();
+            right.Dispose();
+            return instructions;
+        }
+
         public List<Instruction> Visit(AdditionNode node) {
             var instructions = new List<Instruction>();
             var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);

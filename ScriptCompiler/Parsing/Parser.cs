@@ -58,28 +58,32 @@ namespace ScriptCompiler.Parsing {
                                     t => new VariableAccessNode(((IdentifierToken) t).Content)),
                 new PrefixParseRule(t => t is SymbolToken s && s.Symbol == "(", _ => ParseGrouping()),
                 new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.ADDR_OPERATOR,
-                                    _ => new AddressOfNode(ParseExpressionPrecedence(Precedence.FACTOR))),
+                                    _ => new AddressOfNode(ParseExpressionPrecedence(Precedence.Factor))),
                 new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.DEREF_OPERATOR,
-                                    _ => new DereferenceNode(ParseExpressionPrecedence(Precedence.FACTOR))),
+                                    _ => new DereferenceNode(ParseExpressionPrecedence(Precedence.Factor))),
             };
 
             _infixExpressionParseTable = new List<InfixParseRule> {
                 new InfixParseRule(t => t is SymbolToken s && new List<string> {"-", "+"}.Contains(s.Symbol),
-                                   (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.TERM),
+                                   (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.Term),
                 new InfixParseRule(t => t is SymbolToken s && new List<string> {"*", "/"}.Contains(s.Symbol),
-                                   (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.FACTOR),
+                                   (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.Factor),
+                new InfixParseRule(t => t is SymbolToken s && new List<string> {"==", "!="}.Contains(s.Symbol),
+                                   (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.Equality),
+                new InfixParseRule(t => t is SymbolToken s && new List<string> {">", "<"}.Contains(s.Symbol),
+                                   (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.Comparison),
                 new InfixParseRule(t => t is SymbolToken s && s.Symbol == ".",
                                    (t, left) => new StructAccessNode(left, Expecting<IdentifierToken>().Content),
-                                   Precedence.CALL),
+                                   Precedence.Call),
                 new InfixParseRule(t => t is SymbolToken s && s.Symbol == "(",
-                                   (t, left) => ParseFunctionCallNode(left), Precedence.ACCESSOR),
+                                   (t, left) => ParseFunctionCallNode(left), Precedence.Accessor),
                 new InfixParseRule(t => t is SymbolToken s && s.Symbol == "=",
-                                   (t, left) => new AssignmentNode(left, ParseExpression()), Precedence.ASSIGNMENT),
+                                   (t, left) => new AssignmentNode(left, ParseExpression()), Precedence.Assignment),
                 // Translating x->y == (*x).y at this time saves increasing AST complexity
                 new InfixParseRule(t => t is SymbolToken s && s.Symbol == "->",
                                    (t, left) =>
                                        new StructAccessNode(new DereferenceNode(left),
-                                                            Expecting<IdentifierToken>().Content), Precedence.ACCESSOR)
+                                                            Expecting<IdentifierToken>().Content), Precedence.Accessor)
             };
         }
 
@@ -178,7 +182,7 @@ namespace ScriptCompiler.Parsing {
         }
 
         private ExpressionNode ParseExpression() {
-            return ParseExpressionPrecedence(Precedence.NONE);
+            return ParseExpressionPrecedence(Precedence.None);
         }
 
         private ExpressionNode ParseExpressionPrecedence(Precedence precedence) {
@@ -212,10 +216,14 @@ namespace ScriptCompiler.Parsing {
 
         private ExpressionNode ParseBinaryExpressionNode(ExpressionNode leftSide, SymbolToken binOp) {
             return binOp.Symbol switch {
-                "+" => new AdditionNode(leftSide, ParseExpressionPrecedence(Precedence.TERM)),
-                "-" => new SubtractionNode(leftSide, ParseExpressionPrecedence(Precedence.TERM)),
-                "*" => new MultiplicationNode(leftSide, ParseExpressionPrecedence(Precedence.FACTOR)),
-                "/" => new DivisionNode(leftSide, ParseExpressionPrecedence(Precedence.FACTOR)),
+                "+" => new AdditionNode(leftSide, ParseExpressionPrecedence(Precedence.Term)),
+                "-" => new SubtractionNode(leftSide, ParseExpressionPrecedence(Precedence.Term)),
+                "*" => new MultiplicationNode(leftSide, ParseExpressionPrecedence(Precedence.Factor)),
+                "/" => new DivisionNode(leftSide, ParseExpressionPrecedence(Precedence.Factor)),
+                "==" => new EqualityOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Equality)),
+                "!=" => new InequalityOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Equality)),
+                ">" => new GreaterThanOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Comparison)),
+                "<" => new LessThanOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Comparison)),
                 _   => throw new NotImplementedException(),
             };
         }
