@@ -4,15 +4,20 @@ using ScriptCompiler.AST.Statements.Expressions;
 namespace ScriptCompiler.AST.Statements {
     public class IfStatementNode : StatementNode {
         public readonly ExpressionNode Expression;
-        public readonly CodeBlockNode Block;
+        public readonly CodeBlockNode IfBlock;
+        public readonly CodeBlockNode? ElseBlock;
 
-        public IfStatementNode(ExpressionNode expression, CodeBlockNode block) {
+        public IfStatementNode(ExpressionNode expression, CodeBlockNode ifBlock, CodeBlockNode? elseBlock) {
             Expression = expression;
-            Block = block;
+            IfBlock    = ifBlock;
+            ElseBlock  = elseBlock;
         }
 
         public override List<ASTNode> Children() {
-            return new List<ASTNode> {Block, Expression};
+            if (ElseBlock != null) {
+                return new List<ASTNode> {IfBlock, ElseBlock, Expression};
+            }
+            return new List<ASTNode> {IfBlock, Expression};
         }
     }
 }

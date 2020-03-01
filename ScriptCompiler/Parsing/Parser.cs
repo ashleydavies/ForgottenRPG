@@ -70,8 +70,9 @@ namespace ScriptCompiler.Parsing {
                                    (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.Factor),
                 new InfixParseRule(t => t is SymbolToken s && new List<string> {"==", "!="}.Contains(s.Symbol),
                                    (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.Equality),
-                new InfixParseRule(t => t is SymbolToken s && new List<string> {">", "<", ">=", "<="}.Contains(s.Symbol),
-                                   (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.Comparison),
+                new InfixParseRule(
+                    t => t is SymbolToken s && new List<string> {">", "<", ">=", "<="}.Contains(s.Symbol),
+                    (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.Comparison),
                 new InfixParseRule(t => t is SymbolToken s && s.Symbol == ".",
                                    (t, left) => new StructAccessNode(left, Expecting<IdentifierToken>().Content),
                                    Precedence.Call),
@@ -152,7 +153,13 @@ namespace ScriptCompiler.Parsing {
 
         private StatementNode ParseConditionalStatementNode() {
             Expecting<IdentifierToken>(t => t.Content == "if");
-            return new IfStatementNode(ParseExpression(), ParseCodeBlock());
+            var condition = ParseExpression();
+            var ifBlock   = ParseCodeBlock();
+            CodeBlockNode? elseBlock = null;
+            if (PeekIgnoreMatch<IdentifierToken>(t => t.Content == "else")) {
+                elseBlock = ParseCodeBlock();
+            }
+            return new IfStatementNode(condition, ifBlock, elseBlock);
         }
 
         private StatementNode ParseReturnStatementNode() {
@@ -216,17 +223,17 @@ namespace ScriptCompiler.Parsing {
 
         private ExpressionNode ParseBinaryExpressionNode(ExpressionNode leftSide, SymbolToken binOp) {
             return binOp.Symbol switch {
-                "+" => new AdditionNode(leftSide, ParseExpressionPrecedence(Precedence.Term)),
-                "-" => new SubtractionNode(leftSide, ParseExpressionPrecedence(Precedence.Term)),
-                "*" => new MultiplicationNode(leftSide, ParseExpressionPrecedence(Precedence.Factor)),
-                "/" => new DivisionNode(leftSide, ParseExpressionPrecedence(Precedence.Factor)),
+                "+"  => new AdditionNode(leftSide, ParseExpressionPrecedence(Precedence.Term)),
+                "-"  => new SubtractionNode(leftSide, ParseExpressionPrecedence(Precedence.Term)),
+                "*"  => new MultiplicationNode(leftSide, ParseExpressionPrecedence(Precedence.Factor)),
+                "/"  => new DivisionNode(leftSide, ParseExpressionPrecedence(Precedence.Factor)),
                 "==" => new EqualityOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Equality)),
                 "!=" => new InequalityOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Equality)),
-                ">" => new GreaterThanOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Comparison)),
-                "<" => new LessThanOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Comparison)),
+                ">"  => new GreaterThanOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Comparison)),
+                "<"  => new LessThanOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Comparison)),
                 ">=" => new GreaterThanEqualOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Comparison)),
                 "<=" => new LessThanEqualOperatorNode(leftSide, ParseExpressionPrecedence(Precedence.Comparison)),
-                _   => throw new NotImplementedException(),
+                _    => throw new NotImplementedException(),
             };
         }
 
