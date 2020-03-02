@@ -5,7 +5,7 @@ using ForgottenRPG.Service;
 
 namespace ForgottenRPG.VM {
     // Bytecode VM for a small language. 32-bit integers are the smallest atomic unit.
-    public class ScriptVM {
+    public class ScriptVm {
         private const int InstructionRegister = 0;
         private const int StackPointerRegister = 1;
         private readonly List<int> _bytes;
@@ -16,7 +16,7 @@ namespace ForgottenRPG.VM {
         private readonly uint _stackPointerBase;
         public Action<string> PrintMethod { get; set; } = s => ServiceLocator.LogService.Log(LogType.Info, "VM : " + s);
 
-        public ScriptVM(List<int> bytes) {
+        public ScriptVm(List<int> bytes) {
             _bytes = bytes;
             // Copy the bytes to memory
             List<MemoryPage> instructionPages = new List<MemoryPage>();
@@ -63,7 +63,7 @@ namespace ForgottenRPG.VM {
         private void ExecuteInstruction() {
             int a, b;
             switch (ReadInstruction()) {
-                case Instruction.NULL:
+                case Instruction.Null:
                     break;
                 case Instruction.Literal:
                     PushStack(ReadInstructionByte());
@@ -110,23 +110,23 @@ namespace ForgottenRPG.VM {
                 case Instruction.Jmp:
                     Jump(true);
                     break;
-                case Instruction.JmpNEQ:
-                    Jump(!_flagRegister.EQ);
+                case Instruction.JmpNeq:
+                    Jump(!_flagRegister.Eq);
                     break;
-                case Instruction.JmpEQ:
-                    Jump(_flagRegister.EQ);
+                case Instruction.JmpEq:
+                    Jump(_flagRegister.Eq);
                     break;
-                case Instruction.JmpGTE:
-                    Jump(_flagRegister.GTE);
+                case Instruction.JmpGte:
+                    Jump(_flagRegister.Gte);
                     break;
-                case Instruction.JmpLTE:
-                    Jump(_flagRegister.LTE);
+                case Instruction.JmpLte:
+                    Jump(_flagRegister.Lte);
                     break;
-                case Instruction.JmpGT:
-                    Jump(_flagRegister.GT);
+                case Instruction.JmpGt:
+                    Jump(_flagRegister.Gt);
                     break;
-                case Instruction.JmpLT:
-                    Jump(_flagRegister.LT);
+                case Instruction.JmpLt:
+                    Jump(_flagRegister.Lt);
                     break;
                 case Instruction.StackToRegister:
                     _registers[ReadInstructionByte()] = PopStack();
@@ -177,23 +177,23 @@ namespace ForgottenRPG.VM {
 
         private void SetFlags(int basedOn) {
             if (basedOn == 0) {
-                _flagRegister.EQ  = true;
-                _flagRegister.GTE = true;
-                _flagRegister.LTE = true;
-                _flagRegister.GT  = false;
-                _flagRegister.LT  = false;
+                _flagRegister.Eq  = true;
+                _flagRegister.Gte = true;
+                _flagRegister.Lte = true;
+                _flagRegister.Gt  = false;
+                _flagRegister.Lt  = false;
             } else if (basedOn > 0) {
-                _flagRegister.EQ  = false;
-                _flagRegister.GTE = true;
-                _flagRegister.LTE = false;
-                _flagRegister.GT  = true;
-                _flagRegister.LT  = false;
+                _flagRegister.Eq  = false;
+                _flagRegister.Gte = true;
+                _flagRegister.Lte = false;
+                _flagRegister.Gt  = true;
+                _flagRegister.Lt  = false;
             } else {
-                _flagRegister.EQ  = false;
-                _flagRegister.GTE = false;
-                _flagRegister.LTE = true;
-                _flagRegister.GT  = false;
-                _flagRegister.LT  = true;
+                _flagRegister.Eq  = false;
+                _flagRegister.Gte = false;
+                _flagRegister.Lte = true;
+                _flagRegister.Gt  = false;
+                _flagRegister.Lt  = true;
             }
         }
 
@@ -263,7 +263,7 @@ namespace ForgottenRPG.VM {
         }
 
         public enum Instruction {
-            NULL,
+            Null,
             Literal,
             Add,
             Sub,
@@ -277,12 +277,12 @@ namespace ForgottenRPG.VM {
             SetIntData,
             Cmp,
             Jmp,
-            JmpNEQ,
-            JmpEQ,
-            JmpGT,
-            JmpLT,
-            JmpGTE,
-            JmpLTE,
+            JmpNeq,
+            JmpEq,
+            JmpGt,
+            JmpLt,
+            JmpGte,
+            JmpLte,
             Print,
             PrintInt,
             MemWrite,
@@ -290,11 +290,11 @@ namespace ForgottenRPG.VM {
         }
 
         private class Flags {
-            public bool EQ;
-            public bool GT;
-            public bool LT;
-            public bool GTE;
-            public bool LTE;
+            public bool Eq;
+            public bool Gt;
+            public bool Lt;
+            public bool Gte;
+            public bool Lte;
         }
     }
 }

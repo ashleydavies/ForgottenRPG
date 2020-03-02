@@ -32,7 +32,7 @@ namespace ForgottenRPG.Entity.Dialog {
         }
 
         public override void Execute(Dialog dialog) {
-            new ScriptVM(new List<int>(_code)).Execute();
+            new ScriptVm(new List<int>(_code)).Execute();
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using ScriptCompiler.AST;
-using ScriptCompiler.AST.Statements;
+﻿using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.CompileUtil;
 using ScriptCompiler.Types;

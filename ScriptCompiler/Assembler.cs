@@ -104,32 +104,31 @@ namespace ScriptCompiler {
                     break;
                 case "jmp":
                     HandleLoadToStack(components[1]);
-                    AddInstruction(ScriptVM.Instruction.Jmp);
-                    //AddInstruction("RESOLVELABEL" + components[1]);
+                    AddInstruction(ScriptVm.Instruction.Jmp);
                     break;
                 case "jeq":
-                    AddInstruction(ScriptVM.Instruction.JmpEQ);
-                    AddInstruction("RESOLVELABEL" + components[1]);
+                    HandleLoadToStack(components[1]);
+                    AddInstruction(ScriptVm.Instruction.JmpEq);
                     break;
                 case "jneq":
-                    AddInstruction(ScriptVM.Instruction.JmpNEQ);
-                    AddInstruction("RESOLVELABEL" + components[1]);
+                    HandleLoadToStack(components[1]);
+                    AddInstruction(ScriptVm.Instruction.JmpNeq);
                     break;
                 case "jgt":
-                    AddInstruction(ScriptVM.Instruction.JmpGT);
-                    AddInstruction("RESOLVELABEL" + components[1]);
+                    HandleLoadToStack(components[1]);
+                    AddInstruction(ScriptVm.Instruction.JmpGt);
                     break;
                 case "jgte":
-                    AddInstruction(ScriptVM.Instruction.JmpGTE);
-                    AddInstruction("RESOLVELABEL" + components[1]);
+                    HandleLoadToStack(components[1]);
+                    AddInstruction(ScriptVm.Instruction.JmpGte);
                     break;
                 case "jlt":
-                    AddInstruction(ScriptVM.Instruction.JmpLT);
-                    AddInstruction("RESOLVELABEL" + components[1]);
+                    HandleLoadToStack(components[1]);
+                    AddInstruction(ScriptVm.Instruction.JmpLt);
                     break;
                 case "jlte":
-                    AddInstruction(ScriptVM.Instruction.JmpLTE);
-                    AddInstruction("RESOLVELABEL" + components[1]);
+                    HandleLoadToStack(components[1]);
+                    AddInstruction(ScriptVm.Instruction.JmpLte);
                     break;
                 case "mov":
                     HandleLoadToStack(components[2]);
@@ -142,55 +141,56 @@ namespace ScriptCompiler {
                     HandleSaveFromStack(components[1]);
                     break;
                 case "add":
-                    ArithmeticOp(ScriptVM.Instruction.Add, components[1], components[2]);
+                    ArithmeticOp(ScriptVm.Instruction.Add, components[1], components[2]);
                     break;
                 case "sub":
-                    ArithmeticOp(ScriptVM.Instruction.Sub, components[1], components[2]);
+                    ArithmeticOp(ScriptVm.Instruction.Sub, components[1], components[2]);
                     break;
                 case "mul":
-                    ArithmeticOp(ScriptVM.Instruction.Mul, components[1], components[2]);
+                    ArithmeticOp(ScriptVm.Instruction.Mul, components[1], components[2]);
                     break;
                 case "div":
-                    ArithmeticOp(ScriptVM.Instruction.Div, components[1], components[2]);
+                    ArithmeticOp(ScriptVm.Instruction.Div, components[1], components[2]);
                     break;
                 case "inc":
                     HandleLoadToStack(components[1]);
-                    AddInstruction(ScriptVM.Instruction.Inc);
+                    AddInstruction(ScriptVm.Instruction.Inc);
                     HandleSaveFromStack(components[1]);
                     break;
                 case "dec":
                     HandleLoadToStack(components[1]);
-                    AddInstruction(ScriptVM.Instruction.Dec);
+                    AddInstruction(ScriptVm.Instruction.Dec);
                     HandleSaveFromStack(components[1]);
                     break;
                 case "cmp":
-                    HandleLoadToStack(components[1]);
+                    // flip operands so that cmp(a, b) for, e.g., GT, is processed as a > b not b > a
                     HandleLoadToStack(components[2]);
-                    AddInstruction(ScriptVM.Instruction.Cmp);
+                    HandleLoadToStack(components[1]);
+                    AddInstruction(ScriptVm.Instruction.Cmp);
                     break;
                 case "print":
                     HandleLoadToStack(components[1]);
-                    AddInstruction(ScriptVM.Instruction.Print);
+                    AddInstruction(ScriptVm.Instruction.Print);
                     break;
                 case "printint":
                     HandleLoadToStack(components[1]);
-                    AddInstruction(ScriptVM.Instruction.PrintInt);
+                    AddInstruction(ScriptVm.Instruction.PrintInt);
                     break;
                 case "memwrite":
                     HandleLoadToStack(components[1]);
                     HandleLoadToStack(components[2]);
-                    AddInstruction(ScriptVM.Instruction.MemWrite);
+                    AddInstruction(ScriptVm.Instruction.MemWrite);
                     break;
                 case "memread":
                     HandleLoadToStack(components[2]);
-                    AddInstruction(ScriptVM.Instruction.MemRead);
+                    AddInstruction(ScriptVm.Instruction.MemRead);
                     HandleSaveFromStack(components[1]);
                     break;
                 case "memcopy":
                     HandleLoadToStack(components[1]);
                     HandleLoadToStack(components[2]);
-                    AddInstruction(ScriptVM.Instruction.MemRead);
-                    AddInstruction(ScriptVM.Instruction.MemWrite);
+                    AddInstruction(ScriptVm.Instruction.MemRead);
+                    AddInstruction(ScriptVm.Instruction.MemWrite);
                     break;
             }
         }
@@ -232,7 +232,7 @@ namespace ScriptCompiler {
                 .ToList();
         }
 
-        private void ArithmeticOp(ScriptVM.Instruction instruction, string comp1, string comp2) {
+        private void ArithmeticOp(ScriptVm.Instruction instruction, string comp1, string comp2) {
             HandleLoadToStack(comp1);
             HandleLoadToStack(comp2);
             AddInstruction(instruction);
@@ -245,22 +245,22 @@ namespace ScriptCompiler {
                 return;
             }
 
-            AddInstruction(ScriptVM.Instruction.StackToRegister);
+            AddInstruction(ScriptVm.Instruction.StackToRegister);
             AddInstruction(GetRegister(source));
         }
 
         private void HandleLoadToStack(string source) {
             if (source.StartsWith("r")) {
-                AddInstruction(ScriptVM.Instruction.RegisterToStack);
+                AddInstruction(ScriptVm.Instruction.RegisterToStack);
                 AddInstruction(GetRegister(source));
             } else if (source.StartsWith("$")) {
-                AddInstruction(ScriptVM.Instruction.Literal);
+                AddInstruction(ScriptVm.Instruction.Literal);
                 AddInstruction("RESOLVELABEL" + source.Substring(1));
             } else if (source.StartsWith("!")) {
-                AddInstruction(ScriptVM.Instruction.Literal);
+                AddInstruction(ScriptVm.Instruction.Literal);
                 AddInstruction(_userDataIndexes[source.Substring(1)].ToString());
             } else {
-                AddInstruction(ScriptVM.Instruction.Literal);
+                AddInstruction(ScriptVm.Instruction.Literal);
                 AddInstruction(source);
             }
         }
@@ -275,7 +275,7 @@ namespace ScriptCompiler {
             return registerString.Substring(1);
         }
 
-        private void AddInstruction(ScriptVM.Instruction instruction) {
+        private void AddInstruction(ScriptVm.Instruction instruction) {
             AddInstruction(ConvertInstruction(instruction));
         }
 
@@ -285,7 +285,7 @@ namespace ScriptCompiler {
             _instructionId++;
         }
 
-        private string ConvertInstruction(ScriptVM.Instruction instruction) {
+        private string ConvertInstruction(ScriptVm.Instruction instruction) {
             return ((int) instruction).ToString();
         }
         

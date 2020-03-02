@@ -2,6 +2,6 @@
 
 namespace ForgottenRPG.Service {
     public interface IScriptStoreService {
-        ScriptVM CreateScriptVm(int id);
+        ScriptVm CreateScriptVm(int id);
     }
 }

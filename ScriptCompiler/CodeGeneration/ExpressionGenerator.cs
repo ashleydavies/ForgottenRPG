@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements.Expressions;
@@ -213,56 +212,94 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public List<Instruction> Visit(DereferenceNode node) {
+            var pointerType   = TypeIdentifier.Identify(node.Expression);
+            var referenceType = (pointerType as ReferenceType);
+            if (referenceType == null) {
+                throw new CompileException($"Unable to dereference expression of type {pointerType}", 0, 0);
+            }
+
             var       instructions = Generate(node.Expression);
             using var copyReg      = _regManager.NewRegister();
             instructions.Add(PopStack(SType.SGenericPtr));
             instructions.Add(new MemReadInstruction(copyReg, StackPointer));
-            instructions.Add(new MemCopyInstruction(StackPointer, copyReg));
-            instructions.Add(PushStack(SType.SGenericPtr));
+            var type = referenceType.ContainedType;
+            for (int i = 0; i < type.Length; i++) {
+                instructions.Add(new MemCopyInstruction(StackPointer, copyReg));
+                instructions.Add(new AddInstruction(StackPointer, 1));
+                instructions.Add(new AddInstruction(copyReg, 1));
+            }
+
+            _stackFrame.Pushed(type);
+
+            return instructions;
+        }
+
+        public List<Instruction> Visit(EqualityOperatorNode node) {
+            return VisitComparisonOperator(node, label => new JmpEqInstruction(label));
+        }
+
+        public List<Instruction> Visit(InequalityOperatorNode node) {
+            return VisitComparisonOperator(node, label => new JmpNeqInstruction(label));
+        }
+
+        public List<Instruction> Visit(GreaterThanOperatorNode node) {
+            return VisitComparisonOperator(node, label => new JmpGtInstruction(label));
+        }
+
+        public List<Instruction> Visit(LessThanOperatorNode node) {
+            return VisitComparisonOperator(node, label => new JmpLtInstruction(label));
+        }
+
+        public List<Instruction> Visit(GreaterThanEqualOperatorNode node) {
+            return VisitComparisonOperator(node, label => new JmpGteInstruction(label));
+        }
+
+        public List<Instruction> Visit(LessThanEqualOperatorNode node) {
+            return VisitComparisonOperator(node, label => new JmpLteInstruction(label));
+        }
+
+        private List<Instruction> VisitComparisonOperator(BinaryOperatorNode node,
+                                                          Func<Label, Instruction> operationGenerator) {
+            var (instructions, left, right) = GenerateSingleWordBinOpSetup(node);
+            instructions.Add(new CmpInstruction(left, right));
+            var endLabel = new Label(Guid.NewGuid().ToString());
+            var eqLabel  = new Label(Guid.NewGuid().ToString());
+            instructions.Add(operationGenerator(eqLabel));
+            // Neq case
+            instructions.Add(new MemWriteInstruction(StackPointer, 0));
+            instructions.Add(new JmpInstruction(endLabel));
+            // Eq case
+            instructions.Add(new LabelInstruction(eqLabel));
+            instructions.Add(new MemWriteInstruction(StackPointer, 1));
+            instructions.Add(new LabelInstruction(endLabel));
+            instructions.Add(PushStack(SType.SInteger));
+            left.Dispose();
+            right.Dispose();
             return instructions;
         }
 
         public List<Instruction> Visit(AdditionNode node) {
-            var instructions = new List<Instruction>();
-            var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
-            instructions.AddRange(opInstructions);
-            instructions.Add(new AddInstruction(left, right));
-            instructions.Add(new MemWriteInstruction(StackPointer, left));
-            instructions.Add(PushStack(SType.SInteger));
-            left.Dispose();
-            right.Dispose();
-            return instructions;
+            return VisitArithmeticOperator(node, (left, right) => new AddInstruction(left, right));
         }
 
         public List<Instruction> Visit(SubtractionNode node) {
-            var instructions = new List<Instruction>();
-            var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
-            instructions.AddRange(opInstructions);
-            instructions.Add(new SubInstruction(left, right));
-            instructions.Add(new MemWriteInstruction(StackPointer, left));
-            instructions.Add(PushStack(SType.SInteger));
-            left.Dispose();
-            right.Dispose();
-            return instructions;
+            return VisitArithmeticOperator(node, (left, right) => new SubInstruction(left, right));
         }
 
         public List<Instruction> Visit(MultiplicationNode node) {
-            var instructions = new List<Instruction>();
-            var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
-            instructions.AddRange(opInstructions);
-            instructions.Add(new MulInstruction(left, right));
-            instructions.Add(new MemWriteInstruction(StackPointer, left));
-            instructions.Add(PushStack(SType.SInteger));
-            left.Dispose();
-            right.Dispose();
-            return instructions;
+            return VisitArithmeticOperator(node, (left, right) => new MulInstruction(left, right));
         }
 
         public List<Instruction> Visit(DivisionNode node) {
+            return VisitArithmeticOperator(node, (left, right) => new DivInstruction(left, right));
+        }
+
+        public List<Instruction> VisitArithmeticOperator(BinaryOperatorNode node,
+                                                         Func<Register, Register, Instruction> operationGenerator) {
             var instructions = new List<Instruction>();
             var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
             instructions.AddRange(opInstructions);
-            instructions.Add(new DivInstruction(left, right));
+            instructions.Add(operationGenerator(left, right));
             instructions.Add(new MemWriteInstruction(StackPointer, left));
             instructions.Add(PushStack(SType.SInteger));
             left.Dispose();

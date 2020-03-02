@@ -7,7 +7,6 @@ using ScriptCompiler.CompileUtil;
 using ScriptCompiler.Parsing;
 using ScriptCompiler.Types;
 using ScriptCompiler.Visitors;
-using Register = ScriptCompiler.CodeGeneration.Assembly.Register;
 
 namespace ScriptCompiler.CodeGeneration {
     /// <summary>

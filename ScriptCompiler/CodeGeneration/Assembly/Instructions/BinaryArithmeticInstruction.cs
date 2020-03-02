@@ -15,7 +15,7 @@ namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
         public abstract bool IsNoop();
 
         // TODO Polymorphism
-        public bool TryCombine(Instruction other, out BinaryArithmeticInstruction result) {
+        public bool TryCombine(Instruction other, out BinaryArithmeticInstruction? result) {
             if (!(other is BinaryArithmeticInstruction otherArithmetic && SameLocation(otherArithmetic) &&
                   Value is NumericConstant ncLeft &&
                   otherArithmetic.Value is NumericConstant ncRight)) {

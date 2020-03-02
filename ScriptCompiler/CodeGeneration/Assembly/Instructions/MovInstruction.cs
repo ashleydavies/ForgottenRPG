@@ -1,9 +1,9 @@
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
     public class MovInstruction : Instruction {
         private readonly Location _to;
-        private readonly Location _from;
+        private readonly Value _from;
         
-        public MovInstruction(Location to, Location @from) {
+        public MovInstruction(Location to, Value @from) {
             _to = to;
             _from = @from;
         }

@@ -1,7 +1,6 @@
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.NetworkInformation;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
@@ -32,7 +31,7 @@ namespace ScriptCompiler.CodeGeneration {
         public StatementBlockGenerationVisitor(FunctionTypeRepository functionTypeRepository,
                                                UserTypeRepository userTypeRepository,
                                                Dictionary<string, StringLabel> stringPoolAliases,
-                                               StackFrame stackFrame = null) {
+                                               StackFrame? stackFrame = null) {
             _functionTypeRepository = functionTypeRepository;
             _userTypeRepository     = userTypeRepository;
             _stringPoolAliases      = stringPoolAliases;
@@ -117,14 +116,41 @@ namespace ScriptCompiler.CodeGeneration {
             return instructions;
         }
 
-        public List<Instruction> Visit(ReturnStatementNode node) {
+        public List<Instruction> Visit(IfStatementNode node) {
             var instructions = new List<Instruction>();
-            
+
+            // We expect this to add a bool to the stack
             instructions.AddRange(ExpressionGenerator.Generate(node.Expression));
-            
+
+            var elseLabel = new Label(Guid.NewGuid().ToString());
+            var endLabel  = new Label(Guid.NewGuid().ToString());
+
+            instructions.Add(PopStack(SType.SBool));
+            using var resultReg = _regManager.NewRegister();
+            using var cmpReg    = _regManager.NewRegister();
+
+            // Condition
+            instructions.Add(new MemReadInstruction(resultReg, StackPointer));
+            instructions.Add(new MovInstruction(cmpReg, 0));
+            instructions.Add(new CmpInstruction(resultReg, cmpReg));
+            instructions.Add(new JmpEqInstruction(node.ElseBlock != null ? elseLabel : endLabel));
+            instructions.AddRange(VisitStatementBlock(node.IfBlock.Statements));
+            if (node.ElseBlock != null) {
+                instructions.Add(new JmpInstruction(endLabel));
+                instructions.Add(new LabelInstruction(elseLabel));
+                instructions.AddRange(VisitStatementBlock(node.ElseBlock.Statements));
+            }
+            instructions.Add(new LabelInstruction(endLabel));
+
+            return instructions;
+        }
+
+        public List<Instruction> Visit(ReturnStatementNode node) {
+            var instructions = ExpressionGenerator.Generate(node.Expression);
+
             // Copy the result over to the return position
             var (type, offset) = _stackFrame.Lookup(StackFrame.ReturnIdentifier);
-            
+
             using var copyRegister = _regManager.NewRegister();
             // Ret1 | Ret2 | Ret3 | Stk1 | Stk2 | Stk3 | Res1 | Res2 | Res3 | 0
             //                                                                ^ Initial stack pointer
@@ -138,7 +164,7 @@ namespace ScriptCompiler.CodeGeneration {
                 instructions.Add(new SubInstruction(copyRegister, 1));
                 instructions.Add(new MemCopyInstruction(copyRegister, StackPointer));
             }
-            
+
             _stackFrame.Popped(type);
             return instructions;
         }

@@ -3,6 +3,7 @@
         public static readonly SType SVoid = new SType("void", 0);
         public static readonly SType SNoType = new SType("NO TYPE");
         public static readonly SType SInteger = new SType("int");
+        public static readonly SType SBool = new SType("bool");
         public static readonly SType SChar = new SType("char");
         public static readonly SType SString = new ReferenceType(SChar);
         public static readonly SType SGenericPtr = new ReferenceType(SNoType);
@@ -49,6 +50,8 @@
             switch (nodeTypeString) {
                 case "int":
                     return SInteger;
+                case "bool":
+                    return SBool;
                 case "char":
                     return SChar;
                 case "string":
