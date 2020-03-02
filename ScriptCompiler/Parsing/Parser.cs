@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Permissions;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
@@ -193,7 +192,7 @@ namespace ScriptCompiler.Parsing {
         }
 
         private ExpressionNode ParseExpressionPrecedence(Precedence precedence) {
-            var token      = NextToken()!;
+            LexToken token      = NextToken()!;
             var expression = GetMatchingPrefixRule(token).Rule(token);
 
             token = PeekToken();
@@ -241,7 +240,7 @@ namespace ScriptCompiler.Parsing {
             return _prefixExpressionParseTable.FindAll(rule => rule.Predicate(token)).FirstOrDefault();
         }
 
-        private InfixParseRule GetMatchingInfixRule(LexToken token, Precedence precedence) {
+        private InfixParseRule? GetMatchingInfixRule(LexToken token, Precedence precedence) {
             return _infixExpressionParseTable.FindAll(rule => rule.Precedence > precedence)
                                              .FindAll(rule => rule.Predicate(token)).FirstOrDefault();
         }
@@ -368,11 +367,13 @@ namespace ScriptCompiler.Parsing {
             return cached;
         }
 
-        private LexToken PeekToken(int depth = 0) {
+        private LexToken? PeekToken(int depth = 0) {
             if (_cachedTokens.Count > depth) return _cachedTokens[depth];
 
             for (int i = 0; i <= depth - _cachedTokens.Count; i++) {
-                _cachedTokens.Add(_lexer.NextToken()!);
+                var nextToken = _lexer.NextToken();
+                if (nextToken != null) _cachedTokens.Add(nextToken);
+                if (nextToken == null) return null;
             }
 
             return _cachedTokens[depth];

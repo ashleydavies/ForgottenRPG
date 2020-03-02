@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.NetworkInformation;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
@@ -33,7 +31,7 @@ namespace ScriptCompiler.CodeGeneration {
         public StatementBlockGenerationVisitor(FunctionTypeRepository functionTypeRepository,
                                                UserTypeRepository userTypeRepository,
                                                Dictionary<string, StringLabel> stringPoolAliases,
-                                               StackFrame stackFrame = null) {
+                                               StackFrame? stackFrame = null) {
             _functionTypeRepository = functionTypeRepository;
             _userTypeRepository     = userTypeRepository;
             _stringPoolAliases      = stringPoolAliases;

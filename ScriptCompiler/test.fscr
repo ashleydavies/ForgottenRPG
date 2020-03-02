@@ -1,6 +1,4 @@
 print 2 > 1;
 if 2 <= 2 {
     print "Hello World!";
-} else {
-    print "Goodbye World!";
 }
