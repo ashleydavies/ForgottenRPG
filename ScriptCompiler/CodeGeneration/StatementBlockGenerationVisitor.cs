@@ -144,6 +144,10 @@ namespace ScriptCompiler.CodeGeneration {
 
             return instructions;
         }
+        
+        public List<Instruction> Visit(ForStatementNode node) {
+            throw new NotImplementedException();   
+        }
 
         public List<Instruction> Visit(ReturnStatementNode node) {
             var instructions = ExpressionGenerator.Generate(node.Expression);
