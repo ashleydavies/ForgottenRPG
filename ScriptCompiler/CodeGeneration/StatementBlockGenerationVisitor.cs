@@ -146,7 +146,45 @@ namespace ScriptCompiler.CodeGeneration {
         }
         
         public List<Instruction> Visit(ForStatementNode node) {
-            throw new NotImplementedException();   
+            var instructions = new List<Instruction>();
+            
+            var startLabel = new Label(Guid.NewGuid().ToString());
+            var endLabel = new Label(Guid.NewGuid().ToString());
+            
+            // Initialise the variable
+            if (node.Declaration != null) {
+                instructions.AddRange(Visit(node.Declaration as dynamic));
+            }
+            
+            // Start label
+            instructions.Add(new LabelInstruction(startLabel));
+
+            // We expect this to add a bool to the stack
+            if (node.Condition != null) {
+                instructions.AddRange(ExpressionGenerator.Generate(node.Condition));
+
+                instructions.Add(PopStack(SType.SBool));
+                using var resultReg = _regManager.NewRegister();
+                using var cmpReg    = _regManager.NewRegister();
+
+                // Condition
+                instructions.Add(new MemReadInstruction(resultReg, StackPointer));
+                instructions.Add(new MovInstruction(cmpReg, 0));
+                instructions.Add(new CmpInstruction(resultReg, cmpReg));
+                instructions.Add(new JmpEqInstruction(endLabel));
+            }
+            
+            instructions.AddRange(VisitStatementBlock(node.Block.Statements));
+
+            if (node.Update != null) {
+                instructions.AddRange(ExpressionGenerator.Generate(node.Update));
+                instructions.Add(PopStack(TypeIdentifier.Identify(node.Update)));
+            }
+            
+            instructions.Add(new JmpInstruction(startLabel));
+            instructions.Add(new LabelInstruction(endLabel));
+
+            return instructions;
         }
 
         public List<Instruction> Visit(ReturnStatementNode node) {

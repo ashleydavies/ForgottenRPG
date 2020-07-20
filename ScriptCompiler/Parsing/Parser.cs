@@ -163,7 +163,7 @@ namespace ScriptCompiler.Parsing {
             return new IfStatementNode(condition, ifBlock, elseBlock);
         }
 
-        private StatementNode ParseForStatementNode() {]
+        private StatementNode ParseForStatementNode() {
             // TODO: Support empty `for {` and `for condition {` ala Golang
             Expecting<IdentifierToken>(t => t.Content == "for");
             StatementNode? initialisation = null;
