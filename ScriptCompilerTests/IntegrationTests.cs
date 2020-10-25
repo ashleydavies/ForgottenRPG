@@ -12,6 +12,7 @@ using Assert = Xunit.Assert;
 namespace ScriptCompilerTests {
     public class IntegrationTests {
         private readonly List<string> _output = new List<string>();
+
         [Fact]
         public void CanPrintHelloWorld() {
             ExecuteCode("print 'Hello, world!';");
@@ -42,10 +43,12 @@ namespace ScriptCompilerTests {
             CollectionAssert.AreEqual(new List<string> {"1", "2", "3"}, _output);
         }
 
+
         [Fact]
-        public void CanDoNestedFunctionCalls() {
-            ExecuteCode("func void test() { print '2'; test2(); } print '1'; test(); print '4'; func void test2() { print '3'; }");
-            CollectionAssert.AreEqual(new List<string> {"1", "2", "3", "4"}, _output);
+        public void CanDoFunctionCallsWithinFunctions() {
+            ExecuteCode(
+                "func void test() { print '2'; test2(); } print '1'; test(); print '4'; func void test2() { print '3'; }");
+            Assert.Equal(new List<string> {"1", "2", "3", "4"}, _output);
         }
 
         [Fact]
@@ -98,14 +101,49 @@ namespace ScriptCompilerTests {
 
         [Fact]
         public void CanCallFunctionsWithManyStackVariables() {
-            ExecuteCode("int z; func void a(int b, string c, int d) { print b * d; print c; } int m = 5; int b; string c; a(10, 'hello', 5);");
+            ExecuteCode(
+                "int z; func void a(int b, string c, int d) { print b * d; print c; } int m = 5; int b; string c; a(10, 'hello', 5);");
             CollectionAssert.AreEqual(new List<string> {"50", "hello"}, _output);
         }
 
         [Fact]
         public void CanCallFunctionsWithManyStackVariablesAndReturns() {
-            ExecuteCode("int z; func int a(int b, string c, int d) { print b * d; print c; return 10; } int m = 5; int b; string c; print a(10, 'hello', 5);");
+            ExecuteCode(
+                "int z; func int a(int b, string c, int d) { print b * d; print c; return 10; } int m = 5; int b; string c; print a(10, 'hello', 5);");
             CollectionAssert.AreEqual(new List<string> {"50", "hello", "10"}, _output);
+        }
+
+        [Fact]
+        public void CanDoNestedFunctionCalls() {
+            ExecuteCode("func int a(int b) { print b; return b + 1; } a(a(a(10)));");
+            Assert.Equal(new List<string> {"10", "11", "12"}, _output);
+        }
+
+        [Fact]
+        public void CanCallManyFunctionsInASingleExpression() {
+            ExecuteCode(
+                "func int a(int b, int c) { print b + c; return b + c * 2; } int b = 1; int c = 2; int d = 3; a(a(1, 2) + a(b, c), a(c, 5));");
+            Assert.Equal(new List<string> {"3", "3", "7", "22"}, _output);
+        }
+
+        [Fact]
+        public void CanDoDeeplyNestedFunctionCallsInASingleExpression() {
+            ExecuteCode("func int add(int a, int b) { return a + b; } " +
+                        "func int sub(int a, int b) { return a - b; } " +
+                        "func int mul(int a, int b) { return a * b; } " +
+                        "func int div(int a, int b) { return a / b; } " +
+                        "int x = 5; int z = 6;" +
+                        "print add(x, add(sub(div(mul(2, z), 3), 4), div(mul(8, add(2, 1)), sub(add(3, 1), 1))));");
+            Assert.Equal(new List<string> {"13"}, _output);
+        }
+
+        [Fact]
+        public void CanDoNestedFunctionCallsWithMixedExpressions() {
+            ExecuteCode("func int add(int a, int b) { return a + b; } " +
+                        "func int sub(int a, int b) { return a - b; } " +
+                        "int one = 1; int five = 5;" +
+                        "print add(one, five + add(5, 5));");
+            Assert.Equal(new List<string> {"16"}, _output);
         }
 
         [Fact]
@@ -138,35 +176,67 @@ print b.mana;");
 
         [Fact]
         public void FunctionsCanReturnStructs() {
-            ExecuteCode("struct player { int health; int mana; } func player a(int b, string c, int d) { print b * d; print c; player p; p.mana = 30; return p; } print a(10, 'hello', 5).mana;");
+            ExecuteCode(
+                "struct player { int health; int mana; } func player a(int b, string c, int d) { print b * d; print c; player p; p.mana = 30; return p; } print a(10, 'hello', 5).mana;");
             CollectionAssert.AreEqual(new List<string> {"50", "hello", "30"}, _output);
         }
 
         [Fact]
         public void EqualityWorksAsExpected() {
-            ExecuteCode("print 5 == 5; print 6 == 6; print 5 == 10; print 'hello' == 'hello'; print 'hello' == 'fred';");
+            ExecuteCode(
+                "print 5 == 5; print 6 == 6; print 5 == 10; print 'hello' == 'hello'; print 'hello' == 'fred';");
             CollectionAssert.AreEqual(new List<string> {"1", "1", "0", "1", "0"}, _output);
         }
 
         [Fact]
         public void IfStatementsWorkAsExpected() {
-            ExecuteCode("if 1 == 1 { print 'Hello World'; } if 1 == 2 { print 'Goodbye World'; } if 'hello' == 'hello' { print 'String'; } if 5 + 5 == 10 - 5 + 5 { print 'Maths'; }");
-            CollectionAssert.AreEqual(new List<string> { "Hello World", "String", "Maths"}, _output);
+            ExecuteCode(
+                "if 1 == 1 { print 'Hello World'; } if 1 == 2 { print 'Goodbye World'; } if 'hello' == 'hello' { print 'String'; } if 5 + 5 == 10 - 5 + 5 { print 'Maths'; }");
+            CollectionAssert.AreEqual(new List<string> {"Hello World", "String", "Maths"}, _output);
         }
 
         [Fact]
         public void ConditionalsWorkAsExpected() {
-            ExecuteCode("print 1 > 1; print 1 >= 1; print 1 < 1; print 1 <= 1; print 1 == 1; print 1 != 1; print 2 > 1; print 0 < 1; print 1 >= 0; print 1 <= 5;");
+            ExecuteCode(
+                "print 1 > 1; print 1 >= 1; print 1 < 1; print 1 <= 1; print 1 == 1; print 1 != 1; print 2 > 1; print 0 < 1; print 1 >= 0; print 1 <= 5;");
             CollectionAssert.AreEqual(new List<string> {"0", "1", "0", "1", "1", "0", "1", "1", "1", "1"}, _output);
         }
-        
+
+        [Fact]
+        public void CanDoBasicLoops() {
+            ExecuteCode("int sum = 0; for int i = 0; i < 10; i = i + 1 { sum = sum + i; } print sum;");
+            CollectionAssert.AreEqual(new List<string> {"45"}, _output);
+        }
+
+        [Fact]
+        public void CanDoNestedLoops() {
+            ExecuteCode(
+                "int sum = 0; for int i = 0; i < 3; i = i + 1 { for int j = 0; j < 3; j = j + 1 { sum = sum + i; } } print sum;");
+            CollectionAssert.AreEqual(new List<string> {"9"}, _output);
+        }
+
+        [Fact]
+        public void CanDoDoublyNestedLoops() {
+            ExecuteCode(
+                "for int j = 0; j < 3; j = j + 1 { for int k = 0; k < 3; k = k + 1 { for int l = 0; l < 3; l = l + 1 { print j * k * l; } } }");
+            var expected = new List<string>();
+            for (var j = 0; j < 3; j++) {
+                for (var k = 0; k < 3; k++) {
+                    for (var l = 0; l < 3; l++) {
+                        expected.Add((j * k * l).ToString());
+                    }
+                }
+            }
+            CollectionAssert.AreEqual(expected, _output);
+        }
+
         private void ExecuteCode(string code) {
             var compiled = new Parser(code).Compile();
             var assembled =
                 new Assembler(compiled.Split(new[] {Environment.NewLine}, StringSplitOptions.None).ToList()).Compile();
-            var bytecodeString = string.Join(",", assembled);
-            List<int> bytecode = bytecodeString.Split(',').Select(int.Parse).ToList();
-            var vm = new ScriptVm(bytecode);
+            var       bytecodeString = string.Join(",", assembled);
+            List<int> bytecode       = bytecodeString.Split(',').Select(int.Parse).ToList();
+            var       vm             = new ScriptVm(bytecode);
             vm.PrintMethod = str => _output.Add(str);
             vm.Execute();
         }

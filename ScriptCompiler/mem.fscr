@@ -6,7 +6,7 @@ func int @malloc(int size) {
     int @mallocBase   = 2147483648;
     int @mallocStatus = mallocBase - 1;
     int @mallocHead   = mallocBase - 2;
-    int pageLength     = 1024;
+    int pageLength    = 1024;
     
     if !mallocStatus == 0 {
         print "Malloc initialisation in progress";

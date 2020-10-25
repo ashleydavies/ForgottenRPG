@@ -54,6 +54,9 @@ namespace ScriptCompiler.CodeGeneration {
         public List<Instruction> Visit(VariableAccessNode node) {
             var instructions = new List<Instruction>();
             (SType type, int offset) = _stackFrame.Lookup(node.Identifier);
+            if (Equals(type, SType.SNoType)) {
+                throw new CompileException($"Unknown variable {node.Identifier}", 0, 0);
+            }
 
             // Copy the variable value onto the stack
             using var readLocation = _regManager.NewRegister();
