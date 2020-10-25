@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using ScriptCompiler.AST;
@@ -55,10 +57,10 @@ namespace ScriptCompiler.Parsing {
                 new PrefixParseRule(t => t is StringToken, t => new StringLiteralNode(((StringToken) t).Content)),
                 new PrefixParseRule(t => t is IdentifierToken,
                                     t => new VariableAccessNode(((IdentifierToken) t).Content)),
-                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == "(", _ => ParseGrouping()),
-                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.ADDR_OPERATOR,
+                new PrefixParseRule(t => t is SymbolToken("("), _ => ParseGrouping()),
+                new PrefixParseRule(t => t is SymbolToken(Consts.ADDR_OPERATOR),
                                     _ => new AddressOfNode(ParseExpressionPrecedence(Precedence.Factor))),
-                new PrefixParseRule(t => t is SymbolToken s && s.Symbol == Consts.DEREF_OPERATOR,
+                new PrefixParseRule(t => t is SymbolToken(Consts.DEREF_OPERATOR),
                                     _ => new DereferenceNode(ParseExpressionPrecedence(Precedence.Factor))),
             };
 
@@ -72,15 +74,15 @@ namespace ScriptCompiler.Parsing {
                 new InfixParseRule(
                     t => t is SymbolToken s && new List<string> {">", "<", ">=", "<="}.Contains(s.Symbol),
                     (t, left) => ParseBinaryExpressionNode(left, (SymbolToken) t), Precedence.Comparison),
-                new InfixParseRule(t => t is SymbolToken s && s.Symbol == ".",
+                new InfixParseRule(t => t is SymbolToken("."),
                                    (t, left) => new StructAccessNode(left, Expecting<IdentifierToken>().Content),
                                    Precedence.Call),
-                new InfixParseRule(t => t is SymbolToken s && s.Symbol == "(",
+                new InfixParseRule(t => t is SymbolToken("("),
                                    (t, left) => ParseFunctionCallNode(left), Precedence.Accessor),
-                new InfixParseRule(t => t is SymbolToken s && s.Symbol == "=",
+                new InfixParseRule(t => t is SymbolToken("="),
                                    (t, left) => new AssignmentNode(left, ParseExpression()), Precedence.Assignment),
                 // Translating x->y == (*x).y at this time saves increasing AST complexity
-                new InfixParseRule(t => t is SymbolToken s && s.Symbol == "->",
+                new InfixParseRule(t => t is SymbolToken("->"),
                                    (t, left) =>
                                        new StructAccessNode(new DereferenceNode(left),
                                                             Expecting<IdentifierToken>().Content), Precedence.Accessor)
@@ -111,13 +113,13 @@ namespace ScriptCompiler.Parsing {
                     importProcessing && (token is IdentifierToken exToken && exToken.Content == "import");
 
                 switch (token) {
-                    case IdentifierToken itok when itok.Content == "func":
+                    case IdentifierToken("func"):
                         functions.Add(ParseFunctionNode());
                         break;
-                    case IdentifierToken itok when itok.Content == "import" && importProcessing:
+                    case IdentifierToken("import") when importProcessing:
                         imports.Add(ParseImportStatementNode());
                         break;
-                    case IdentifierToken itok when itok.Content == "struct":
+                    case IdentifierToken("struct"):
                         structs.Add(ParseStructNode());
                         break;
                     default:
@@ -133,18 +135,17 @@ namespace ScriptCompiler.Parsing {
             StatementNode returnNode;
 
             returnNode = PeekToken() switch {
-                IdentifierToken it when it.Content == "if"     => ParseConditionalStatementNode(),
-                IdentifierToken it when it.Content == "print"  => ParsePrintStatementNode(),
-                IdentifierToken it when it.Content == "return" => ParseReturnStatementNode(),
-                IdentifierToken it when PeekToken(1) is IdentifierToken ||
-                                        PeekToken(1) is SymbolToken s && s.Symbol == "@"
-                => ParseDeclarationStatementNode(),
+                IdentifierToken("if")     => ParseConditionalStatementNode(),
+                IdentifierToken("for")    => ParseForStatementNode(),
+                IdentifierToken("print")  => ParsePrintStatementNode(),
+                IdentifierToken("return") => ParseReturnStatementNode(),
+                _ when PeekDeclaration()  => ParseDeclarationStatementNode(),
                 _ => ((Func<StatementNode>) (() => {
                     Console.WriteLine($"Dropping to naked expression parsing for {PeekToken()} {PeekToken(1)}");
                     var expressionNode = ParseExpression();
                     Expecting<SymbolToken>(t => t.Symbol == ";");
                     return expressionNode;
-                }))(),
+                }))()
             };
 
             return returnNode;
@@ -152,13 +153,41 @@ namespace ScriptCompiler.Parsing {
 
         private StatementNode ParseConditionalStatementNode() {
             Expecting<IdentifierToken>(t => t.Content == "if");
-            var condition = ParseExpression();
-            var ifBlock   = ParseCodeBlock();
+            var            condition = ParseExpression();
+            var            ifBlock   = ParseCodeBlock();
             CodeBlockNode? elseBlock = null;
             if (PeekIgnoreMatch<IdentifierToken>(t => t.Content == "else")) {
                 elseBlock = ParseCodeBlock();
             }
+
             return new IfStatementNode(condition, ifBlock, elseBlock);
+        }
+
+        private StatementNode ParseForStatementNode() {
+            // TODO: Support empty `for {` and `for condition {` ala Golang
+            Expecting<IdentifierToken>(t => t.Content == "for");
+            StatementNode? initialisation = null;
+            if (PeekToken() is SymbolToken(";")) {
+                NextToken();
+            } else if (PeekDeclaration()) {
+                initialisation = ParseDeclarationStatementNode();
+            } else {
+                initialisation = ParseExpression();
+                Expecting<SymbolToken>(s => s.Symbol == ";");
+            }
+
+            ExpressionNode? condition = null;
+            if (!PeekIgnoreMatch<SymbolToken>(s => s.Symbol == ";")) {
+                condition = ParseExpression();
+                Expecting<SymbolToken>(s => s.Symbol == ";");
+            }
+
+            ExpressionNode? update = null;
+            if (!PeekMatch<SymbolToken>(s => s.Symbol == "{")) {
+                update = ParseExpression();
+            }
+            
+            return new ForStatementNode(initialisation, condition, update, ParseCodeBlock());
         }
 
         private StatementNode ParseReturnStatementNode() {
@@ -193,7 +222,7 @@ namespace ScriptCompiler.Parsing {
 
         private ExpressionNode ParseExpressionPrecedence(Precedence precedence) {
             LexToken token      = NextToken()!;
-            var expression = GetMatchingPrefixRule(token).Rule(token);
+            var      expression = GetMatchingPrefixRule(token).Rule(token);
 
             token = PeekToken();
             while (GetMatchingInfixRule(token, precedence) != null) {
@@ -317,6 +346,14 @@ namespace ScriptCompiler.Parsing {
             Expecting<SymbolToken>(t => t.Symbol == "}");
 
             return new CodeBlockNode(statements);
+        }
+
+        /// <summary>
+        /// Returns if the next tokens look like a type definition
+        /// </summary>
+        private bool PeekDeclaration() {
+            return PeekToken() is IdentifierToken && PeekToken(1) is IdentifierToken ||
+                   PeekToken(1) is SymbolToken s && s.Symbol == "@";
         }
 
         private T Expecting<T>(Func<T, bool>? predicate = null) where T : class {

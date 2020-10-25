@@ -229,6 +229,10 @@ namespace ScriptCompiler.Parsing {
             Content = content;
         }
 
+        public void Deconstruct(out string content) {
+            content = Content;
+        }
+
         protected override string StringRepresentation() {
             return Content;
         }
@@ -239,6 +243,10 @@ namespace ScriptCompiler.Parsing {
 
         public IntegerToken(int line, int position, uint content) : base(line, position) {
             Content = content;
+        }
+
+        public void Deconstruct(out uint content) {
+            content = Content;
         }
 
         protected override string StringRepresentation() {
@@ -271,6 +279,10 @@ namespace ScriptCompiler.Parsing {
 
         public bool IsChar(char symbol) {
             return symbol.ToString() == Symbol;
+        }
+
+        public void Deconstruct(out string symbol) {
+            symbol = Symbol;
         }
 
         protected override string StringRepresentation() {
