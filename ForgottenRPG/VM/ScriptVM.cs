@@ -1,5 +1,4 @@
-﻿#define DEBUG_MEM
-using System;
+﻿using System;
 using System.Collections.Generic;
 using ForgottenRPG.Service;
 

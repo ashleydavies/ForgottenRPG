@@ -151,6 +151,8 @@ namespace ScriptCompiler.CodeGeneration {
             var startLabel = new Label(Guid.NewGuid().ToString());
             var endLabel = new Label(Guid.NewGuid().ToString());
             
+            _stackFrame = new StackFrame(_stackFrame);
+            
             // Initialise the variable
             if (node.Declaration != null) {
                 instructions.AddRange(Visit(node.Declaration as dynamic));
@@ -184,6 +186,10 @@ namespace ScriptCompiler.CodeGeneration {
             instructions.Add(new JmpInstruction(startLabel));
             instructions.Add(new LabelInstruction(endLabel));
 
+            var (newFrame, len) = _stackFrame.Purge();
+            _stackFrame         = newFrame!;
+            instructions.Add(new SubInstruction(StackPointer, len));
+            
             return instructions;
         }
 

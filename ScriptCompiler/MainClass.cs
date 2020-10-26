@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ForgottenRPG.Service;
+using ForgottenRPG.Service.Null;
 using ScriptCompiler.Parsing;
 using ForgottenRPG.VM;
 
@@ -52,24 +54,31 @@ namespace ScriptCompiler {
                 Console.WriteLine(bytecodeString);
                 Console.WriteLine($"{assembled.Count} words in total");
             } else if (args[0] == "execute") {
+                ServiceLocator.LogService = new SimpleLogger();
                 var compiled = Parser.FromFile(fileName).Compile();
-                Console.WriteLine("Compiled code:");
-                Console.WriteLine(compiled);
+                ServiceLocator.LogService.Log(LogType.Info, "Compiled code:");
+                ServiceLocator.LogService.Log(LogType.Info, compiled);
 
                 var assembled =
                     new Assembler(compiled.Split(new[] {Environment.NewLine}, StringSplitOptions.None).ToList())
                         .Compile();
                 string bytecodeString = string.Join(",", assembled);
 
-                Console.WriteLine("Assembled code:");
-                Console.WriteLine(bytecodeString);
-                Console.WriteLine($"{assembled.Count} words in total");
+                ServiceLocator.LogService.Log(LogType.Info, "Assembled code:");
+                ServiceLocator.LogService.Log(LogType.Info, bytecodeString);
+                ServiceLocator.LogService.Log(LogType.Info, $"{assembled.Count} words in total");
 
                 List<int> bytecode = bytecodeString.Split(',').Select(int.Parse).ToList();
                 new ScriptVm(bytecode).Execute();
             } else {
                 Console.WriteLine($"Unexpected argument {args[0]}");
             }
+        }
+    }
+
+    class SimpleLogger : ILogService {
+        public void Log(LogType logType, string content) {
+            Console.WriteLine($"{logType}: {content}");
         }
     }
 }

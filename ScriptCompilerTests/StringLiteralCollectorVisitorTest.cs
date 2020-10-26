@@ -4,6 +4,7 @@ using ScriptCompiler;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
+using ScriptCompiler.CodeGeneration;
 using ScriptCompiler.Visitors;
 using Xunit;
 

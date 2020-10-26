@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ForgottenRPG.Service;
 using ForgottenRPG.VM;
 
 namespace ScriptCompiler {
@@ -99,7 +100,7 @@ namespace ScriptCompiler {
         private void ProcessCodeLine(string line, string[] components) {
             switch (components[0]) {
                 case "label":
-                    Console.WriteLine("Assigning label " + components[1] + " to instruction ID " + _instructionId);
+                    ServiceLocator.LogService.Log(LogType.Info, "Assigning label " + components[1] + " to instruction ID " + _instructionId);
                     _labels[components[1]] = _instructionId.ToString();
                     break;
                 case "jmp":
