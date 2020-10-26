@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using ForgottenRPG.Service;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
@@ -141,7 +142,7 @@ namespace ScriptCompiler.Parsing {
                 IdentifierToken("return") => ParseReturnStatementNode(),
                 _ when PeekDeclaration()  => ParseDeclarationStatementNode(),
                 _ => ((Func<StatementNode>) (() => {
-                    Console.WriteLine($"Dropping to naked expression parsing for {PeekToken()} {PeekToken(1)}");
+                    ServiceLocator.LogService.Log(LogType.Info, $"Dropping to naked expression parsing for {PeekToken()} {PeekToken(1)}");
                     var expressionNode = ParseExpression();
                     Expecting<SymbolToken>(t => t.Symbol == ";");
                     return expressionNode;

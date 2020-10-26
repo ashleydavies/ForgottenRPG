@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using ScriptCompiler.AST.Statements.Expressions;
+using ScriptCompiler.Visitors;
 
-namespace ScriptCompiler.Visitors {
+namespace ScriptCompiler.CodeGeneration {
     public class StringCollectorVisitor : EverythingVisitor<List<string>> {
         protected override List<string> Base() {
             return new List<string>();
