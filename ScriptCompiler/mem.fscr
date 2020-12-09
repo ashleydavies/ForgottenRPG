@@ -3,10 +3,10 @@
 // mallocStatus (mallocBase - 1) -> whether malloc is initialised or not
 // mallocHead   (mallocBase - 2) -> state of malloc 'head'  (i.e. first page that has never been allocated)
 func int @malloc(int size) {
-    int @mallocBase   = 2147483648;
-    int @mallocStatus = mallocBase - 1;
-    int @mallocHead   = mallocBase - 2;
-    int pageLength    = 1024;
+    static int @mallocBase   = 2147483648;
+    static int @mallocStatus = mallocBase - 1;
+    static int @mallocHead   = mallocBase - 2;
+    static int pageLength    = 1024;
     
     if !mallocStatus == 0 {
         print "Malloc initialisation in progress";

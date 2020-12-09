@@ -13,29 +13,44 @@ namespace ForgottenRPG.VM {
         private readonly Stack<int> _stack;
         private readonly Dictionary<uint, IMemoryPage> _memory = new Dictionary<uint, IMemoryPage>();
         private readonly uint _stackPointerBase;
+        private uint _maxExecutionAddress;
         public Action<string> PrintMethod { get; set; } = s => ServiceLocator.LogService.Log(LogType.Info, "VM : " + s);
 
         public ScriptVm(List<int> bytes) {
             _bytes = bytes;
             // Copy the bytes to memory
-            List<MemoryPage> instructionPages = new List<MemoryPage>();
-            for (uint i = 0; i < bytes.Count; i++) {
-                uint page   = i / MemoryPage.PageSize;
-                uint offset = i % MemoryPage.PageSize;
+            var  allPreloadedPages = new List<MemoryPage>();
+            // Subset of allPreloadedPages; just instruction-related ones
+            var  instructionPages  = new List<MemoryPage>();
+            uint addr              = 0;
+            for (uint i = 0; i < bytes.Count; i++, addr++) {
+                // Special case: if we are the last byte of the static section, we do a page jump
+                if (i == bytes[1]) {
+                    addr += (MemoryPage.PageSize - addr % MemoryPage.PageSize) % MemoryPage.PageSize;
+                }
+
+                uint page   = addr / MemoryPage.PageSize;
+                uint offset = addr % MemoryPage.PageSize;
 
                 if (!_memory.ContainsKey(page)) {
                     var memoryPage = new MemoryPage();
                     _memory[page] = memoryPage;
-                    instructionPages.Add(memoryPage);
+                    allPreloadedPages.Add(memoryPage);
+
+                    if (addr > bytes[1]) {
+                        instructionPages.Add(memoryPage);
+                    }
                 }
 
                 _memory[page].WriteAddress(offset, bytes[(int) i]);
             }
 
+            _maxExecutionAddress = addr;
+
             // Lock the pages for writing so programs can't overwrite instruction data
             instructionPages.ForEach(x => x.Lock());
 
-            _stackPointerBase = (uint) instructionPages.Count * MemoryPage.PageSize;
+            _stackPointerBase = (uint) allPreloadedPages.Count * MemoryPage.PageSize;
             _registers = new Dictionary<int, int> {
                 [InstructionRegister]  = bytes[0],
                 [StackPointerRegister] = (int) _stackPointerBase
@@ -46,7 +61,7 @@ namespace ForgottenRPG.VM {
         }
 
         public void Execute() {
-            while (_registers[InstructionRegister] >= 0 && _registers[InstructionRegister] < _bytes.Count) {
+            while (_registers[InstructionRegister] >= 0 && _registers[InstructionRegister] < _maxExecutionAddress) {
                 ExecuteInstruction();
             }
         }
@@ -196,7 +211,7 @@ namespace ForgottenRPG.VM {
             }
         }
 
-        private void IncrementIr() => _registers[InstructionRegister] += 1;
+        private void        IncrementIr()     => _registers[InstructionRegister] += 1;
         private Instruction ReadInstruction() => (Instruction) ReadInstructionByte();
 
         private int ReadInstructionByte() {
@@ -205,10 +220,10 @@ namespace ForgottenRPG.VM {
             return data;
         }
 
-        private int PeekInstructionByte() => ReadMemory(_registers[InstructionRegister]);
-        private void PushStack(int data) => _stack.Push(data);
-        private int PeekStack() => _stack.Peek();
-        private int PopStack() => _stack.Pop();
+        private int  PeekInstructionByte() => ReadMemory(_registers[InstructionRegister]);
+        private void PushStack(int data)   => _stack.Push(data);
+        private int  PeekStack()           => _stack.Peek();
+        private int  PopStack()            => _stack.Pop();
 
         private int ReadMemory(int sindex) {
             // Treat memory addresses as unsigned integers
@@ -221,16 +236,16 @@ namespace ForgottenRPG.VM {
                 _maxMem = Math.Max(_maxMem, (uint) _registers[StackPointerRegister]);
                 var output = "";
                 for (uint i = _stackPointerBase; i <= _maxMem; i++) {
-                    var (pN, oN) =  GetPageAndOffset(i);
+                    var (pN, oN) = GetPageAndOffset(i);
                     var sep = ":";
                     if (_registers[StackPointerRegister] == i) sep = "=";
-                    output       += $"{i}{sep} {_memory[pN]?.ReadAddress(oN) ?? 0}; ";
+                    output += $"{i}{sep} {_memory[pN]?.ReadAddress(oN) ?? 0}; ";
                 }
 
                 Console.WriteLine(output);
             }
 #endif
-    
+
             return _memory[page].ReadAddress(offset);
         }
 
@@ -247,10 +262,10 @@ namespace ForgottenRPG.VM {
             _maxMem = Math.Max(_maxMem, (uint) _registers[StackPointerRegister]);
             var output = "";
             for (uint i = _stackPointerBase; i <= _maxMem; i++) {
-                var (pN, oN) =  GetPageAndOffset(i);
+                var (pN, oN) = GetPageAndOffset(i);
                 var sep = ":";
                 if (_registers[StackPointerRegister] == i) sep = "=";
-                output       += $"{i}{sep} {_memory[pN]?.ReadAddress(oN) ?? 0}; ";
+                output += $"{i}{sep} {_memory[pN]?.ReadAddress(oN) ?? 0}; ";
             }
 
             Console.WriteLine(output);

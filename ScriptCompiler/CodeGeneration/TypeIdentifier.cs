@@ -31,7 +31,7 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public SType Visit(VariableAccessNode node) {
-            var (type, _) = _stackFrame.Lookup(node.Identifier);
+            var (type, _, _) = _stackFrame.Lookup(node.Identifier);
             return type;
         }
 

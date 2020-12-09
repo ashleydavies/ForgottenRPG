@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using ForgottenRPG.Service;
 using ForgottenRPG.VM;
@@ -8,27 +9,37 @@ namespace ScriptCompiler {
     internal enum AssemblyContext {
         Null,
         Data,
+        Static,
         Text
     }
-    
+
     public class Assembler {
+        // Hardcoded constant strings etc begin at index 2, as index 0 contains a pointer to the start of executable code
+        // and index 1 contains the length of the space allocated to storing static variable values.
+        private const int UserDataOffset = 2;
+
         private int _instructionId;
-        private List<string> _lines;
+        private readonly List<string> _lines;
         private List<string> _instructions;
-        private List<string> _userData;
-        // Hardcoded constant strings etc begin at index 1, as index 0 contains a pointer to the start of executable code
-        private int _userDataNextIndex = 1;
-        private Dictionary<string, int> _userDataIndexes;
+        private readonly List<int> _userData;
+        // The start position of the next user data (used since we need to e.g. skip remainder of a page after statics)
+        private int _nextDataIndex;
+        // Required to calculate where the page break goes
+        private int _staticLength;
+
         private AssemblyContext _context = AssemblyContext.Null;
+
+        // Technically static variables are a subset of user data for the purposes of assembling so we use the same map
+        private readonly Dictionary<string, int> _userDataIndexes;
         private readonly Dictionary<string, string> _labels;
 
         public Assembler(List<string> lines) {
-            _lines = lines;
-            _instructionId = 0;
-            _instructions = new List<string>();
-            _userData = new List<string>();
+            _lines           = lines;
+            _instructionId   = 0;
+            _instructions    = new List<string>();
+            _userData        = new List<int>();
             _userDataIndexes = new Dictionary<string, int>();
-            _labels = new Dictionary<string, string>();
+            _labels          = new Dictionary<string, string>();
         }
 
         public List<string> Compile() {
@@ -49,7 +60,7 @@ namespace ScriptCompiler {
                     _lines[i] = _lines[i].Substring(0, _lines[i].IndexOf('#')).Trim();
                 }
             }
-            
+
             foreach (string line in _lines) {
                 if (line.Length == 0) continue;
                 string[] components = line.Split(' ').Select(x => x.ToLower()).ToArray();
@@ -71,6 +82,7 @@ namespace ScriptCompiler {
 
                 if (_context == AssemblyContext.Text) ProcessCodeLine(line, components);
                 else if (_context == AssemblyContext.Data) ProcessDataLine(line, components);
+                else if (_context == AssemblyContext.Static) ProcessStaticLine(line, components);
             }
         }
 
@@ -86,13 +98,25 @@ namespace ScriptCompiler {
                             return true;
                         }).ToArray()
                     );
-                    
+
                     contents = contents.Replace("\\n", "\n");
 
-                    _userDataIndexes[components[1]] = _userDataNextIndex;
-                    // Bump the next index to include this string and an initial length integer which precedes all arrays
-                    _userDataNextIndex += contents.Length + 1;
-                    _userData.Add(contents);
+                    _userDataIndexes[components[1]] =  _nextDataIndex;
+                    _nextDataIndex                  += contents.Length + 1;
+                    _userData.Add(contents.Length);
+                    _userData.AddRange(contents.ToCharArray().Select(Convert.ToInt32));
+                    break;
+            }
+        }
+
+        private void ProcessStaticLine(string line, string[] components) {
+            switch (components[0]) {
+                case "static":
+                    // The value is stored as a comma-separated int array
+                    // e.g. STATIC $stc_... 0,0,0,0 => $stc_... = 0,0,0,0
+                    List<int> initialValue = components[2].Split(",").Select(int.Parse).ToList();
+                    _userData.AddRange(initialValue);
+                    _userDataIndexes[components[1]] = _userData.Count + UserDataOffset;
                     break;
             }
         }
@@ -100,7 +124,9 @@ namespace ScriptCompiler {
         private void ProcessCodeLine(string line, string[] components) {
             switch (components[0]) {
                 case "label":
-                    ServiceLocator.LogService.Log(LogType.Info, "Assigning label " + components[1] + " to instruction ID " + _instructionId);
+                    ServiceLocator.LogService.Log(LogType.Info,
+                                                  "Assigning label " + components[1] + " to instruction ID " +
+                                                  _instructionId);
                     _labels[components[1]] = _instructionId.ToString();
                     break;
                 case "jmp":
@@ -198,11 +224,19 @@ namespace ScriptCompiler {
 
         private void SwitchContext(string contextString) {
             switch (contextString) {
-                case "text":
-                    _context = AssemblyContext.Text;
+                case "static":
+                    _context = AssemblyContext.Static;
                     break;
                 case "data":
-                    _context = AssemblyContext.Data;
+                    // We should have just finished the static section
+                    _staticLength = _userData.Count;
+                    int staticPages  = (int)Math.Ceiling((_staticLength + UserDataOffset) / (double)MemoryPage.PageSize);
+                    // Start the data at the beginning of the next page (since we want it to be immutable)
+                    _nextDataIndex = staticPages * (int)MemoryPage.PageSize;
+                    _context      = AssemblyContext.Data;
+                    break;
+                case "text":
+                    _context = AssemblyContext.Text;
                     break;
                 default:
                     Console.WriteLine($"Unknown context type '{contextString}'");
@@ -212,25 +246,29 @@ namespace ScriptCompiler {
 
         private void Postprocess() {
             // As entry 0 will be the initial instruction register value
-            int codeOffset = 1;
-            
-            List<int> userDataPointers = new List<int>();
-            
+            int codeOffset = _nextDataIndex;
+
             List<string> newInstructions = new List<string>();
+            newInstructions.AddRange(_userData.Select(x => x.ToString()));
+
+            /*
+             * The thing left to fix is that anything referring to memory addresses after the 'break' after static
+             * variables are left referring to a position that is not taking into account that the break is inserted.
+             * We need to do some "virtual virtual" address translation prior to output so that we can account for
+             * issues like this.
+             */
             
-            foreach (string userData in _userData) {
-                userDataPointers.Add(codeOffset);
-                codeOffset += 1 + userData.Length;
-                newInstructions.Add(userData.Length.ToString());
-                newInstructions.Add(string.Join(",", userData.ToCharArray().Select(Convert.ToInt32)));
-            }
             
             newInstructions.Insert(0, codeOffset.ToString());
+            // This points to the end of the static section, at which point a "page break" needs inserting by the VM
+            newInstructions.Insert(1, (_staticLength + UserDataOffset).ToString());
             newInstructions.AddRange(_instructions);
-            
+
             _instructions = newInstructions
-                .Select(x => x.StartsWith("RESOLVELABEL") ? $"{int.Parse(_labels[x.Substring(12)]) + codeOffset}" : x)
-                .ToList();
+                            .Select(x => x.StartsWith("RESOLVELABEL")
+                                        ? $"{int.Parse(_labels[x.Substring(12)]) + codeOffset}"
+                                        : x)
+                            .ToList();
         }
 
         private void ArithmeticOp(ScriptVm.Instruction instruction, string comp1, string comp2) {
@@ -271,7 +309,7 @@ namespace ScriptCompiler {
                 Console.WriteLine("Register reference should begin with r");
                 return "RFAIL";
             }
-            
+
             // TODO lint to make sure it's a valid number
             return registerString.Substring(1);
         }
@@ -289,6 +327,5 @@ namespace ScriptCompiler {
         private string ConvertInstruction(ScriptVm.Instruction instruction) {
             return ((int) instruction).ToString();
         }
-        
     }
 }
