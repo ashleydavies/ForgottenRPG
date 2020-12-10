@@ -20,8 +20,8 @@ namespace ScriptCompiler.Parsing {
 
             public InfixParseRule(Predicate<LexToken> predicate, Func<LexToken, ExpressionNode, ExpressionNode> rule,
                                   Precedence precedence) {
-                Predicate  = predicate;
-                Rule       = rule;
+                Predicate = predicate;
+                Rule = rule;
                 Precedence = precedence;
             }
         }
@@ -32,7 +32,7 @@ namespace ScriptCompiler.Parsing {
 
             public PrefixParseRule(Predicate<LexToken> predicate, Func<LexToken, ExpressionNode> rule) {
                 Predicate = predicate;
-                Rule      = rule;
+                Rule = rule;
             }
         }
 
@@ -51,7 +51,7 @@ namespace ScriptCompiler.Parsing {
 
         public Parser(string contents) {
             _contents = contents;
-            _lexer    = new Lexer(_contents);
+            _lexer = new Lexer(_contents);
 
             _prefixExpressionParseTable = new List<PrefixParseRule> {
                 new PrefixParseRule(t => t is IntegerToken, t => new IntegerLiteralNode(((IntegerToken) t).Content)),
@@ -101,10 +101,10 @@ namespace ScriptCompiler.Parsing {
         }
 
         private ProgramNode ParseProgram() {
-            var structs          = new List<StructNode>();
-            var functions        = new List<FunctionNode>();
-            var statements       = new List<StatementNode>();
-            var imports          = new List<ImportNode>();
+            var structs = new List<StructNode>();
+            var functions = new List<FunctionNode>();
+            var statements = new List<StatementNode>();
+            var imports = new List<ImportNode>();
             var importProcessing = true;
 
             while (_cachedTokens.Count > 0 || _lexer.HasMore() && PeekToken() != null) {
@@ -142,7 +142,8 @@ namespace ScriptCompiler.Parsing {
                 IdentifierToken("return") => ParseReturnStatementNode(),
                 _ when PeekDeclaration()  => ParseDeclarationStatementNode(),
                 _ => ((Func<StatementNode>) (() => {
-                    ServiceLocator.LogService.Log(LogType.Info, $"Dropping to naked expression parsing for {PeekToken()} {PeekToken(1)}");
+                    ServiceLocator.LogService.Log(LogType.Info,
+                                                  $"Dropping to naked expression parsing for {PeekToken()} {PeekToken(1)}");
                     var expressionNode = ParseExpression();
                     Expecting<SymbolToken>(t => t.Symbol == ";");
                     return expressionNode;
@@ -154,8 +155,8 @@ namespace ScriptCompiler.Parsing {
 
         private StatementNode ParseConditionalStatementNode() {
             Expecting<IdentifierToken>(t => t.Content == "if");
-            var            condition = ParseExpression();
-            var            ifBlock   = ParseCodeBlock();
+            var condition = ParseExpression();
+            var ifBlock = ParseCodeBlock();
             CodeBlockNode? elseBlock = null;
             if (PeekIgnoreMatch<IdentifierToken>(t => t.Content == "else")) {
                 elseBlock = ParseCodeBlock();
@@ -187,7 +188,7 @@ namespace ScriptCompiler.Parsing {
             if (!PeekMatch<SymbolToken>(s => s.Symbol == "{")) {
                 update = ParseExpression();
             }
-            
+
             return new ForStatementNode(initialisation, condition, update, ParseCodeBlock());
         }
 
@@ -199,7 +200,14 @@ namespace ScriptCompiler.Parsing {
         }
 
         private DeclarationStatementNode ParseDeclarationStatementNode() {
-            var identifier   = Expecting<IdentifierToken>().Content;
+            var identifier = Expecting<IdentifierToken>().Content;
+            var isStatic = false;
+            // Parse modifiers like static
+            if (identifier == "static") {
+                isStatic = true;
+                identifier = Expecting<IdentifierToken>().Content;
+            }
+
             var pointerDepth = 0;
             while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) pointerDepth++;
             var typeNode = new ExplicitTypeNode(identifier, pointerDepth);
@@ -210,11 +218,11 @@ namespace ScriptCompiler.Parsing {
             if (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "=")) {
                 ExpressionNode initialVal = ParseExpression();
                 Expecting<SymbolToken>(t => t.Symbol == ";");
-                return new DeclarationStatementNode(typeNode, variableIdentifier, initialVal);
+                return new DeclarationStatementNode(typeNode, variableIdentifier, isStatic, initialVal);
             }
 
             Expecting<SymbolToken>(t => t.Symbol == ";");
-            return new DeclarationStatementNode(typeNode, variableIdentifier);
+            return new DeclarationStatementNode(typeNode, variableIdentifier, isStatic);
         }
 
         private ExpressionNode ParseExpression() {
@@ -222,13 +230,13 @@ namespace ScriptCompiler.Parsing {
         }
 
         private ExpressionNode ParseExpressionPrecedence(Precedence precedence) {
-            LexToken token      = NextToken()!;
-            var      expression = GetMatchingPrefixRule(token).Rule(token);
+            LexToken token = NextToken()!;
+            var expression = GetMatchingPrefixRule(token).Rule(token);
 
             token = PeekToken();
             while (GetMatchingInfixRule(token, precedence) != null) {
                 expression = GetMatchingInfixRule(token, precedence).Rule(NextToken()!, expression);
-                token      = PeekToken();
+                token = PeekToken();
             }
 
             return expression;
@@ -312,7 +320,7 @@ namespace ScriptCompiler.Parsing {
 
         private FunctionNode ParseFunctionNode() {
             Expecting<IdentifierToken>(t => t.Content == "func");
-            var typeToken    = Expecting<IdentifierToken>();
+            var typeToken = Expecting<IdentifierToken>();
             int pointerDepth = 0;
             while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) pointerDepth++;
 

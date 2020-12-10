@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
+using ForgottenRPG.VM;
 using ScriptCompiler.AST;
 using ScriptCompiler.CodeGeneration.Assembly;
 using ScriptCompiler.CodeGeneration.Assembly.Instructions;
@@ -15,6 +18,7 @@ namespace ScriptCompiler.CodeGeneration {
     /// </summary>
     public class CodeGenerator {
         private readonly FunctionTypeRepository _functionTypeRepository = new FunctionTypeRepository();
+        private readonly StaticVariableRepository _staticVariableRepository = new StaticVariableRepository();
         private readonly UserTypeRepository _userTypeRepository = new UserTypeRepository();
         private readonly Dictionary<string, StringLabel> _stringPoolAliases = new Dictionary<string, StringLabel>();
 
@@ -26,14 +30,6 @@ namespace ScriptCompiler.CodeGeneration {
             InitialiseFunctionTypeRepo(programNodes);
             InitialiseStringPool(programNodes);
 
-            // Begin data section
-            instructions.Add(Section.DataSection);
-
-            // Add strings to data section
-            foreach (var (_, stringLabel) in _stringPoolAliases) {
-                instructions.Add(new StringInstruction(stringLabel));
-            }
-
             // Begin code section
             instructions.Add(Section.CodeSection);
 
@@ -42,6 +38,7 @@ namespace ScriptCompiler.CodeGeneration {
                 new StatementBlockGenerationVisitor(
                     _functionTypeRepository,
                     _userTypeRepository,
+                    _staticVariableRepository,
                     _stringPoolAliases).VisitStatementBlock(program.StatementNodes)
             );
 
@@ -54,6 +51,21 @@ namespace ScriptCompiler.CodeGeneration {
             }
 
             instructions.Add(new LabelInstruction(Label.EndLabel));
+
+            /* Now that we have insights set up on the code by our pass above, set up and prepend the data sections */
+            // Begin data section
+            var dataSections = new List<Instruction> {Section.StaticSection};
+            // Add static variable space
+            foreach (var (staticId, initialValue) in _staticVariableRepository.Values) {
+                dataSections.Add(new StaticInstruction(new StaticLabel(staticId), initialValue));
+            }
+            // Add strings to data section
+            dataSections.Add(Section.DataSection);
+            dataSections.AddRange(from StringLabel stringLabel in _stringPoolAliases.Values
+                                 select new StringInstruction(stringLabel));
+
+            // Add data section
+            instructions.InsertRange(0, dataSections);
 
             return instructions;
         }
@@ -84,6 +96,7 @@ namespace ScriptCompiler.CodeGeneration {
             instructions.AddRange(new StatementBlockGenerationVisitor(
                                       _functionTypeRepository,
                                       _userTypeRepository,
+                                      _staticVariableRepository,
                                       _stringPoolAliases,
                                       stackFrame
                                   ).VisitStatementBlock(functionNode.CodeBlock.Statements));
@@ -139,11 +152,10 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         private void InitialiseUserTypeRepo(List<ProgramNode> programNodes) {
-            Dictionary<string, StructNode> userTypeNodeMapping = new Dictionary<string, StructNode>();
             // TODO: Validation of no repeat names etc.
-            foreach (StructNode structNode in programNodes.SelectMany(f => f.StructNodes)) {
-                userTypeNodeMapping.Add(structNode.StructName, structNode);
-            }
+            Dictionary<string, StructNode> userTypeNodeMapping
+                = programNodes.SelectMany(f => f.StructNodes)
+                              .ToDictionary(structNode => structNode.StructName);
 
             List<string> userTypesToProcess = new List<string>(userTypeNodeMapping.Keys);
             while (userTypesToProcess.Count > 0) {

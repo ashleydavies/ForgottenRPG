@@ -53,16 +53,22 @@ namespace ScriptCompiler.CodeGeneration {
 
         public List<Instruction> Visit(VariableAccessNode node) {
             var instructions = new List<Instruction>();
-            (SType type, int offset) = _stackFrame.Lookup(node.Identifier);
+            var (type, offset, guid) = _stackFrame.Lookup(node.Identifier);
             if (Equals(type, SType.SNoType)) {
                 throw new CompileException($"Unknown variable {node.Identifier}", 0, 0);
             }
 
             // Copy the variable value onto the stack
             using var readLocation = _regManager.NewRegister();
-            instructions.Add(
-                new MovInstruction(readLocation, StackPointer).WithComment($"Begin access {node.Identifier}"));
-            instructions.Add(new AddInstruction(readLocation, offset));
+            if (offset != null) {
+                instructions.Add(
+                    new MovInstruction(readLocation, StackPointer).WithComment($"Begin access {node.Identifier}"));
+                instructions.Add(new AddInstruction(readLocation, offset));
+            } else {
+                instructions.Add(new MovInstruction(readLocation, new StaticLabel(guid.GetValueOrDefault()))
+                                     .WithComment($"Begin static access {node.Identifier}"));
+            }
+
             for (int i = 0; i < type.Length; i++) {
                 // Use that register to copy across the object
                 instructions.Add(new MemCopyInstruction(StackPointer, readLocation));

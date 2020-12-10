@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ForgottenRPG.Service;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
@@ -15,6 +16,7 @@ namespace ScriptCompiler.CodeGeneration {
     public class StatementBlockGenerationVisitor : Visitor<List<Instruction>> {
         private readonly FunctionTypeRepository _functionTypeRepository;
         private readonly UserTypeRepository _userTypeRepository;
+        private readonly StaticVariableRepository _staticVariableRepository;
         private readonly Dictionary<string, StringLabel> _stringPoolAliases;
         private readonly RegisterManager _regManager = new RegisterManager();
 
@@ -28,14 +30,16 @@ namespace ScriptCompiler.CodeGeneration {
         private TypeIdentifier TypeIdentifier => new TypeIdentifier(
             _functionTypeRepository, _userTypeRepository, _stackFrame);
 
-        public StatementBlockGenerationVisitor(FunctionTypeRepository functionTypeRepository,
+        internal StatementBlockGenerationVisitor(FunctionTypeRepository functionTypeRepository,
                                                UserTypeRepository userTypeRepository,
+                                               StaticVariableRepository staticVariableRepository,
                                                Dictionary<string, StringLabel> stringPoolAliases,
                                                StackFrame? stackFrame = null) {
-            _functionTypeRepository = functionTypeRepository;
-            _userTypeRepository     = userTypeRepository;
-            _stringPoolAliases      = stringPoolAliases;
-            _stackFrame             = stackFrame ?? new StackFrame();
+            _functionTypeRepository   = functionTypeRepository;
+            _userTypeRepository       = userTypeRepository;
+            _staticVariableRepository = staticVariableRepository;
+            _stringPoolAliases        = stringPoolAliases;
+            _stackFrame               = stackFrame ?? new StackFrame();
         }
 
         public List<Instruction> VisitStatementBlock(List<StatementNode> statements) {
@@ -47,9 +51,7 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public List<Instruction> Visit(DeclarationStatementNode node) {
-            var instructions = new List<Instruction>();
-
-            if (_stackFrame.ExistsLocalScope(node.Identifier)) {
+            if (_stackFrame.ExistsLocalAny(node.Identifier)) {
                 // TODO: Add line and col numbers (as well as other debug info) to all nodes, and report correctly here
                 throw new CompileException($"Attempt to redefine identifier {node.Identifier}", 0, 0);
             }
@@ -59,6 +61,17 @@ namespace ScriptCompiler.CodeGeneration {
                 throw new CompileException($"Unable to discern type from {node.TypeNode}", 0, 0);
             }
 
+            var instructions = new List<Instruction>();
+
+            if (node.Static) {
+                ServiceLocator.LogService.Log(LogType.Info, $"Variable {node.Identifier} is static");
+                // TODO: Constexpr support and dynamic runtime setup?
+                var initialValue = new int[type.Length];
+                _stackFrame.AddStaticIdentifier(type, node.Identifier, _staticVariableRepository.CreateNew(initialValue));
+                
+                return instructions;
+            }
+            
             _stackFrame.AddIdentifier(type, node.Identifier);
             // Adjust stack pointer
             instructions.Add(new AddInstruction(StackPointer, type.Length)
@@ -197,7 +210,8 @@ namespace ScriptCompiler.CodeGeneration {
             var instructions = ExpressionGenerator.Generate(node.Expression);
 
             // Copy the result over to the return position
-            var (type, offset) = _stackFrame.Lookup(StackFrame.ReturnIdentifier);
+            // We know this will be offset rather than guid since it's not a static
+            var (type, offset, _) = _stackFrame.Lookup(StackFrame.ReturnIdentifier);
 
             using var copyRegister = _regManager.NewRegister();
             // Ret1 | Ret2 | Ret3 | Stk1 | Stk2 | Stk3 | Res1 | Res2 | Res3 | 0
@@ -205,7 +219,7 @@ namespace ScriptCompiler.CodeGeneration {
             // ^ StackPointer + offset
             //                       ^ StackPointer + offset + type.Length
             instructions.Add(new MovInstruction(copyRegister, StackPointer));
-            instructions.Add(new AddInstruction(copyRegister, offset + type.Length));
+            instructions.Add(new AddInstruction(copyRegister, offset.GetValueOrDefault() + type.Length));
 
             for (int i = 0; i < type.Length; i++) {
                 instructions.Add(new SubInstruction(StackPointer, 1));
