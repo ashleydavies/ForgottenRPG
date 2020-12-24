@@ -5,6 +5,7 @@ using System.Linq;
 using ScriptCompiler;
 using ScriptCompiler.Parsing;
 using ForgottenRPG.VM;
+using Microsoft.VisualBasic;
 using NUnit.Framework;
 using Xunit;
 using Assert = Xunit.Assert;
@@ -228,6 +229,18 @@ print b.mana;");
                 }
             }
             CollectionAssert.AreEqual(expected, _output);
+        }
+
+        [Fact]
+        public void CanDoLoopsWithVariablesWithin() {
+            ExecuteCode("for int i = 0; i < 3; i = i + 1 { int k = 5; print k + i; }");
+            CollectionAssert.AreEqual(new List<string>{"5", "6", "7"}, _output);
+        }
+
+        [Fact]
+        public void CanDoStaticVariables() {
+            ExecuteCode("func void iter() { static int x = 0; print (x = x + 1); } iter(); iter(); iter();");
+            CollectionAssert.AreEqual(new List<string>{"1", "2", "3"}, _output);
         }
 
         private void ExecuteCode(string code) {

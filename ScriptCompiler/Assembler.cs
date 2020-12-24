@@ -115,8 +115,8 @@ namespace ScriptCompiler {
                     // The value is stored as a comma-separated int array
                     // e.g. STATIC $stc_... 0,0,0,0 => $stc_... = 0,0,0,0
                     List<int> initialValue = components[2].Split(",").Select(int.Parse).ToList();
-                    _userData.AddRange(initialValue);
                     _userDataIndexes[components[1]] = _userData.Count + UserDataOffset;
+                    _userData.AddRange(initialValue);
                     break;
             }
         }

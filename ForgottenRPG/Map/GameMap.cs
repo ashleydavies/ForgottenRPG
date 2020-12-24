@@ -114,6 +114,7 @@ namespace ForgottenRPG.Map {
         }
 
         // TODO: Identify a number of candidate positions and choose the best (closest) so we can increase density
+        // Coming back just over a year later, this code is delightfully hacky given how well it actually works
         private void TryDropItem(GameCoordinate position, ItemStack item, int retries = 25) {
             if (retries == 0 || !_items.Any(i => i.position.EuclideanDistance(position) < 16)) {
                 _items.Add((item, position));
@@ -129,7 +130,7 @@ namespace ForgottenRPG.Map {
         }
     }
 
-    public struct GameMapEntitySpawnDetails {
+    public readonly struct GameMapEntitySpawnDetails {
         public readonly TileCoordinate Position;
         public readonly string EntityName;
         public readonly List<TileCoordinate> Path;
