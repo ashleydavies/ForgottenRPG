@@ -5,9 +5,9 @@ using System.Text;
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
     public class StaticInstruction : Instruction {
         private readonly StaticLabel _label;
-        private readonly int[] _initial;
+        private readonly uint[] _initial;
         
-        public StaticInstruction(StaticLabel label, int[] initial) {
+        public StaticInstruction(StaticLabel label, uint[] initial) {
             _label = label;
             _initial = initial;
         }

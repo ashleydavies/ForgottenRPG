@@ -1,25 +1,9 @@
-struct test {
-    int x;
-    int y;
-    int z;
-    string m;
-}
-
-func void test(int n) {
-    static int test_old;
-    static int test;
-    
-    if test_old == 0 {
-        test_old = 1;
-        test = 1;
+for int i = 0; i < 2; i = i + 1 {
+    for int j = 0; j < 2; j = j + 1 {
+        for int k = 0; k < 2; k = k + 1 {
+            print i;
+            print j;
+            print k;
+        }
     }
-    
-    print test;
-    int curr_test = test;
-    test = test + test_old;
-    test_old = curr_test;
-}
-
-for int i = 0; i < 10; i = i + 1 {
-    test(42);
 }

@@ -65,8 +65,13 @@ namespace ScriptCompiler.CodeGeneration {
 
             if (node.Static) {
                 ServiceLocator.LogService.Log(LogType.Info, $"Variable {node.Identifier} is static");
-                // TODO: Constexpr support and dynamic runtime setup?
-                var initialValue = new int[type.Length];
+                var initialValue = new uint[type.Length];
+                if (node.InitialValue != null && node.InitialValue is IConstExpr constExpr) {
+                    var result = constExpr.Calculate();
+                    if (result != null) {
+                        initialValue = result;
+                    }
+                }
                 _stackFrame.AddStaticIdentifier(type, node.Identifier, _staticVariableRepository.CreateNew(initialValue));
                 
                 return instructions;
@@ -163,9 +168,8 @@ namespace ScriptCompiler.CodeGeneration {
             
             var startLabel = new Label(Guid.NewGuid().ToString());
             var endLabel = new Label(Guid.NewGuid().ToString());
-            
-            _stackFrame = new StackFrame(_stackFrame);
-            
+
+            NewStackFrame();
             // Initialise the variable
             if (node.Declaration != null) {
                 instructions.AddRange(Visit(node.Declaration as dynamic));
@@ -189,7 +193,9 @@ namespace ScriptCompiler.CodeGeneration {
                 instructions.Add(new JmpEqInstruction(endLabel));
             }
             
+            NewStackFrame();
             instructions.AddRange(VisitStatementBlock(node.Block.Statements));
+            PopStackFrame(instructions);
 
             if (node.Update != null) {
                 instructions.AddRange(ExpressionGenerator.Generate(node.Update));
@@ -198,12 +204,18 @@ namespace ScriptCompiler.CodeGeneration {
             
             instructions.Add(new JmpInstruction(startLabel));
             instructions.Add(new LabelInstruction(endLabel));
+            PopStackFrame(instructions);
+            return instructions;
+        }
 
+        private void PopStackFrame(List<Instruction> instructions) {
             var (newFrame, len) = _stackFrame.Purge();
             _stackFrame         = newFrame!;
             instructions.Add(new SubInstruction(StackPointer, len));
-            
-            return instructions;
+        }
+
+        private StackFrame NewStackFrame() {
+            return _stackFrame = new StackFrame(_stackFrame);
         }
 
         public List<Instruction> Visit(ReturnStatementNode node) {

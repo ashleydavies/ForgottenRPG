@@ -13,7 +13,7 @@ namespace ForgottenRPG.VM {
         private readonly Stack<int> _stack;
         private readonly Dictionary<uint, IMemoryPage> _memory = new Dictionary<uint, IMemoryPage>();
         private readonly uint _stackPointerBase;
-        private uint _maxExecutionAddress;
+        private readonly uint _maxExecutionAddress;
         public Action<string> PrintMethod { get; set; } = s => ServiceLocator.LogService.Log(LogType.Info, "VM : " + s);
 
         public ScriptVm(List<int> bytes) {
