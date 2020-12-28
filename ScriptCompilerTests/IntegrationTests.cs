@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq;
 using ScriptCompiler;
 using ScriptCompiler.Parsing;
@@ -243,12 +244,39 @@ print b.mana;");
             CollectionAssert.AreEqual(new List<string>{"1", "2", "3"}, _output);
         }
 
+        [Fact]
+        public void CanDoInitialisedStaticVariables() {
+            ExecuteCode(@"
+static int a = 1;
+static int b = 1 + 1;
+static int c = 1 + b;
+static int d = a + b + c;
+
+print a;
+print b;
+print c;
+print d;");
+            CollectionAssert.AreEqual(new List<string>{"1", "2", "3", "6"}, _output);
+        }
+
+        [Fact]
+        public void CorrectlyHandlesNumericTypes() {
+            ExecuteCode("int x = 5; int y = 0 - 7; uint z = 10; uint a = 12; print x; print x + y; print z; print z - a;");
+            CollectionAssert.AreEqual(new List<string>{"5", "-2", "10", "4294967294"}, _output);
+        }
+
+        [Fact]
+        public void CorrectlyHandlesFloats() {
+            ExecuteCode("print (1f/32f) + (1f/16f);");
+            CollectionAssert.AreEqual(new List<string>{(3f/32f).ToString(CultureInfo.InvariantCulture)}, _output);
+        }
+
         private void ExecuteCode(string code) {
             var compiled = new Parser(code).Compile();
             var assembled =
                 new Assembler(compiled.Split(new[] {Environment.NewLine}, StringSplitOptions.None).ToList()).Compile();
             var       bytecodeString = string.Join(",", assembled);
-            List<int> bytecode       = bytecodeString.Split(',').Select(int.Parse).ToList();
+            List<uint> bytecode       = bytecodeString.Split(',').Select(uint.Parse).ToList();
             var       vm             = new ScriptVm(bytecode);
             vm.PrintMethod = str => _output.Add(str);
             vm.Execute();

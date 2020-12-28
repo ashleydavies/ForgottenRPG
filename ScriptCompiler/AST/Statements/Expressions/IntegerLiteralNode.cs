@@ -8,7 +8,7 @@ namespace ScriptCompiler.AST.Statements.Expressions {
             Value = value;
         }
 
-        public uint[] Calculate() {
+        public override uint[] Calculate(CalcContext _) {
             return new[]{Value};
         }
     }

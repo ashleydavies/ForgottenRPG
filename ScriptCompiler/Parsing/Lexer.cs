@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using static ScriptCompiler.Parsing.Consts;
@@ -123,9 +124,22 @@ namespace ScriptCompiler.Parsing {
         }
 
         private LexToken LexNumber() {
-            return new IntegerToken(_scanLine,
-                                    _scanPosition,
-                                    uint.Parse(TakeUntil(c => !IsNumber(c)).str));
+            string number = TakeUntil(c => !IsNumber(c)).str;
+            if (PeekNextChar() == 'f') {
+                SkipChar();
+                return new FloatToken(_scanLine,
+                                      _scanPosition, 
+                                      float.Parse(number));
+            }
+
+            if (PeekNextChar() == '.') {
+                number += NextChar();
+                number += TakeUntil(c => !IsNumber(c)).str;
+                if (PeekNextChar() == 'f') SkipChar();
+                return new FloatToken(_scanLine, _scanPosition, float.Parse(number));
+            }
+            
+            return new IntegerToken(_scanLine, _scanPosition, uint.Parse(number));
         }
 
         private (string str, bool terminated) TakeUntil(Predicate<char> condition) {
@@ -251,6 +265,22 @@ namespace ScriptCompiler.Parsing {
 
         protected override string StringRepresentation() {
             return Content.ToString();
+        }
+    }
+
+    public class FloatToken : LexToken {
+        public readonly float Content;
+
+        public FloatToken(int line, int position, float content) : base(line, position) {
+            Content = content;
+        }
+
+        public void Deconstruct(out float content) {
+            content = Content;
+        }
+
+        protected override string StringRepresentation() {
+            return Content.ToString(CultureInfo.InvariantCulture);
         }
     }
 

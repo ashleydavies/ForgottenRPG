@@ -69,7 +69,7 @@ namespace ForgottenRPG.Entity.Dialog {
                         if (string.IsNullOrEmpty(prompt)) prompt = "End discussion";
                         break;
                     case "code":
-                        replyActions.Add(new DialogActionCode(replyAction.Value.Split(',').Select(int.Parse).ToList()));
+                        replyActions.Add(new DialogActionCode(replyAction.Value.Split(',').Select(uint.Parse).ToList()));
                         break;
                 }
             }

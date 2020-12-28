@@ -25,14 +25,14 @@ namespace ForgottenRPG.Entity.Dialog {
     }
 
     public class DialogActionCode : DialogAction {
-        private readonly List<int> _code;
+        private readonly List<uint> _code;
 
-        public DialogActionCode(List<int> code) {
+        public DialogActionCode(List<uint> code) {
             _code = code;
         }
 
         public override void Execute(Dialog dialog) {
-            new ScriptVm(new List<int>(_code)).Execute();
+            new ScriptVm(new List<uint>(_code)).Execute();
         }
     }
 }

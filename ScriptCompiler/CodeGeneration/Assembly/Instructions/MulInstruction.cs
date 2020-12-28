@@ -1,9 +1,11 @@
+using ScriptCompiler.Types;
+
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
     public class MulInstruction : BinaryArithmeticInstruction {
-        public MulInstruction(Location toLocation, Value value) : base(toLocation, value) { }
+        public MulInstruction(Location toLocation, Value value, SType type) : base(toLocation, value, type) { }
 
         protected override string AsString() {
-            return $"MUL {ToLocation} {Value}";
+            return $"MUL{InstructionSuffix()} {ToLocation} {Value}";
         }
 
         public override bool IsNoop() {

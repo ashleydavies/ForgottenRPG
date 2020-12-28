@@ -5,5 +5,9 @@
         public VariableAccessNode(string identifier) {
             Identifier = identifier;
         }
+
+        public override uint[]? Calculate(CalcContext ctx) {
+            return !ctx.Static ? null : ctx.EvaluateVariable(Identifier);
+        }
     }
 }

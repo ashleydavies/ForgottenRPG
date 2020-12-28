@@ -1,10 +1,14 @@
-﻿namespace ScriptCompiler.Types {
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace ScriptCompiler.Types {
     public class SType {
         public static readonly SType SVoid = new SType("void", 0);
         public static readonly SType SNoType = new SType("NO TYPE");
         public static readonly SType SInteger = new SType("int");
+        public static readonly SType SUInteger = new SType("uint");
         public static readonly SType SBool = new SType("bool");
         public static readonly SType SChar = new SType("char");
+        public static readonly SType SFloat = new SType("float");
         public static readonly SType SString = new ReferenceType(SChar);
         public static readonly SType SGenericPtr = new ReferenceType(SNoType);
 
@@ -50,6 +54,10 @@
             switch (nodeTypeString) {
                 case "int":
                     return SInteger;
+                case "uint":
+                    return SUInteger;
+                case "float":
+                    return SFloat;
                 case "bool":
                     return SBool;
                 case "char":

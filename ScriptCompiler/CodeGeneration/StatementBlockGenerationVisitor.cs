@@ -64,13 +64,10 @@ namespace ScriptCompiler.CodeGeneration {
             var instructions = new List<Instruction>();
 
             if (node.Static) {
-                ServiceLocator.LogService.Log(LogType.Info, $"Variable {node.Identifier} is static");
                 var initialValue = new uint[type.Length];
-                if (node.InitialValue != null && node.InitialValue is IConstExpr constExpr) {
-                    var result = constExpr.Calculate();
-                    if (result != null) {
-                        initialValue = result;
-                    }
+                if (node.InitialValue != null) {
+                    initialValue = node.InitialValue.Calculate(new CalcContext(true, _stackFrame, _staticVariableRepository))
+                                ?? throw new CompileException("Failed to evaluate constexpr assignment", 0, 0);
                 }
                 _stackFrame.AddStaticIdentifier(type, node.Identifier, _staticVariableRepository.CreateNew(initialValue));
                 
@@ -127,6 +124,10 @@ namespace ScriptCompiler.CodeGeneration {
 
             if (ReferenceEquals(expressionType, SType.SString)) {
                 instructions.Add(new PrintInstruction(register));
+            } else if (ReferenceEquals(expressionType, SType.SUInteger)) {
+                instructions.Add(new PrintUIntInstruction(register));
+            } else if (ReferenceEquals(expressionType, SType.SFloat)) {
+                instructions.Add(new PrintFloatInstruction(register));
             } else {
                 instructions.Add(new PrintIntInstruction(register));
             }
