@@ -39,6 +39,10 @@ namespace ScriptCompiler.CodeGeneration {
             return SType.SInteger;
         }
 
+        public SType Visit(FloatLiteralNode _) {
+            return SType.SFloat;
+        }
+
         public SType Visit(StringLiteralNode _) {
             return SType.SString;
         }
@@ -50,6 +54,10 @@ namespace ScriptCompiler.CodeGeneration {
             }
 
             throw new CompileException($"Unexpected type {userType} in struct access", 0, 0);
+        }
+
+        public SType Visit(SizeOfNode node) {
+            return SType.SInteger;
         }
 
         public SType Visit(AddressOfNode node) {

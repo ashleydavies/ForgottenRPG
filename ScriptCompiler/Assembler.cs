@@ -21,7 +21,7 @@ namespace ScriptCompiler {
         private int _instructionId;
         private readonly List<string> _lines;
         private List<string> _instructions;
-        private readonly List<int> _userData;
+        private readonly List<uint> _userData;
         // The start position of the next user data (used since we need to e.g. skip remainder of a page after statics)
         private int _nextDataIndex;
         // Required to calculate where the page break goes
@@ -37,7 +37,7 @@ namespace ScriptCompiler {
             _lines           = lines;
             _instructionId   = 0;
             _instructions    = new List<string>();
-            _userData        = new List<int>();
+            _userData        = new List<uint>();
             _userDataIndexes = new Dictionary<string, int>();
             _labels          = new Dictionary<string, string>();
         }
@@ -103,8 +103,8 @@ namespace ScriptCompiler {
 
                     _userDataIndexes[components[1]] =  _nextDataIndex;
                     _nextDataIndex                  += contents.Length + 1;
-                    _userData.Add(contents.Length);
-                    _userData.AddRange(contents.ToCharArray().Select(Convert.ToInt32));
+                    _userData.Add((uint)contents.Length);
+                    _userData.AddRange(contents.ToCharArray().Select(Convert.ToUInt32));
                     break;
             }
         }
@@ -114,7 +114,7 @@ namespace ScriptCompiler {
                 case "static":
                     // The value is stored as a comma-separated int array
                     // e.g. STATIC $stc_... 0,0,0,0 => $stc_... = 0,0,0,0
-                    List<int> initialValue = components[2].Split(",").Select(int.Parse).ToList();
+                    List<uint> initialValue = components[2].Split(",").Select(uint.Parse).ToList();
                     _userDataIndexes[components[1]] = _userData.Count + UserDataOffset;
                     _userData.AddRange(initialValue);
                     break;
@@ -170,14 +170,26 @@ namespace ScriptCompiler {
                 case "add":
                     ArithmeticOp(ScriptVm.Instruction.Add, components[1], components[2]);
                     break;
+                case "addf":
+                    ArithmeticOp(ScriptVm.Instruction.Addf, components[1], components[2]);
+                    break;
                 case "sub":
                     ArithmeticOp(ScriptVm.Instruction.Sub, components[1], components[2]);
+                    break;
+                case "subf":
+                    ArithmeticOp(ScriptVm.Instruction.Subf, components[1], components[2]);
                     break;
                 case "mul":
                     ArithmeticOp(ScriptVm.Instruction.Mul, components[1], components[2]);
                     break;
+                case "mulf":
+                    ArithmeticOp(ScriptVm.Instruction.Mulf, components[1], components[2]);
+                    break;
                 case "div":
                     ArithmeticOp(ScriptVm.Instruction.Div, components[1], components[2]);
+                    break;
+                case "divf":
+                    ArithmeticOp(ScriptVm.Instruction.Divf, components[1], components[2]);
                     break;
                 case "inc":
                     HandleLoadToStack(components[1]);
@@ -202,6 +214,14 @@ namespace ScriptCompiler {
                 case "printint":
                     HandleLoadToStack(components[1]);
                     AddInstruction(ScriptVm.Instruction.PrintInt);
+                    break;
+                case "printuint":
+                    HandleLoadToStack(components[1]);
+                    AddInstruction(ScriptVm.Instruction.PrintUInt);
+                    break;
+                case "printfloat":
+                    HandleLoadToStack(components[1]);
+                    AddInstruction(ScriptVm.Instruction.PrintFloat);
                     break;
                 case "memwrite":
                     HandleLoadToStack(components[1]);
@@ -258,7 +278,6 @@ namespace ScriptCompiler {
              * issues like this.
              */
             
-            
             newInstructions.Insert(0, codeOffset.ToString());
             // This points to the end of the static section, at which point a "page break" needs inserting by the VM
             newInstructions.Insert(1, (_staticLength + UserDataOffset).ToString());
@@ -300,7 +319,9 @@ namespace ScriptCompiler {
                 AddInstruction(_userDataIndexes[source.Substring(1)].ToString());
             } else {
                 AddInstruction(ScriptVm.Instruction.Literal);
-                AddInstruction(source);
+                AddInstruction(source.StartsWith('-')
+                                   ? ((uint) int.Parse(source)).ToString()
+                                   : uint.Parse(source).ToString());
             }
         }
 

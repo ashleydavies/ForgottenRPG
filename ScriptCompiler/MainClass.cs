@@ -36,7 +36,7 @@ namespace ScriptCompiler {
 
                 Console.WriteLine(bytecodeString);
 
-                List<int> bytecode = bytecodeString.Split(',').Select(int.Parse).ToList();
+                List<uint> bytecode = bytecodeString.Split(',').Select(uint.Parse).ToList();
 
                 ScriptVm scriptVm = new ScriptVm(bytecode);
                 scriptVm.Execute();
@@ -68,7 +68,7 @@ namespace ScriptCompiler {
                 ServiceLocator.LogService.Log(LogType.Info, bytecodeString);
                 ServiceLocator.LogService.Log(LogType.Info, $"{assembled.Count} words in total");
 
-                List<int> bytecode = bytecodeString.Split(',').Select(int.Parse).ToList();
+                List<uint> bytecode = bytecodeString.Split(',').Select(uint.Parse).ToList();
                 new ScriptVm(bytecode).Execute();
             } else {
                 Console.WriteLine($"Unexpected argument {args[0]}");

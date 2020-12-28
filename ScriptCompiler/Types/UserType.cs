@@ -7,7 +7,6 @@ namespace ScriptCompiler.Types {
         private readonly List<(string name, SType type)> _fields;
         private readonly Dictionary<string, int> _fieldOffsets = new Dictionary<string, int>();
         
-
         public UserType(string name, List<(string, SType)> fields) : base(name, fields.Sum(tuple => tuple.Item2.Length)) {
             _fields = fields;
 

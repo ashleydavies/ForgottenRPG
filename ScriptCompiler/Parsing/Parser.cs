@@ -37,8 +37,8 @@ namespace ScriptCompiler.Parsing {
         }
 
         private readonly string _contents;
-        private Lexer _lexer;
-        private List<LexToken> _cachedTokens = new List<LexToken>();
+        private readonly Lexer _lexer;
+        private readonly List<LexToken> _cachedTokens = new List<LexToken>();
 
         private readonly List<PrefixParseRule> _prefixExpressionParseTable;
 
@@ -55,7 +55,10 @@ namespace ScriptCompiler.Parsing {
 
             _prefixExpressionParseTable = new List<PrefixParseRule> {
                 new PrefixParseRule(t => t is IntegerToken, t => new IntegerLiteralNode(((IntegerToken) t).Content)),
+                new PrefixParseRule(t => t is FloatToken, t => new FloatLiteralNode(((FloatToken) t).Content)),
                 new PrefixParseRule(t => t is StringToken, t => new StringLiteralNode(((StringToken) t).Content)),
+                new PrefixParseRule(t => t is IdentifierToken("sizeof"),
+                                        _ => new SizeOfNode(ParseExpressionPrecedence(Precedence.Factor))),
                 new PrefixParseRule(t => t is IdentifierToken,
                                     t => new VariableAccessNode(((IdentifierToken) t).Content)),
                 new PrefixParseRule(t => t is SymbolToken("("), _ => ParseGrouping()),

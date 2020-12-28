@@ -149,6 +149,28 @@ namespace ScriptCompiler.CodeGeneration {
             };
         }
 
+        public List<Instruction> Visit(FloatLiteralNode node) {
+            return new List<Instruction> {
+                new MemWriteInstruction(StackPointer, BitConverter.SingleToInt32Bits(node.Value)),
+                PushStack(SType.SFloat)
+            };
+        }
+
+        public List<Instruction> Visit(SizeOfNode node) {
+            // Special case for SizeOfNode: Allow type names
+            int result;
+            if (node.Arg is VariableAccessNode n && _userTypeRepository.ExistsType(n.Identifier)) {
+                result = _userTypeRepository[n.Identifier].Length;
+            } else {
+                result = TypeIdentifier.Identify(node.Arg).Length;
+            }
+
+            return new List<Instruction> {
+                new MemWriteInstruction(StackPointer, result),
+                PushStack(SType.SInteger)
+            };
+        }
+
         public List<Instruction> Visit(StringLiteralNode node) {
             if (!_stringPoolAliases.ContainsKey(node.String)) {
                 // TODO: Exception upgrade
@@ -288,27 +310,28 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public List<Instruction> Visit(AdditionNode node) {
-            return VisitArithmeticOperator(node, (left, right) => new AddInstruction(left, right));
+            return VisitArithmeticOperator(node, (t, left, right) => new AddInstruction(left, right, t));
         }
 
         public List<Instruction> Visit(SubtractionNode node) {
-            return VisitArithmeticOperator(node, (left, right) => new SubInstruction(left, right));
+            return VisitArithmeticOperator(node, (t, left, right) => new SubInstruction(left, right, t));
         }
 
         public List<Instruction> Visit(MultiplicationNode node) {
-            return VisitArithmeticOperator(node, (left, right) => new MulInstruction(left, right));
+            return VisitArithmeticOperator(node, (t, left, right) => new MulInstruction(left, right, t));
         }
 
         public List<Instruction> Visit(DivisionNode node) {
-            return VisitArithmeticOperator(node, (left, right) => new DivInstruction(left, right));
+            return VisitArithmeticOperator(node, (t, left, right) => new DivInstruction(left, right, t));
         }
 
         public List<Instruction> VisitArithmeticOperator(BinaryOperatorNode node,
-                                                         Func<Register, Register, Instruction> operationGenerator) {
+                                                         Func<SType, Register, Register, Instruction> operationGenerator) {
             var instructions = new List<Instruction>();
             var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
             instructions.AddRange(opInstructions);
-            instructions.Add(operationGenerator(left, right));
+            SType lType = TypeIdentifier.Identify(node.Left);
+            instructions.Add(operationGenerator(lType, left, right));
             instructions.Add(new MemWriteInstruction(StackPointer, left));
             instructions.Add(PushStack(SType.SInteger));
             left.Dispose();

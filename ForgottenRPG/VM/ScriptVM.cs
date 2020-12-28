@@ -1,28 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using ForgottenRPG.Service;
+using static System.BitConverter;
 
 namespace ForgottenRPG.VM {
     // Bytecode VM for a small language. 32-bit integers are the smallest atomic unit.
     public class ScriptVm {
-        private const int InstructionRegister = 0;
-        private const int StackPointerRegister = 1;
-        private readonly List<int> _bytes;
-        private readonly Dictionary<int, int> _registers;
+        private const uint InstructionRegister = 0;
+        private const uint StackPointerRegister = 1;
+        private readonly List<uint> _bytes;
+        private readonly Dictionary<uint, uint> _registers;
         private readonly Flags _flagRegister;
-        private readonly Stack<int> _stack;
+        private readonly Stack<uint> _stack;
         private readonly Dictionary<uint, IMemoryPage> _memory = new Dictionary<uint, IMemoryPage>();
         private readonly uint _stackPointerBase;
         private readonly uint _maxExecutionAddress;
         public Action<string> PrintMethod { get; set; } = s => ServiceLocator.LogService.Log(LogType.Info, "VM : " + s);
 
-        public ScriptVm(List<int> bytes) {
+        public ScriptVm(List<uint> bytes) {
             _bytes = bytes;
             // Copy the bytes to memory
-            var  allPreloadedPages = new List<MemoryPage>();
+            var allPreloadedPages = new List<MemoryPage>();
             // Subset of allPreloadedPages; just instruction-related ones
-            var  instructionPages  = new List<MemoryPage>();
-            uint addr              = 0;
+            var  instructionPages = new List<MemoryPage>();
+            uint addr             = 0;
             for (uint i = 0; i < bytes.Count; i++, addr++) {
                 // Special case: if we are the last byte of the static section, we do a page jump
                 if (i == bytes[1]) {
@@ -51,13 +53,13 @@ namespace ForgottenRPG.VM {
             instructionPages.ForEach(x => x.Lock());
 
             _stackPointerBase = (uint) allPreloadedPages.Count * MemoryPage.PageSize;
-            _registers = new Dictionary<int, int> {
+            _registers = new Dictionary<uint, uint> {
                 [InstructionRegister]  = bytes[0],
-                [StackPointerRegister] = (int) _stackPointerBase
+                [StackPointerRegister] = _stackPointerBase
             };
 
             _flagRegister = new Flags();
-            _stack        = new Stack<int>();
+            _stack        = new Stack<uint>();
         }
 
         public void Execute() {
@@ -75,7 +77,8 @@ namespace ForgottenRPG.VM {
         //
         // ¯\_(ツ)_/¯
         private void ExecuteInstruction() {
-            int a, b;
+            uint  a,  b;
+            float f1, f2;
             switch (ReadInstruction()) {
                 case Instruction.Null:
                     break;
@@ -84,31 +87,53 @@ namespace ForgottenRPG.VM {
                     break;
                 case Instruction.Add:
                     PushStack(PopStack() + PopStack());
-                    SetFlags(PeekStack());
+                    SetFlags((int) PeekStack());
+                    break;
+                case Instruction.Addf:
+                    PushStackf(PopStackf() + PopStackf());
+                    Console.WriteLine($"Added to {PeekStackf()}");
+                    SetFlags((int) PeekStackf());
                     break;
                 case Instruction.Sub:
                     b = PopStack();
                     a = PopStack();
                     PushStack(a - b);
-                    SetFlags(PeekStack());
+                    SetFlags((int) PeekStack());
+                    break;
+                case Instruction.Subf:
+                    f1 = PopStackf();
+                    f2 = PopStackf();
+                    PushStackf(f2 - f1);
+                    SetFlags(PeekStackf());
                     break;
                 case Instruction.Mul:
                     PushStack(PopStack() * PopStack());
-                    SetFlags(PeekStack());
+                    SetFlags((int) PeekStack());
+                    break;
+                case Instruction.Mulf:
+                    PushStackf(PopStackf() * PopStackf());
+                    SetFlags((int) PeekStackf());
                     break;
                 case Instruction.Div:
                     b = PopStack();
                     a = PopStack();
                     PushStack(a / b);
-                    SetFlags(PeekStack());
+                    SetFlags((int) PeekStack());
+                    break;
+                case Instruction.Divf:
+                    f1 = PopStackf();
+                    f2 = PopStackf();
+                    PushStackf(f2 / f1);
+                    Console.WriteLine($"Dividing {f2} / {f1} to {PeekStackf()}; {f2 / f1}");
+                    SetFlags(PeekStackf());
                     break;
                 case Instruction.Inc:
                     PushStack(PopStack() + 1);
-                    SetFlags(PeekStack());
+                    SetFlags((int) PeekStack());
                     break;
                 case Instruction.Dec:
                     PushStack(PopStack() - 1);
-                    SetFlags(PeekStack());
+                    SetFlags((int) PeekStack());
                     break;
                 case Instruction.FetchIntData:
                     // TODO
@@ -119,7 +144,7 @@ namespace ForgottenRPG.VM {
                 case Instruction.Cmp:
                     a = PopStack();
                     b = PopStack();
-                    SetFlags(a - b);
+                    SetFlags((int) (a - b));
                     break;
                 case Instruction.Jmp:
                     Jump(true);
@@ -153,7 +178,13 @@ namespace ForgottenRPG.VM {
                     PrintMethod(StringFromMemory(PopStack()));
                     break;
                 case Instruction.PrintInt:
+                    PrintMethod(((int) PopStack()).ToString());
+                    break;
+                case Instruction.PrintUInt:
                     PrintMethod(PopStack().ToString());
+                    break;
+                case Instruction.PrintFloat:
+                    PrintMethod(PopStackf().ToString(CultureInfo.CurrentCulture));
                     break;
                 case Instruction.MemWrite:
                     var val = PopStack();
@@ -170,12 +201,11 @@ namespace ForgottenRPG.VM {
             }
         }
 
-        private string StringFromMemory(int userDataId) {
+        private string StringFromMemory(uint userDataId) {
             // Add one as the first byte is the initial instruction register
-            int len = ReadMemory(userDataId);
-
+            var    len        = ReadMemory(userDataId);
             char[] userString = new char[len];
-            for (int i = 0; i < len; i++) {
+            for (uint i = 0; i < len; i++) {
                 userString[i] = Convert.ToChar(ReadMemory(userDataId + 1 + i));
             }
 
@@ -183,13 +213,13 @@ namespace ForgottenRPG.VM {
         }
 
         private void Jump(bool doJump) {
-            int instructionPointer = PopStack(); //ReadInstructionByte();
+            uint instructionPointer = PopStack(); //ReadInstructionByte();
             if (doJump) {
                 _registers[InstructionRegister] = instructionPointer;
             }
         }
 
-        private void SetFlags(int basedOn) {
+        private void SetFlags(float basedOn) {
             if (basedOn == 0) {
                 _flagRegister.Eq  = true;
                 _flagRegister.Gte = true;
@@ -214,20 +244,23 @@ namespace ForgottenRPG.VM {
         private void        IncrementIr()     => _registers[InstructionRegister] += 1;
         private Instruction ReadInstruction() => (Instruction) ReadInstructionByte();
 
-        private int ReadInstructionByte() {
+        private uint ReadInstructionByte() {
             var data = ReadMemory(_registers[InstructionRegister]);
             IncrementIr();
             return data;
         }
 
-        private int  PeekInstructionByte() => ReadMemory(_registers[InstructionRegister]);
-        private void PushStack(int data)   => _stack.Push(data);
-        private int  PeekStack()           => _stack.Peek();
-        private int  PopStack()            => _stack.Pop();
+        private uint  PeekInstructionByte()  => ReadMemory(_registers[InstructionRegister]);
+        private void  PushStack(uint data)   => _stack.Push(data);
+        private void  PushStackf(float data) => PushStack((uint) SingleToInt32Bits(data));
+        private uint  PeekStack()            => _stack.Peek();
+        private float PeekStackf()           => Int32BitsToSingle((int) _stack.Peek());
+        private uint  PopStack()             => _stack.Pop();
+        private float PopStackf()            => Int32BitsToSingle((int) PopStack());
 
-        private int ReadMemory(int sindex) {
+        private uint ReadMemory(uint sindex) {
             // Treat memory addresses as unsigned integers
-            var index = (uint) sindex;
+            var index = sindex;
             var (page, offset) = GetPageAndOffset(index);
             if (!_memory.ContainsKey(page)) _memory[page] = new MemoryPage();
 #if DEBUG_MEM
@@ -251,8 +284,8 @@ namespace ForgottenRPG.VM {
 
         private uint _maxMem = 0;
 
-        private void WriteMemory(int sindex, int value) {
-            var index = (uint) sindex;
+        private void WriteMemory(uint sindex, uint value) {
+            var index = sindex;
             var (page, offset) = GetPageAndOffset(index);
             if (!_memory.ContainsKey(page)) _memory[page] = new MemoryPage();
             _memory[page].WriteAddress(offset, value);
@@ -280,9 +313,13 @@ namespace ForgottenRPG.VM {
             Null,
             Literal,
             Add,
+            Addf,
             Sub,
+            Subf,
             Mul,
+            Mulf,
             Div,
+            Divf,
             Inc,
             Dec,
             StackToRegister,
@@ -299,6 +336,8 @@ namespace ForgottenRPG.VM {
             JmpLte,
             Print,
             PrintInt,
+            PrintUInt,
+            PrintFloat,
             MemWrite,
             MemRead,
         }

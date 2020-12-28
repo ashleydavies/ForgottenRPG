@@ -1,9 +1,11 @@
+using ScriptCompiler.Types;
+
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
     public class SubInstruction : BinaryArithmeticInstruction {
-        public SubInstruction(Location toLocation, Value amount) : base(toLocation, amount) { }
+        public SubInstruction(Location toLocation, Value amount, SType? type = null) : base(toLocation, amount, type) { }
 
         protected override string AsString() {
-            return $"SUB {ToLocation} {Value}";
+            return $"SUB{InstructionSuffix()} {ToLocation} {Value}";
         }
 
         public override bool IsNoop() {
