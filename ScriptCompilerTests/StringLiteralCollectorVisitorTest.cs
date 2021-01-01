@@ -20,7 +20,7 @@ namespace ScriptCompilerTests {
                         new FunctionNode("test", new ExplicitTypeNode("void"), new CodeBlockNode(
                             new List<StatementNode> {
                                 new PrintStatementNode(new StringLiteralNode("Hello, world!"))
-                            }), new List<(string type, string name)> { ("int", "x") }, null)
+                            }), new List<(string, int, string)> { ("int", 0, "x") }, null)
                     }, new List<StatementNode> {
                         new PrintStatementNode(new StringLiteralNode("Hello, world! Two"))
                     }
