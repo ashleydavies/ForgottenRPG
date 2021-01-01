@@ -123,6 +123,11 @@ namespace ScriptCompiler.CodeGeneration {
                 instructions.Add(PopStack(TypeIdentifier.Identify(expressionNode)));
             }
 
+            if (node.Function is StructAccessNode) {
+                // Method call; pop this@ pointer 
+                instructions.Add(PopStack(SType.SGenericPtr));
+            }
+
             // If there are any locals...
             if (locals.Count > 0) {
                 // Move down below return type

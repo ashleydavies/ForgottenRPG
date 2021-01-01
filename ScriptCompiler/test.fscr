@@ -5,14 +5,24 @@ struct Float {
     float x;
 }
 
+func float Float::getValue() {
+    return this->x;
+}
+
+func void Float::multiply(Float @by) {
+    this->x = this->x * by->getValue();
+}
+
 func void Float::double() {
     this->x = this->x * 2f;
 }
 
 Float @x = malloc(sizeof Float);
+Float @y = malloc(sizeof Float);
 x->x = 1.0f;
+y->x = 2.0f;
 x->double();
-x->double();
+x->multiply(y);
 x->double();
 x->double();
 print x->x;
