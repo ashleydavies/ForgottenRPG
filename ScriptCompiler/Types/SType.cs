@@ -33,7 +33,7 @@ namespace ScriptCompiler.Types {
         }
 
         public override int GetHashCode() {
-            throw new System.NotImplementedException();
+            return Name.GetHashCode();
         }
 
         /// <summary>

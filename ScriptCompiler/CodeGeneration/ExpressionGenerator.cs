@@ -81,7 +81,7 @@ namespace ScriptCompiler.CodeGeneration {
 
         public List<Instruction> Visit(FunctionCallNode node) {
             var instructions = new List<Instruction>();
-            var returnType   = _functionTypeRepository.ReturnType(node.FunctionName);
+            var returnType   = _functionTypeRepository.ReturnType(node.FunctionRef(TypeIdentifier));
 
             // ToList as we need deterministic iteration order
             var locals = _regManager.GetLocals().ToList();
@@ -93,9 +93,16 @@ namespace ScriptCompiler.CodeGeneration {
             }
 
             // Push space for the return value
-            instructions.Add(PushStack(_functionTypeRepository.ReturnType(node.FunctionName)));
+            instructions.Add(PushStack(_functionTypeRepository.ReturnType(node.FunctionRef(TypeIdentifier))));
 
             // Push the parameters
+            if (node.Function is StructAccessNode n) {
+                // Method call; push 
+                var (instructs, reg) = LValueGenerator.Generate(n.Left);
+                instructions.AddRange(instructs);
+                instructions.Add(new MemWriteInstruction(StackPointer, reg));
+                instructions.Add(PushStack(SType.SGenericPtr));
+            }
             foreach (var expressionNode in node.Args) {
                 // Our contract with Generate is they will push the result onto the stack... exactly what we want!
                 instructions.AddRange(Generate(expressionNode));
@@ -107,13 +114,18 @@ namespace ScriptCompiler.CodeGeneration {
             instructions.Add(new MemWriteInstruction(_regManager.StackPointer, returnLabel));
             // TODO: Check this logic? Make sure all stack operations make sense
             instructions.Add(new AddInstruction(_regManager.StackPointer, 1));
-            instructions.Add(new JmpInstruction(new Label($"func_{node.FunctionName}")));
+            instructions.Add(new JmpInstruction(new Label(node.AsmLabel(TypeIdentifier))));
             // The return address
             instructions.Add(new LabelInstruction(returnLabel));
             // Pop the arguments
             foreach (var expressionNode in node.Args) {
                 // Our contract with Generate is they will push the result onto the stack... exactly what we want!
                 instructions.Add(PopStack(TypeIdentifier.Identify(expressionNode)));
+            }
+
+            if (node.Function is StructAccessNode) {
+                // Method call; pop this@ pointer 
+                instructions.Add(PopStack(SType.SGenericPtr));
             }
 
             // If there are any locals...
@@ -326,7 +338,8 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public List<Instruction> VisitArithmeticOperator(BinaryOperatorNode node,
-                                                         Func<SType, Register, Register, Instruction> operationGenerator) {
+                                                         Func<SType, Register, Register, Instruction>
+                                                             operationGenerator) {
             var instructions = new List<Instruction>();
             var (opInstructions, left, right) = GenerateSingleWordBinOpSetup(node);
             instructions.AddRange(opInstructions);
