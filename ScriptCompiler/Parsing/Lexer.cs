@@ -14,7 +14,7 @@ namespace ScriptCompiler.Parsing {
         private static readonly char[] StringDelimeters = {'\'', '"'};
 
         private static readonly char[] Symbols = {
-            '+', '-', '*', '/', '=', ';',
+            '+', '-', '*', '/', '=', ';', ':',
             '<', '>', '[', ']', '{', '}',
             '(', ')', '.', ',', ADDR_CHAR, DEREF_CHAR
         };
@@ -27,7 +27,8 @@ namespace ScriptCompiler.Parsing {
             {'>', new[] {'=', '>'}},
             {'<', new[] {'=', '<'}},
             {'=', new[] {'='}},
-            {'!', new[] {'='}}
+            {'!', new[] {'='}},
+            {':', new[] {':'}},
         };
 
         private int _scanLine = 1;

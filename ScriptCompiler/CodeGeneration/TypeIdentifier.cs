@@ -27,7 +27,7 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public SType Visit(FunctionCallNode node) {
-            return _functionTypeRepository.ReturnType(node.FunctionName);
+            return _functionTypeRepository.ReturnType(node.FunctionRef(this));
         }
 
         public SType Visit(VariableAccessNode node) {

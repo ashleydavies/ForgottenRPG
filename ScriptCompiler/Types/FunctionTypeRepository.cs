@@ -2,19 +2,19 @@ using System.Collections.Generic;
 
 namespace ScriptCompiler.Types {
     public class FunctionTypeRepository {
-        private readonly Dictionary<string, (SType returnType, List<SType> @params)> repository
-            = new Dictionary<string, (SType returnType, List<SType> @params)>();
+        private readonly Dictionary<FunctionReference, (SType returnType, List<SType> @params)> _repository
+            = new();
         
-        public void Register(string name, SType returnType, List<SType> parameters) {
-            repository.Add(name, (returnType, parameters));
+        public void Register(FunctionReference reference, SType returnType, List<SType> parameters) {
+            _repository.Add(reference, (returnType, parameters));
         }
 
-        public SType ReturnType(string name) {
-            return repository[name].returnType;
+        public SType ReturnType(FunctionReference reference) {
+            return _repository[reference].returnType;
         }
 
-        public List<SType> Parameters(string name) {
-            return repository[name].@params;
+        public List<SType> Parameters(FunctionReference reference) {
+            return _repository[reference].@params;
         }
     }
 }

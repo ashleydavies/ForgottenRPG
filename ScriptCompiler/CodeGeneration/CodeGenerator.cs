@@ -76,15 +76,15 @@ namespace ScriptCompiler.CodeGeneration {
             var stackFrame      = new StackFrame();
             var registerManager = new RegisterManager();
 
-            var returnType = _functionTypeRepository.ReturnType(functionNode.Name);
+            var returnType = _functionTypeRepository.ReturnType(functionNode.Reference(_userTypeRepository));
             if (!ReferenceEquals(returnType, SType.SVoid)) {
                 stackFrame.AddIdentifier(returnType, StackFrame.ReturnIdentifier);
                 stackFrame = new StackFrame(stackFrame);
             }
 
             // Set up the stack frame for the function parameters
-            foreach (var (type, name) in functionNode.ParameterDefinitions) {
-                stackFrame.AddIdentifier(SType.FromTypeString(type, _userTypeRepository), name);
+            foreach (var (type, depth, name) in functionNode.ParameterDefinitions) {
+                stackFrame.AddIdentifier(SType.FromTypeString(type, _userTypeRepository, depth), name);
             }
 
             // The return pointer
@@ -146,7 +146,8 @@ namespace ScriptCompiler.CodeGeneration {
         private void InitialiseFunctionTypeRepo(List<ProgramNode> allProgramNodes) {
             var functionNodes = allProgramNodes.SelectMany(p => p.FunctionNodes);
             foreach (var f in functionNodes) {
-                _functionTypeRepository.Register(f.Name, f.TypeNode.GetSType(_userTypeRepository),
+                _functionTypeRepository.Register(f.Reference(_userTypeRepository),
+                                                 f.TypeNode.GetSType(_userTypeRepository),
                                                  f.ParameterTypes(_userTypeRepository));
             }
         }

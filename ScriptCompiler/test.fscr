@@ -1,7 +1,19 @@
-float x = 0.5;
-float y = 0.5f;
-float z = 1f;
-float a = 0.25f;
+import "mem";
+string word = "Hello World";
 
-print x + y + z;
-print 0.5f;
+struct Float {
+    float x;
+}
+
+func void Float::double() {
+    this->x = this->x * 2f;
+}
+
+Float @x = malloc(sizeof Float);
+x->x = 1.0f;
+x->double();
+x->double();
+x->double();
+x->double();
+print x->x;
+print word;

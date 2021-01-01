@@ -258,7 +258,7 @@ namespace ScriptCompiler.Parsing {
 
             Expecting<SymbolToken>(t => t.Symbol == ")");
 
-            return new FunctionCallNode(((VariableAccessNode) left).Identifier, @params);
+            return new FunctionCallNode(left, @params);
         }
 
         private ExpressionNode ParseBinaryExpressionNode(ExpressionNode leftSide, SymbolToken binOp) {
@@ -328,15 +328,22 @@ namespace ScriptCompiler.Parsing {
             while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) pointerDepth++;
 
             var nameToken = Expecting<IdentifierToken>();
+            IdentifierToken? objectName = null;
+            if (PeekIgnoreMatch<SymbolToken>(t => t.Symbol == "::")) {
+                objectName = nameToken;
+                nameToken = Expecting <IdentifierToken>();
+            }
             Expecting<SymbolToken>(t => t.Symbol == "(");
 
-            List<(string type, string name)> paramDefinitions = new List<(string type, string name)>();
+            var paramDefinitions = new List<(string type, int pointerDepth, string name)>();
 
             while (!PeekMatch<SymbolToken>(t => t.Symbol == ")")) {
                 // Parse parameter expression and include it in the list
                 var paramType = Expecting<IdentifierToken>();
+                int depth     = 0;
+                while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) depth++;
                 var paramName = Expecting<IdentifierToken>();
-                paramDefinitions.Add((paramType.Content, paramName.Content));
+                paramDefinitions.Add((paramType.Content, depth, paramName.Content));
                 if (PeekIgnoreMatch<SymbolToken>(t => t.Symbol == ",")) continue;
                 break;
             }
@@ -344,7 +351,7 @@ namespace ScriptCompiler.Parsing {
             Expecting<SymbolToken>(t => t.Symbol == ")");
             var block = ParseCodeBlock();
             return new FunctionNode(nameToken.Content, new ExplicitTypeNode(typeToken.Content, pointerDepth), block,
-                                    paramDefinitions);
+                                    paramDefinitions, objectName?.Content);
         }
 
         private CodeBlockNode ParseCodeBlock() {
