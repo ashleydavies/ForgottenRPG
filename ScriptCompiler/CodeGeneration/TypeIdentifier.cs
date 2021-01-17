@@ -62,7 +62,7 @@ namespace ScriptCompiler.CodeGeneration {
 
         public SType Visit(AddressOfNode node) {
             SType exprType = Identify(node.Expression);
-            return new ReferenceType(exprType);
+            return new ReferenceType(exprType.Name);
         }
 
         public SType Visit(DereferenceNode node) {
@@ -71,13 +71,17 @@ namespace ScriptCompiler.CodeGeneration {
                 throw new CompileException($"Attempt to dereference non-pointer type {exprType}", 0, 0);
             }
 
-            return refType.ContainedType;
+            return SType.FromTypeString(refType.ContainedType, _userTypeRepository);
         }
 
         public SType Visit(AssignmentNode node) {
             var valueType = Identify(node.Value);
             var destType  = Identify(node.Destination);
             if (!Equals(valueType, destType)) {
+                // TODO: Remove this hack and add casting
+                if (valueType is ReferenceType && destType is ReferenceType) {
+                    return valueType;
+                }
                 throw new CompileException($"Mismatching types in assignment (from {valueType.Name} to {destType.Name}",
                                            0, 0);
             }

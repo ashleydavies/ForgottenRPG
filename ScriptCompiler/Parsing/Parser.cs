@@ -20,8 +20,8 @@ namespace ScriptCompiler.Parsing {
 
             public InfixParseRule(Predicate<LexToken> predicate, Func<LexToken, ExpressionNode, ExpressionNode> rule,
                                   Precedence precedence) {
-                Predicate = predicate;
-                Rule = rule;
+                Predicate  = predicate;
+                Rule       = rule;
                 Precedence = precedence;
             }
         }
@@ -32,7 +32,7 @@ namespace ScriptCompiler.Parsing {
 
             public PrefixParseRule(Predicate<LexToken> predicate, Func<LexToken, ExpressionNode> rule) {
                 Predicate = predicate;
-                Rule = rule;
+                Rule      = rule;
             }
         }
 
@@ -51,14 +51,14 @@ namespace ScriptCompiler.Parsing {
 
         public Parser(string contents) {
             _contents = contents;
-            _lexer = new Lexer(_contents);
+            _lexer    = new Lexer(_contents);
 
             _prefixExpressionParseTable = new List<PrefixParseRule> {
                 new PrefixParseRule(t => t is IntegerToken, t => new IntegerLiteralNode(((IntegerToken) t).Content)),
                 new PrefixParseRule(t => t is FloatToken, t => new FloatLiteralNode(((FloatToken) t).Content)),
                 new PrefixParseRule(t => t is StringToken, t => new StringLiteralNode(((StringToken) t).Content)),
                 new PrefixParseRule(t => t is IdentifierToken("sizeof"),
-                                        _ => new SizeOfNode(ParseExpressionPrecedence(Precedence.Factor))),
+                                    _ => new SizeOfNode(ParseExpressionPrecedence(Precedence.Factor))),
                 new PrefixParseRule(t => t is IdentifierToken,
                                     t => new VariableAccessNode(((IdentifierToken) t).Content)),
                 new PrefixParseRule(t => t is SymbolToken("("), _ => ParseGrouping()),
@@ -104,10 +104,10 @@ namespace ScriptCompiler.Parsing {
         }
 
         private ProgramNode ParseProgram() {
-            var structs = new List<StructNode>();
-            var functions = new List<FunctionNode>();
-            var statements = new List<StatementNode>();
-            var imports = new List<ImportNode>();
+            var structs          = new List<StructNode>();
+            var functions        = new List<FunctionNode>();
+            var statements       = new List<StatementNode>();
+            var imports          = new List<ImportNode>();
             var importProcessing = true;
 
             while (_cachedTokens.Count > 0 || _lexer.HasMore() && PeekToken() != null) {
@@ -158,8 +158,8 @@ namespace ScriptCompiler.Parsing {
 
         private StatementNode ParseConditionalStatementNode() {
             Expecting<IdentifierToken>(t => t.Content == "if");
-            var condition = ParseExpression();
-            var ifBlock = ParseCodeBlock();
+            var            condition = ParseExpression();
+            var            ifBlock   = ParseCodeBlock();
             CodeBlockNode? elseBlock = null;
             if (PeekIgnoreMatch<IdentifierToken>(t => t.Content == "else")) {
                 elseBlock = ParseCodeBlock();
@@ -197,17 +197,22 @@ namespace ScriptCompiler.Parsing {
 
         private StatementNode ParseReturnStatementNode() {
             Expecting<IdentifierToken>(t => t.Content == "return");
-            var returnStatementNode = new ReturnStatementNode(ParseExpression());
+            ExpressionNode? node = null;
+            if (!PeekMatch<SymbolToken>(s => s.Symbol == ";")) {
+                node = ParseExpression();
+            }
+
+            var returnStatementNode = new ReturnStatementNode(node);
             Expecting<SymbolToken>(t => t.Symbol == ";");
             return returnStatementNode;
         }
 
         private DeclarationStatementNode ParseDeclarationStatementNode() {
             var identifier = Expecting<IdentifierToken>().Content;
-            var isStatic = false;
+            var isStatic   = false;
             // Parse modifiers like static
             if (identifier == "static") {
-                isStatic = true;
+                isStatic   = true;
                 identifier = Expecting<IdentifierToken>().Content;
             }
 
@@ -233,13 +238,13 @@ namespace ScriptCompiler.Parsing {
         }
 
         private ExpressionNode ParseExpressionPrecedence(Precedence precedence) {
-            LexToken token = NextToken()!;
-            var expression = GetMatchingPrefixRule(token).Rule(token);
+            LexToken token      = NextToken()!;
+            var      expression = GetMatchingPrefixRule(token).Rule(token);
 
             token = PeekToken();
             while (GetMatchingInfixRule(token, precedence) != null) {
                 expression = GetMatchingInfixRule(token, precedence).Rule(NextToken()!, expression);
-                token = PeekToken();
+                token      = PeekToken();
             }
 
             return expression;
@@ -323,16 +328,17 @@ namespace ScriptCompiler.Parsing {
 
         private FunctionNode ParseFunctionNode() {
             Expecting<IdentifierToken>(t => t.Content == "func");
-            var typeToken = Expecting<IdentifierToken>();
+            var typeToken    = Expecting<IdentifierToken>();
             int pointerDepth = 0;
             while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) pointerDepth++;
 
-            var nameToken = Expecting<IdentifierToken>();
+            var              nameToken  = Expecting<IdentifierToken>();
             IdentifierToken? objectName = null;
             if (PeekIgnoreMatch<SymbolToken>(t => t.Symbol == "::")) {
                 objectName = nameToken;
-                nameToken = Expecting <IdentifierToken>();
+                nameToken  = Expecting<IdentifierToken>();
             }
+
             Expecting<SymbolToken>(t => t.Symbol == "(");
 
             var paramDefinitions = new List<(string type, int pointerDepth, string name)>();

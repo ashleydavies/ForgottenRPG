@@ -158,11 +158,11 @@ namespace ScriptCompiler.CodeGeneration {
                 = programNodes.SelectMany(f => f.StructNodes)
                               .ToDictionary(structNode => structNode.StructName);
 
-            List<string> userTypesToProcess = new List<string>(userTypeNodeMapping.Keys);
+            var userTypesToProcess = new List<string>(userTypeNodeMapping.Keys);
             while (userTypesToProcess.Count > 0) {
                 string userType = userTypesToProcess[0];
 
-                Queue<string> dependencies = new Queue<string>();
+                var dependencies = new Queue<string>();
                 dependencies.Enqueue(userType);
                 while (dependencies.Count != 0) {
                     string next       = dependencies.Dequeue();

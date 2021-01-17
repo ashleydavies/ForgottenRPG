@@ -12,6 +12,8 @@
     <Tile id="15" name="stone" collision="0" textureXOffset="-32"/>
     <Tile id="10" name="tilledDirt" collision="0" textureXOffset="-32"/>
     <Tile id="11" name="treeAlive" collision="1" textureXOffset="-32" textureYOffset="-33"/>
-    <Tile id="19" name="treeDead" collision="1" textureXOffset="-32" textureYOffset="-33">
-    </Tile>
+    <Tile id="19" name="treeDead" collision="1" textureXOffset="-32" textureYOffset="-33"/>
+    <Tile id="120" name="wood_wall_down" collision="1" autoFloor="1" textureXOffset="-32" textureYOffset="-33"/>
+    <Tile id="134" name="wood_wall_up" collision="1" autoFloor="1" textureXOffset="-32" textureYOffset="-33"/>
+    <Tile id="148" name="wood_wall_south" collision="1" autoFloor="1" textureXOffset="-32" textureYOffset="-33"/>
 </Tiles>

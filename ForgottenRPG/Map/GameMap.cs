@@ -45,6 +45,7 @@ namespace ForgottenRPG.Map {
             Size = size;
 
             InitialisePathfindingNodes();
+            //InitialiseCompositeTiles();
         }
 
         public void SpawnEntities(EntityLoader entityLoader) {
@@ -95,6 +96,10 @@ namespace ForgottenRPG.Map {
 
                 _pathfindingNodes[x, y].Neighbors = neighbors.ToArray();
             });
+        }
+
+        private void InitialiseCompositeTiles() {
+            throw new NotImplementedException();
         }
 
         private void EachTile(Action<int, int> f) {

@@ -1,11 +1,17 @@
 using SFML.System;
 
 namespace ForgottenRPG.Util.Coordinate {
-    public class ScreenCoordinate : Coordinate {
-        public ScreenCoordinate(int x, int y) : base(x, y) { }
+    public readonly struct ScreenCoordinate {
+        public readonly int X;
+        public readonly int Y;
 
-        public ScreenCoordinate(Vector2i v) : base(v.X, v.Y) { }
-        public ScreenCoordinate(Vector2f v) : base((int) v.X, (int) v.Y) { }
+        public ScreenCoordinate(int x, int y) {
+            X = x;
+            Y = y;
+        }
+
+        public ScreenCoordinate(Vector2i v) : this(v.X, v.Y) { }
+        public ScreenCoordinate(Vector2f v) : this((int) v.X, (int) v.Y) { }
         
         public static implicit operator Vector2f(ScreenCoordinate coordinate) {
             return new Vector2f(coordinate.X, coordinate.Y);
@@ -37,6 +43,10 @@ namespace ForgottenRPG.Util.Coordinate {
 
         public bool Overlaps(ScreenCoordinate position, int width, int height) {
             return X > position.X && Y > position.Y && X < position.X + width && Y < position.Y + height;
+        }
+        
+        public override string ToString() {
+            return $"<{X}, {Y}>";
         }
     }
 }

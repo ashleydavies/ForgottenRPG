@@ -15,12 +15,14 @@ namespace ForgottenRPG.Map {
         // Instance fields
         public readonly int Id;
         public readonly string Name;
+        public readonly bool AutoFloor;
 
-        internal MapTile(int id, ISpriteable spriteable, string name, bool collideable) {
-            Id = id;
+        internal MapTile(int id, ISpriteable spriteable, string name, bool collideable, bool autoFloor) {
+            Id          = id;
             _spriteable = spriteable;
-            Name = name;
+            Name        = name;
             Collideable = collideable;
+            AutoFloor   = autoFloor;
         }
 
         public GameCoordinate TextureOffset { get; set; } = new GameCoordinate(0, 0);
@@ -37,7 +39,7 @@ namespace ForgottenRPG.Map {
 
         private class NullMapTile : MapTile {
             public NullMapTile(int id, ISpriteable spriteable, string name, bool collideable)
-                : base(id, spriteable, name, collideable) { }
+                : base(id, spriteable, name, collideable, false) { }
 
             public override void Update(float delta) { }
             public override void Draw(RenderTarget renderSurface, TileCoordinate position) { }

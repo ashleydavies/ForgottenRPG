@@ -219,28 +219,34 @@ namespace ScriptCompiler.CodeGeneration {
             return _stackFrame = new StackFrame(_stackFrame);
         }
 
+        // TODO: Actually exit from the function
         public List<Instruction> Visit(ReturnStatementNode node) {
-            var instructions = ExpressionGenerator.Generate(node.Expression);
+            var instructions = new List<Instruction>();
+            if (node.Expression != null) {
+                instructions.AddRange(ExpressionGenerator.Generate(node.Expression));
 
-            // Copy the result over to the return position
-            // We know this will be offset rather than guid since it's not a static
-            var (type, offset, _) = _stackFrame.Lookup(StackFrame.ReturnIdentifier);
 
-            using var copyRegister = _regManager.NewRegister();
-            // Ret1 | Ret2 | Ret3 | Stk1 | Stk2 | Stk3 | Res1 | Res2 | Res3 | 0
-            //                                                                ^ Initial stack pointer
-            // ^ StackPointer + offset
-            //                       ^ StackPointer + offset + type.Length
-            instructions.Add(new MovInstruction(copyRegister, StackPointer));
-            instructions.Add(new AddInstruction(copyRegister, offset.GetValueOrDefault() + type.Length));
+                // Copy the result over to the return position
+                // We know this will be offset rather than guid since it's not a static
+                var (type, offset, _) = _stackFrame.Lookup(StackFrame.ReturnIdentifier);
 
-            for (int i = 0; i < type.Length; i++) {
-                instructions.Add(new SubInstruction(StackPointer, 1));
-                instructions.Add(new SubInstruction(copyRegister, 1));
-                instructions.Add(new MemCopyInstruction(copyRegister, StackPointer));
+                using var copyRegister = _regManager.NewRegister();
+                // Ret1 | Ret2 | Ret3 | Stk1 | Stk2 | Stk3 | Res1 | Res2 | Res3 | 0
+                //                                                                ^ Initial stack pointer
+                // ^ StackPointer + offset
+                //                       ^ StackPointer + offset + type.Length
+                instructions.Add(new MovInstruction(copyRegister, StackPointer));
+                instructions.Add(new AddInstruction(copyRegister, offset.GetValueOrDefault() + type.Length));
+
+                for (int i = 0; i < type.Length; i++) {
+                    instructions.Add(new SubInstruction(StackPointer, 1));
+                    instructions.Add(new SubInstruction(copyRegister, 1));
+                    instructions.Add(new MemCopyInstruction(copyRegister, StackPointer));
+                }
+
+                _stackFrame.Popped(type);
             }
 
-            _stackFrame.Popped(type);
             return instructions;
         }
 

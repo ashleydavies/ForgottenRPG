@@ -22,7 +22,7 @@ namespace ForgottenRPG.Entity {
 
         private GameCoordinate RenderOffset => new GameCoordinate(-_sprite.TextureRect.Width / 2,
                                                                   -_sprite.TextureRect.Height + MapTile.Height / 2)
-                                               + GetComponent<MovementComponent>()?.RenderOffset;
+                                               + GetComponent<MovementComponent>()?.RenderOffset ?? 0;
 
         public bool FightMode => _manager.FightMode;
 

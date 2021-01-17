@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.0" orientation="isometric" renderorder="right-down" width="40" height="20" tilewidth="64" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="26">
+<map version="1.4" tiledversion="1.4.3" orientation="isometric" renderorder="right-down" width="40" height="20" tilewidth="64" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="26">
  <tileset firstgid="1" name="tiles" tilewidth="64" tileheight="32" spacing="1" tilecount="105" columns="7">
+  <grid orientation="isometric" width="64" height="32"/>
   <image source="../../../Image/Tiles/tiles.png" width="512" height="512"/>
+ </tileset>
+ <tileset firstgid="106" name="walls" tilewidth="64" tileheight="32" spacing="1" tilecount="105" columns="7">
+  <grid orientation="isometric" width="64" height="32"/>
+  <image source="../../../Image/Tiles/walls.png" width="512" height="512"/>
  </tileset>
  <layer id="1" name="Tile Layer 1" width="40" height="20">
   <data encoding="csv">
 2,3,8,8,15,15,8,8,8,11,8,8,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
 2,3,3,8,8,15,8,8,8,8,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
 2,2,3,3,8,15,15,8,11,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-2,2,2,3,11,8,15,8,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,2,2,2,2,2,2,
-2,2,2,3,3,8,15,15,8,3,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,8,8,8,8,3,3,2,2,2,2,2,2,
-2,2,2,2,3,8,8,15,15,8,8,3,3,2,2,2,2,2,2,2,2,2,2,2,3,3,8,3,8,8,8,8,8,3,2,2,2,2,2,2,
+2,2,2,3,11,8,15,8,8,3,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,2,2,2,2,2,2,
+2,2,2,3,3,8,15,15,8,8,134,3,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,8,8,8,8,3,3,2,2,2,2,2,2,
+2,2,2,2,120,120,120,120,15,120,148,3,3,2,2,2,2,2,2,2,2,2,2,2,3,3,8,3,8,8,8,8,8,3,2,2,2,2,2,2,
 2,2,2,2,3,8,8,8,15,8,8,8,3,3,3,2,2,2,2,2,2,2,3,3,3,8,8,11,8,8,8,8,8,3,3,2,2,2,2,2,
 2,2,2,2,3,3,8,8,8,8,15,8,8,8,3,3,3,2,2,2,2,3,3,8,8,8,8,8,8,8,15,8,8,8,3,3,2,2,2,2,
 2,2,2,2,2,3,8,8,11,8,15,15,8,8,8,8,3,3,2,2,2,3,3,11,8,8,8,3,3,15,8,8,8,8,8,8,3,2,2,2,
@@ -36,7 +41,7 @@
   </object>
  </objectgroup>
  <objectgroup id="3" name="Items">
-  <object id="23" name="iron_longsword" x="1000" y="200">
+  <object id="23" name="iron_longsword" x="1000" y="198">
    <properties>
     <property name="quantity" type="int" value="1"/>
    </properties>

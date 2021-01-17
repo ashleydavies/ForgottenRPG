@@ -2,8 +2,14 @@
 using ForgottenRPG.Map;
 
 namespace ForgottenRPG.Util.Coordinate {
-    public class TileCoordinate : Coordinate {
-        public TileCoordinate(int x, int y) : base(x, y) { }
+    public readonly struct TileCoordinate {
+        public readonly int X;
+        public readonly int Y;
+
+        public TileCoordinate(int x, int y) {
+            X = x;
+            Y = y;
+        }
 
         public static GameCoordinate IsoToCartesian(int x, int y) {
             return new GameCoordinate(
@@ -40,6 +46,10 @@ namespace ForgottenRPG.Util.Coordinate {
 
             TileCoordinate other = (TileCoordinate) obj;
             return other.X == X && other.Y == Y;
+        }
+        
+        public override string ToString() {
+            return $"<{X}, {Y}>";
         }
     }
 }

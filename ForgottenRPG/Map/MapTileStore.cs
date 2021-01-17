@@ -41,9 +41,10 @@ namespace ForgottenRPG.Map {
 
             if (tileData == null) return MapTile.Null;
 
-            var name = tileData.Attribute("name")?.Value;
+            var name      = tileData.Attribute("name")?.Value;
             var collision = tileData.Attribute("collision")?.Value == "1";
-            var complex = tileData.Attribute("textureComplex")?.Value == "1";
+            var complex   = tileData.Attribute("textureComplex")?.Value == "1";
+            var autoFloor = tileData.Attribute("autoFloor")?.Value == "1";
 
             if (name == null) return MapTile.Null;
 
@@ -62,7 +63,7 @@ namespace ForgottenRPG.Map {
                 graphic = new SpriteableWrapper(_textureStore.GetNewSprite(name));
             }
 
-            var newTile = new MapTile(id, graphic, name, collision);
+            var newTile = new MapTile(id, graphic, name, collision, autoFloor);
 
             int xOffset = 0, yOffset = 0;
 
@@ -78,6 +79,10 @@ namespace ForgottenRPG.Map {
             foreach (var keyValuePair in _mapTileDictionary) {
                 keyValuePair.Value.Update(delta);
             }
+        }
+
+        public void RegisterOrFindCompositeTile() {
+            
         }
     }
 }

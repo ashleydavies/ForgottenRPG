@@ -1,0 +1,34 @@
+import "mem";
+
+struct List {
+    ListItem @head;
+    ListItem @tail;
+}
+
+func void List::PrintAll() {
+    printR(this->head);
+}
+
+func void List::Append(int newVal) {
+    if this->head == 0 {
+        this->head = malloc(sizeof ListItem);
+        this->head->value = newVal;
+        this->tail = this->head;
+    } else {
+        this->tail->next = malloc(sizeof ListItem);
+        this->tail = this->tail->next;
+        this->tail->value = newVal;
+    }
+}
+
+func void printR(ListItem @element) {
+    if element != 0 {
+        print element->value;
+        printR(element->next);
+    }
+}
+
+struct ListItem {
+    ListItem @next;
+    int value;
+}

@@ -103,7 +103,7 @@ namespace ForgottenRPG.Service {
                 .Elements("Resolutions")
                 .Elements("NamespaceResolutions")
                 .Elements("NamespaceResolution")
-                .FirstOrDefault(elems => elems.Attribute("id").Value.Equals(id));
+                .FirstOrDefault(elems => elems.Attribute("id")?.Value?.Equals(id) ?? false);
 
             if (namespaceData == null) {
                 ServiceLocator.LogService.Log(LogType.Error, "Attempt to load namespace " + id + " failed");

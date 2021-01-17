@@ -27,7 +27,7 @@ namespace ScriptCompiler.AST {
             ParameterDefinitions = parameterDefinitions;
             ObjectName           = objectName;
             if (objectName != null) {
-                parameterDefinitions.Insert(0, (objectName, 1, "this"));
+                ParameterDefinitions.Insert(0, (new ReferenceType(objectName).Name, 1, "this"));
             }
         }
 

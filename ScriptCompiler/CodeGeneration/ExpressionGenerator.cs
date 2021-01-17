@@ -265,7 +265,7 @@ namespace ScriptCompiler.CodeGeneration {
             using var copyReg      = _regManager.NewRegister();
             instructions.Add(PopStack(SType.SGenericPtr));
             instructions.Add(new MemReadInstruction(copyReg, StackPointer));
-            var type = referenceType.ContainedType;
+            var type = SType.FromTypeString(referenceType.ContainedType, _userTypeRepository);
             for (int i = 0; i < type.Length; i++) {
                 instructions.Add(new MemCopyInstruction(StackPointer, copyReg));
                 instructions.Add(new AddInstruction(StackPointer, 1));

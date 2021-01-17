@@ -9,8 +9,8 @@ namespace ScriptCompiler.Types {
         public static readonly SType SBool = new SType("bool");
         public static readonly SType SChar = new SType("char");
         public static readonly SType SFloat = new SType("float");
-        public static readonly SType SString = new ReferenceType(SChar);
-        public static readonly SType SGenericPtr = new ReferenceType(SNoType);
+        public static readonly SType SString = new ReferenceType(SChar.Name);
+        public static readonly SType SGenericPtr = new ReferenceType(SNoType.Name);
 
         public readonly string Name;
         public readonly int Length;
@@ -40,11 +40,25 @@ namespace ScriptCompiler.Types {
         /// Returns a type from a type string (e.g. from 'int x = 5;'), returning SNoType if no type could be decided on
         /// </summary>
         public static SType FromTypeString(string nodeTypeString, UserTypeRepository utr, int pointerDepth = 0) {
+            // TODO: Fix this hack
+            if (nodeTypeString.StartsWith("@")) {
+                pointerDepth = 0;
+                while (nodeTypeString.StartsWith("@")) {
+                    nodeTypeString = nodeTypeString.Substring(1);
+                    pointerDepth++;
+                }
+            }
+
             SType type = FromTypeString(nodeTypeString, utr);
+            // If this is a pointer, set up based on the string instead of the derived type
+            if (pointerDepth > 0) {
+                pointerDepth--;
+                type = new ReferenceType(nodeTypeString);
+            }
             if (ReferenceEquals(type, SNoType)) return type;
             while (pointerDepth > 0) {
                 pointerDepth--;
-                type = new ReferenceType(type);
+                type = new ReferenceType(type.Name);
             }
 
             return type;
