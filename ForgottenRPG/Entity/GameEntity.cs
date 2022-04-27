@@ -16,7 +16,7 @@ namespace ForgottenRPG.Entity {
 
         private readonly Sprite _sprite;
         private readonly List<IComponent> _components = new List<IComponent>();
-        private EntityManager _manager;
+        private readonly EntityManager _manager;
 
         public GameCoordinate RenderPosition => (GameCoordinate) Position + RenderOffset;
 
