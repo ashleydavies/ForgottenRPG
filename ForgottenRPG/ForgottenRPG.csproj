@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp9.0</TargetFramework>
     <StartupObject>ForgottenRPG.Game</StartupObject>
-    <LangVersion>8</LangVersion>
+    <LangVersion>13</LangVersion>
     <RootNamespace>ForgottenRPG</RootNamespace>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
@@ -17,7 +17,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Data\XML\Entity\farmerJoe.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Data\XML\Entity\player.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -25,8 +25,8 @@
     <None Update="Resources\Data\XML\itemData.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Data\XML\Map\0.tmx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="Resources\Data\XML\Map\entry-peninsula.tmx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Data\XML\Map\0.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -76,11 +76,8 @@
     <None Update="Resources\Image\header.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Image\mapIcons.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="Resources\Image\Resolution.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Image\sprite_template.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -98,16 +95,22 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Image\UI\items.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Image\UI\ui.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\Image\worldmap.png">
+    <None Update="Resources\Image\UI\worldmap.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Image\UI\mapicons.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Data\XML\Map\abandoned-forest.tmx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-		<PackageReference Include="SFML.Net" Version="2.5.0" />
+		<PackageReference Include="SFML.Net" Version="2.6.1" />
   </ItemGroup>
 </Project>

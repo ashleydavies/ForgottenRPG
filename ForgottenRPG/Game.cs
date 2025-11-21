@@ -14,13 +14,12 @@ using SFML.System;
 using SFML.Window;
 
 namespace ForgottenRPG {
+    public record struct GameUtils(RenderWindow window, MapTileStore mapTileStore, ITextureStore textureStore, ItemManager itemManager) { }
     public class Game {
         private readonly DeltaClock _deltaClock;
         private readonly Stack<AbstractGameState> _gameStates;
-        private readonly MapTileStore _mapTileStore;
-        private readonly ITextureStore _textureStore;
-        private readonly ItemManager _itemManager;
         private readonly RenderWindow _window;
+        private readonly GameUtils _utils;
 
         private Game() {
             string xmlDirectory = Path.Combine("Resources", "Data", "XML");
@@ -30,11 +29,16 @@ namespace ForgottenRPG {
             _gameStates = new Stack<AbstractGameState>();
 
             _deltaClock = new DeltaClock();
-            _textureStore = new CachedFileTextureStore(Path.Combine("Resources", "Image"));
-            _mapTileStore = new MapTileStore(xmlDirectory, _textureStore);
-            _itemManager = new ItemManager(xmlDirectory, _textureStore);
+            
+            var textureStore = new CachedFileTextureStore(Path.Combine("Resources", "Image"));
+            var mapTileStore = new MapTileStore(xmlDirectory, textureStore);
+            var itemManager  = new ItemManager(xmlDirectory, textureStore);
 
-            _window = new RenderWindow(VideoMode.FullscreenModes[0], "RPG", Styles.Titlebar | Styles.Fullscreen);
+            // _window = new RenderWindow(VideoMode.DesktopMode, "RPG", Styles.Titlebar | Styles.Fullscreen);
+            _window = new RenderWindow(VideoMode.DesktopMode, "RPG");
+            
+            _utils  = new GameUtils(_window, mapTileStore, textureStore, itemManager);
+            
             Vector2f windowSize = new Vector2f(_window.Size.X, _window.Size.Y);
 
             _window.Closed += (sender, args)
@@ -45,16 +49,16 @@ namespace ForgottenRPG {
                 => _gameStates.Peek().Clicked(new ScreenCoordinate(args.X, args.Y));
 
             try {
-                SetGameState(new StateGame(this, windowSize, _textureStore, _mapTileStore, _itemManager));
+                // SetGameState(new StateGame(this, windowSize, _textureStore, _mapTileStore, _itemManager));
+                SetGameState(new WorldMapState(_utils, this, xmlDirectory));
             } catch (EntityException e) {
-                SetGameState(new ExceptionState(this, e, windowSize, _textureStore));
+                SetGameState(new ExceptionState(this, e, windowSize, _utils));
             }
 
             while (_window.IsOpen) {
-                _window.DispatchEvents();
-                _window.Clear();
-
                 try {
+                    _window.DispatchEvents();
+                    _window.Clear();
                     _gameStates.Peek().Update(_deltaClock.GetDelta());
 
                     foreach (var state in (_gameStates.ToList() as IEnumerable<AbstractGameState>).Reverse()) {
@@ -64,7 +68,7 @@ namespace ForgottenRPG {
                     break;
                 } catch (Exception e) {
                     if (_gameStates.Peek() is ExceptionState) throw;
-;                    SetGameState(new ExceptionState(this, e, windowSize, _textureStore));
+;                    SetGameState(new ExceptionState(this, e, windowSize, _utils));
                 }
 
                 _window.Display();

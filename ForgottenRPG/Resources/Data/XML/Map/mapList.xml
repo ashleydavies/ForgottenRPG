@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<maps>
-	<map name="Entry Peninsula" icon="1" mX="1080" mY="690" />
-	<map name="Abandoned Forest" icon="0" mX="1050" mY="620" />
-	<map name="Derelict Fields" icon="0" mX="830" mY="550" />
-	<map name="Kran" icon="2" mX="360" mY="550" />
-	
-	<connections>
-		<connection map1="0" map2="1" dir="north" />
-		<connection map1="1" map2="2" dir="west" />
-		<connection map1="2" map2="3" dir="west" />
-	</connections>
-</maps>
+<MapOverview>
+    <Maps>
+        <Map id="entry-peninsula" name="Entry Peninsula" icon="river" mX="1080" mY="690"/>
+        <Map id="abandoned-forest" name="Abandoned Forest" icon="forest" mX="1050" mY="620"/>
+        <Map id="derelict-fields" name="Derelict Fields" icon="forest" mX="830" mY="550"/>
+        <Map id="kran" name="Kran" icon="town" mX="360" mY="550"/>
+    </Maps>
+
+    <Connections>
+        <Connection from="entry-peninsula" to="abandoned-forest" start="north"/>
+        <Connection from="abandoned-forest" to="derelict-fields" start="west"/>
+        <Connection from="derelict-fields" to="kran" start="west"/>
+    </Connections>
+</MapOverview>

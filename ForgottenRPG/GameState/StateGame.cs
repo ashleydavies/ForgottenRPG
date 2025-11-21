@@ -34,21 +34,20 @@ namespace ForgottenRPG.GameState {
         private Vector2f _windowSize;
         private float _scale = 1;
 
-        public StateGame(Game game, Vector2f size, ITextureStore textureStore, MapTileStore mapTileStore,
-                         ItemManager itemManager) : base(game) {
+        public StateGame(Game game, GameUtils utils, string mapId, Vector2f size) : base(game) {
             _windowSize = size;
-            _textureStore = textureStore;
-            _itemManager = itemManager;
+            _textureStore = utils.textureStore;
+            _itemManager = utils.itemManager;
             _entityManager = new EntityManager(this);
             _factionManager = new FactionManager();
-            _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, _factionManager, textureStore);
-            _mapLoader = new MapLoader(Config.MapDataDirectory, mapTileStore, _itemManager);
-            _map = _mapLoader.LoadMap(0, this);
+            _entityLoader = new EntityLoader(Config.EntityDataDirectory, _entityManager, _factionManager, utils.textureStore);
+            _mapLoader = new MapLoader(Config.MapDataDirectory, utils.mapTileStore, _itemManager);
+            _map = _mapLoader.LoadMap(mapId, this);
             _map.SpawnEntities(_entityLoader);
             _clickManager.Register(ClickPriority.Entity, _entityManager);
             _clickManager.Register(ClickPriority.Map, _map);
 
-            _debugGui = new DebugGui(textureStore);
+            _debugGui = new DebugGui(utils.textureStore);
 
             _keyMappings = new Dictionary<Keyboard.Key, (bool, Action<float>)> {
                 {
@@ -59,10 +58,10 @@ namespace ForgottenRPG.GameState {
                     (true, delta => _gameCenter += new Vector2f(0, 300 * delta))
                 }, {
                     Keyboard.Key.Left,
-                    (true, delta => _gameCenter = new Vector2f(_gameCenter.X - 300 * delta, _gameCenter.Y))
+                    (true, delta => _gameCenter -= new Vector2f(600 * delta, 0))
                 }, {
                     Keyboard.Key.Right,
-                    (true, delta => _gameCenter = new Vector2f(_gameCenter.X + 300 * delta, _gameCenter.Y))
+                    (true, delta => _gameCenter += new Vector2f(600 * delta, 0))
                 }, {
                     Keyboard.Key.F, (false, _ => _entityManager.TryToggleFightMode())
                 }, {
@@ -85,22 +84,23 @@ namespace ForgottenRPG.GameState {
                       .PickupItem(new ItemStack(_itemManager.GetItem("frog_sword"), 1));
 
                 if (entity != Player) {
-                    for (int i = 0; i < 15; i++)
+                    for (int i = 0; i < 15; i++) {
                         entity.GetComponent<InventoryComponent>().Inventory
                               .PickupItem(new ItemStack(_itemManager.GetItem("iron_longsword"), 1));
+                    }
                 }
             }
 
             _gameCenter = (GameCoordinate) Player.Position;
 
-            ServiceLocator.LogService = new MultiLogService(new List<ILogService> {
+            ServiceLocator.LogService = new MultiLogService([
                 ServiceLocator.LogService,
                 new DebugGuiLogService(_debugGui)
-            });
+            ]);
         }
 
         public override void Update(float delta) {
-            foreach (Keyboard.Key key in _keyMappings.Keys) {
+            foreach (var key in _keyMappings.Keys) {
                 var pressed = Keyboard.IsKeyPressed(key);
                 if (pressed && (_keyMappings[key].repeat || _lastTime.ContainsKey(key) && !_lastTime[key])) {
                     _keyMappings[key].action(delta);

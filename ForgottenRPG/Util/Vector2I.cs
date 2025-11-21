@@ -1,4 +1,5 @@
-﻿using SFML.System;
+﻿using System;
+using SFML.System;
 
 namespace ForgottenRPG.Util {
     public class Vector2I {
@@ -9,19 +10,25 @@ namespace ForgottenRPG.Util {
             X = x;
             Y = y;
         }
-        
+
+        public double Distance(Vector2I other) {
+            return Math.Sqrt(
+                Math.Pow(other.X - X, 2) + Math.Pow(other.Y - Y, 2)
+            );
+        }
+
         public static implicit operator Vector2I(Vector2u vector2U) {
-            return new Vector2I((int) vector2U.X, (int) vector2U.Y);
+            return new Vector2I((int)vector2U.X, (int)vector2U.Y);
         }
 
         public static Vector2I operator +(Vector2I left, Vector2I right) {
             return new Vector2I(left.X + right.X, left.Y + right.Y);
         }
-        
+
         public static Vector2I operator -(Vector2I left, Vector2I right) {
             return new Vector2I(left.X - right.X, left.Y - right.Y);
         }
-        
+
         public static Vector2I operator /(Vector2I dividend, int divisor) {
             return new Vector2I(dividend.X / divisor, dividend.Y / divisor);
         }

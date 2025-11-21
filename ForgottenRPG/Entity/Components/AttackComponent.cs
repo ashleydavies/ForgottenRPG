@@ -1,4 +1,5 @@
 using ForgottenRPG.Entity.Components.Messages;
+using ForgottenRPG.Items;
 using ForgottenRPG.Service;
 
 namespace ForgottenRPG.Entity.Components {
@@ -17,7 +18,7 @@ namespace ForgottenRPG.Entity.Components {
 
             if (Entity.IsAdjacent(_target)) {
                 ServiceLocator.LogService.Log(LogType.Info, $"{Entity.Name} attacked {_target.Name}");
-                _target.SendMessage(new DamageMessage(100, Entity));
+                _target.SendMessage(new DamageMessage(ComputeDamage(), Entity));
                 SendMessage(new SkipTurnMessage());
             } else {
                 SendMessage(new DestinationMessage(_target.Position));
@@ -31,5 +32,21 @@ namespace ForgottenRPG.Entity.Components {
         public void Message(AttackMessage message) {
             _target = message.ToAttack;
         }
+
+        // TODO: This is very barebones and gross
+        private int ComputeDamage() {
+            var inventory = Entity.GetComponent<InventoryComponent>();
+            if (inventory != null) {
+                var weapon = inventory.Inventory.EquippedItem(EquipmentSlot.Primary);
+                if (weapon == null) return 0;
+                
+                switch (weapon.Item) {
+                    case MeleeWeapon mw:
+                        return mw.Damage;
+                }
+            }
+
+            return 0;
+      }
     }
 }

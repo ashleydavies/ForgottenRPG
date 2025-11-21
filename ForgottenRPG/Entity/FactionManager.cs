@@ -4,15 +4,15 @@ using ForgottenRPG.Service;
 
 namespace ForgottenRPG.Entity {
     /// <summary>
-    /// The FactionManager keeps track of the various in-game factions and their relationships with eachother
+    /// The FactionManager keeps track of the various in-game factions and their relationships with each-other
     /// </summary>
     public class FactionManager {
         public class Faction {
             public readonly string Name;
 
             private readonly int _baseRelationship;
-            private readonly Dictionary<Faction, int> _relationships = new Dictionary<Faction, int>();
-            private readonly List<GameEntity> _entities = new List<GameEntity>();
+            private readonly Dictionary<Faction, int> _relationships = new();
+            private readonly List<GameEntity> _entities = [];
 
             public Faction(string name, int baseRelationship = 0) {
                 Name = name;
@@ -61,8 +61,8 @@ namespace ForgottenRPG.Entity {
 
         public const int HostilityRelationshipValue = -1000;
 
-        private readonly Dictionary<string, Faction> _factions = new Dictionary<string, Faction>();
-        private readonly Dictionary<GameEntity, Faction> _userLookup = new Dictionary<GameEntity, Faction>();
+        private readonly Dictionary<string, Faction> _factions = new();
+        private readonly Dictionary<GameEntity, Faction> _userLookup = new();
 
         public FactionManager() {
             _factions.Add(Player, new Faction(Player));

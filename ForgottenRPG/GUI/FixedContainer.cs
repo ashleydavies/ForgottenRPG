@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ForgottenRPG.Service;
 using ForgottenRPG.Util.Coordinate;
 using SFML.Graphics;
 using SFML.System;
@@ -48,6 +49,7 @@ namespace ForgottenRPG.GUI {
         }
 
         public ScreenCoordinate ChildScreenPosition(IGuiComponent component) {
+            if (Parent == null) return new ScreenCoordinate(Top, Left);
             return Parent.ChildScreenPosition(this) + new ScreenCoordinate(Top, Left);
         }
 
@@ -56,6 +58,7 @@ namespace ForgottenRPG.GUI {
         }
 
         public override void Clicked(ScreenCoordinate coordinates) {
+            base.Clicked(coordinates);
             foreach (IGuiComponent component in _components.Where(x => x.IsMouseOver(coordinates))) {
                 component.Clicked(coordinates);
             }

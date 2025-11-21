@@ -18,7 +18,7 @@ namespace ForgottenRPG.Map {
         private readonly List<GameMapEntitySpawnDetails> _spawnPositions;
         private readonly List<(ItemStack itemStack, GameCoordinate position)> _items;
         private readonly MapTileStore _tileStore;
-        private readonly Random _random = new Random();
+        private readonly Random _random = new();
         public readonly Vector2I Size;
 
         public MapTile GetTile(TileCoordinate coordinate) => _tileStore.GetTile(TileId(coordinate));

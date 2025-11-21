@@ -12,6 +12,7 @@ namespace ForgottenRPG.Map {
         public static readonly MapTile Null = new NullMapTile(0, null, "Null Tile", false);
         private readonly ISpriteable _spriteable;
         public readonly bool Collideable;
+ 
         // Instance fields
         public readonly int Id;
         public readonly string Name;

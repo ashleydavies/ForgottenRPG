@@ -60,7 +60,7 @@ namespace ScriptCompiler {
                 ServiceLocator.LogService.Log(LogType.Info, compiled);
 
                 var assembled =
-                    new Assembler(compiled.Split(new[] {Environment.NewLine}, StringSplitOptions.None).ToList())
+                    new Assembler(compiled.Split([Environment.NewLine], StringSplitOptions.None).ToList())
                         .Compile();
                 string bytecodeString = string.Join(",", assembled);
 

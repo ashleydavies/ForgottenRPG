@@ -7,9 +7,9 @@
         </Modifiers>
     </Item>
     <Item Id="1" Name="Frog Sword" Type="MeleeWeapon" Codename="frog_sword">
-        <Description>A sword said to have been wielded by the great frog warriors of old</Description>
+        <Description>A sword said to have been wielded by the great frog warriors of old. Its damage is unmatched.</Description>
         <Modifiers>
-            <Damage>2147483647</Damage>
+            <Damage>5000</Damage>
         </Modifiers>
     </Item>
 </Items>

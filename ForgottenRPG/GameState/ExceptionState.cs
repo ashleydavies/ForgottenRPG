@@ -11,9 +11,9 @@ namespace ForgottenRPG.GameState
         private readonly GuiWindow _exceptionGuiWindow;
         private static readonly Vector2i GuiWindowSize = new Vector2i(60 * 12, 60 * 14);
 
-        public ExceptionState(Game game, Exception exception, Vector2f windowSize, ITextureStore textureStore)
+        public ExceptionState(Game game, Exception exception, Vector2f windowSize, GameUtils utils)
             : base(game) {
-            _exceptionGuiWindow = new GuiWindow(textureStore, (Vector2i) (windowSize / 2), GuiWindowSize);
+            _exceptionGuiWindow = new GuiWindow(utils.textureStore, (Vector2i) (windowSize / 2), GuiWindowSize);
 
             var contents =
                 $"EXCEPTION\n\n Type: {exception.GetType()}\n Message: {exception.Message}";

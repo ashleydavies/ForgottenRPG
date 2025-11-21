@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
@@ -21,10 +22,14 @@ namespace ForgottenRPG.Map {
             _itemManager = itemManager;
         }
 
-        public GameMap LoadMap(int id, StateGame game) {
+        public GameMap LoadMap(string id, StateGame game) {
             XDocument document;
 
-            using (FileStream fs = File.OpenRead(Path.Combine(_directory, id + ".tmx"))) document = XDocument.Load(fs);
+            string fileName = Path.Combine(_directory, id + ".tmx");
+            if (!File.Exists(fileName)) {
+                throw new ArgumentException($"Couldn't open map {fileName} as it was not found on the filesystem");
+            }
+            using (var fs = File.OpenRead(fileName)) document = XDocument.Load(fs);
 
             var map = document.Elements("map").FirstOrDefault();
             var tileLayer = map?.Elements("layer").FirstOrDefault();

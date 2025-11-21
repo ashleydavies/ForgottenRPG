@@ -36,6 +36,16 @@
             <name>items</name>
             <extension>png</extension>
         </TextureResolution>
+        
+        <TextureResolution id="6" namespace="2">
+            <name>worldmap</name>
+            <extension>png</extension>
+        </TextureResolution>
+        
+        <TextureResolution id="7" namespace="2">
+            <name>mapicons</name>
+            <extension>png</extension>
+        </TextureResolution>
     </TextureResolutions>
     
     <ImageResolutions>
@@ -195,9 +205,51 @@
         </ImageResolution>
 
         <ImageResolution id="110001" name="ui_item_frog_sword" texture="5">
-            <position x="16" y="0"/>
+            <position x="32" y="0"/>
             <size width="32" height="32"/>
         </ImageResolution>
+        
+        <ImageResolution id="150000" name="worldmap" texture="6">
+            <position x="0" y="0"/>
+            <size width="1200" height="800"/>
+        </ImageResolution>
+        
+        
+        <ImageResolution id="200000" name="map_meta_cleared" texture="7">
+            <position x="0" y="0"/>
+            <size width="32" height="32"/>
+        </ImageResolution>
+
+        <ImageResolution id="200001" name="map_meta_uncleared" texture="7">
+            <position x="0" y="32"/>
+            <size width="32" height="32"/>
+        </ImageResolution>
+
+        <ImageResolution id="200002" name="map_meta_undiscovered" texture="7">
+            <position x="0" y="64"/>
+            <size width="32" height="32"/>
+        </ImageResolution>
+
+        <ImageResolution id="200003" name="map_meta_undiscovered_2" texture="7">
+            <position x="0" y="96"/>
+            <size width="32" height="32"/>
+        </ImageResolution>
+
+        <ImageResolution id="200004" name="map_icon_forest" texture="7">
+            <position x="32" y="0"/>
+            <size width="32" height="32"/>
+        </ImageResolution>
+
+        <ImageResolution id="200004" name="map_icon_river" texture="7">
+            <position x="64" y="0"/>
+            <size width="32" height="32"/>
+        </ImageResolution>
+
+        <ImageResolution id="200004" name="map_icon_town" texture="7">
+            <position x="96" y="0"/>
+            <size width="32" height="32"/>
+        </ImageResolution>
+
     </ImageResolutions>
     
 </Resolutions>
