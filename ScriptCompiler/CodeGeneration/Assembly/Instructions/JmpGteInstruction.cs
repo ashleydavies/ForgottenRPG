@@ -1,13 +1,13 @@
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
     public class JmpGteInstruction : Instruction {
-        private readonly Location _to;
+        public Location Location { get; }
         
-        public JmpGteInstruction(Location to) {
-            _to = to;
+        public JmpGteInstruction(Location location) {
+            Location = location;
         }
 
         protected override string AsString() {
-            return $"JGTE {_to}";
+            return $"JGTE {Location}";
         }
     }
 }

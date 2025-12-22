@@ -1,14 +1,14 @@
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
     public class LabelInstruction : Instruction {
-        private readonly Label _label;
+        public Label Label { get; }
         
         public LabelInstruction(Label label) {
-            _label = label;
+            Label = label;
         }
 
         protected override string AsString() {
             // Trim the starting $ of the label
-            return $"LABEL {_label.ToString().TrimStart('$')}";
+            return $"LABEL {Label.ToString().TrimStart('$')}";
         }
     }
 }

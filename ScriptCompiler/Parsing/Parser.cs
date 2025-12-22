@@ -10,6 +10,7 @@ using ScriptCompiler.AST.Statements;
 using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.AST.Statements.Expressions.Arithmetic;
 using ScriptCompiler.CodeGeneration;
+using ScriptCompiler.CodeGeneration.Assembly.Instructions;
 
 namespace ScriptCompiler.Parsing {
     public class Parser {
@@ -94,9 +95,11 @@ namespace ScriptCompiler.Parsing {
         }
 
         public string Compile() {
-            return string.Join('\n', Optimiser.Optimise(
-                                   new CodeGenerator().Generate(Parse())
-                               ).Select(p => p.ToString()));
+            return string.Join('\n', CompileInstructions().Select(p => p.ToString()));
+        }
+
+        public List<Instruction> CompileInstructions() {
+            return Optimiser.Optimise(new CodeGenerator().Generate(Parse()));
         }
 
         public ProgramNode Parse() {

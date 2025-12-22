@@ -41,13 +41,11 @@ namespace ScriptCompiler {
                 ScriptVm scriptVm = new ScriptVm(bytecode);
                 scriptVm.Execute();
             } else if (args[0] == "compile-assemble") {
-                var compiled = Parser.FromFile(fileName).Compile();
+                var compiled = Parser.FromFile(fileName).CompileInstructions();
                 Console.WriteLine("Compiled code:");
-                Console.WriteLine(compiled);
+                Console.WriteLine(string.Join(Environment.NewLine, compiled));
 
-                var assembled =
-                    new Assembler(compiled.Split(new[] {Environment.NewLine}, StringSplitOptions.None).ToList())
-                        .Compile();
+                var assembled = new Assembler(compiled).Compile();
                 string bytecodeString = string.Join(",", assembled);
 
                 Console.WriteLine("Assembled code:");
@@ -55,13 +53,11 @@ namespace ScriptCompiler {
                 Console.WriteLine($"{assembled.Count} words in total");
             } else if (args[0] == "execute") {
                 ServiceLocator.LogService = new SimpleLogger();
-                var compiled = Parser.FromFile(fileName).Compile();
+                var compiled = Parser.FromFile(fileName).CompileInstructions();
                 ServiceLocator.LogService.Log(LogType.Info, "Compiled code:");
-                ServiceLocator.LogService.Log(LogType.Info, compiled);
+                ServiceLocator.LogService.Log(LogType.Info, string.Join(Environment.NewLine, compiled));
 
-                var assembled =
-                    new Assembler(compiled.Split([Environment.NewLine], StringSplitOptions.None).ToList())
-                        .Compile();
+                var assembled = new Assembler(compiled).Compile();
                 string bytecodeString = string.Join(",", assembled);
 
                 ServiceLocator.LogService.Log(LogType.Info, "Assembled code:");

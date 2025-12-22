@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using ForgottenRPG.Service;
 using ForgottenRPG.VM;
+using ScriptCompiler.CodeGeneration.Assembly;
+using ScriptCompiler.CodeGeneration.Assembly.Instructions;
 
 namespace ScriptCompiler {
     internal enum AssemblyContext {
@@ -20,6 +21,7 @@ namespace ScriptCompiler {
 
         private int _instructionId;
         private readonly List<string> _lines;
+        private readonly List<Instruction> _instructionsInput;
         private List<string> _instructions;
         private readonly List<uint> _userData;
         // The start position of the next user data (used since we need to e.g. skip remainder of a page after statics)
@@ -35,6 +37,7 @@ namespace ScriptCompiler {
 
         public Assembler(List<string> lines) {
             _lines           = lines;
+            _instructionsInput = null;
             _instructionId   = 0;
             _instructions    = new List<string>();
             _userData        = new List<uint>();
@@ -42,8 +45,22 @@ namespace ScriptCompiler {
             _labels          = new Dictionary<string, string>();
         }
 
+        public Assembler(List<Instruction> instructions) {
+            _lines = null;
+            _instructionsInput = instructions;
+            _instructionId = 0;
+            _instructions = new List<string>();
+            _userData = new List<uint>();
+            _userDataIndexes = new Dictionary<string, int>();
+            _labels = new Dictionary<string, string>();
+        }
+
         public List<string> Compile() {
-            Process();
+            if (_instructionsInput != null) {
+                ProcessInstructions();
+            } else {
+                Process();
+            }
             Postprocess();
 
             return GetCompiled();
@@ -51,6 +68,185 @@ namespace ScriptCompiler {
 
         public List<string> GetCompiled() {
             return _instructions.ToList();
+        }
+
+        private void ProcessInstructions() {
+            foreach (var instruction in _instructionsInput) {
+                if (instruction is Section section) {
+                    if (section == Section.StaticSection) SwitchContext("static");
+                    else if (section == Section.DataSection) SwitchContext("data");
+                    else if (section == Section.CodeSection) SwitchContext("text");
+                    continue;
+                }
+
+                if (_context == AssemblyContext.Null) {
+                     _context = AssemblyContext.Text;
+                }
+
+                if (_context == AssemblyContext.Static) {
+                    if (instruction is StaticInstruction staticInstr) {
+                        _userDataIndexes[staticInstr.Label.ToString().TrimStart('!')] = _userData.Count + UserDataOffset;
+                        _userData.AddRange(staticInstr.Initial);
+                    }
+                } else if (_context == AssemblyContext.Data) {
+                    if (instruction is StringInstruction stringInstr) {
+                        string contents = stringInstr.Label.Contents.Replace("\\n", "\n");
+                        _userDataIndexes[stringInstr.Label.ToString().TrimStart('!')] = _nextDataIndex;
+                        _nextDataIndex += contents.Length + 1;
+                        _userData.Add((uint)contents.Length);
+                        _userData.AddRange(contents.ToCharArray().Select(Convert.ToUInt32));
+                    }
+                } else if (_context == AssemblyContext.Text) {
+                    ProcessInstruction(instruction);
+                }
+            }
+        }
+
+        private void ProcessInstruction(Instruction instruction) {
+            switch (instruction) {
+                case LabelInstruction labelInstr:
+                    ServiceLocator.LogService.Log(LogType.Info,
+                                                  "Assigning label " + labelInstr.Label + " to instruction ID " +
+                                                  _instructionId);
+                    _labels[labelInstr.Label.ToString()] = _instructionId.ToString();
+                    break;
+                case LiteralInstruction literalInstr:
+                    AddInstruction(ScriptVm.Instruction.Literal);
+                    AddInstruction(literalInstr.Value.ToString());
+                    break;
+                case LabelLiteralInstruction labelLiteralInstr:
+                    AddInstruction(ScriptVm.Instruction.Literal);
+                    if (labelLiteralInstr.Label is StaticLabel || labelLiteralInstr.Label is StringLabel) {
+                        AddInstruction(_userDataIndexes[labelLiteralInstr.Label.ToString().TrimStart('!')].ToString());
+                    } else {
+                        AddInstruction("RESOLVELABEL" + labelLiteralInstr.Label.ToString());
+                    }
+                    break;
+                case RegisterToStackInstruction rtsInstr:
+                    AddInstruction(ScriptVm.Instruction.RegisterToStack);
+                    AddInstruction(rtsInstr.RegisterIndex.ToString());
+                    break;
+                case StackToRegisterInstruction strInstr:
+                    AddInstruction(ScriptVm.Instruction.StackToRegister);
+                    AddInstruction(strInstr.RegisterIndex.ToString());
+                    break;
+                case AddInstruction _:
+                    AddInstruction(ScriptVm.Instruction.Add);
+                    break;
+                case AddFloatInstruction _:
+                    AddInstruction(ScriptVm.Instruction.Addf);
+                    break;
+                case SubInstruction _:
+                    AddInstruction(ScriptVm.Instruction.Sub);
+                    break;
+                case SubFloatInstruction _:
+                    AddInstruction(ScriptVm.Instruction.Subf);
+                    break;
+                case MulInstruction _:
+                    AddInstruction(ScriptVm.Instruction.Mul);
+                    break;
+                case MulFloatInstruction _:
+                    AddInstruction(ScriptVm.Instruction.Mulf);
+                    break;
+                case DivInstruction _:
+                    AddInstruction(ScriptVm.Instruction.Div);
+                    break;
+                case DivFloatInstruction _:
+                    AddInstruction(ScriptVm.Instruction.Divf);
+                    break;
+                case IncInstruction _:
+                    AddInstruction(ScriptVm.Instruction.Inc);
+                    break;
+                case DecInstruction _:
+                    AddInstruction(ScriptVm.Instruction.Dec);
+                    break;
+                case CmpInstruction _:
+                    AddInstruction(ScriptVm.Instruction.Cmp);
+                    break;
+                case JmpInstruction jmp:
+                    HandleLoadToStack(jmp.Location);
+                    AddInstruction(ScriptVm.Instruction.Jmp);
+                    break;
+                case JmpEqInstruction jmpEq:
+                    HandleLoadToStack(jmpEq.Location);
+                    AddInstruction(ScriptVm.Instruction.JmpEq);
+                    break;
+                case JmpNeqInstruction jmpNeq:
+                    HandleLoadToStack(jmpNeq.Location);
+                    AddInstruction(ScriptVm.Instruction.JmpNeq);
+                    break;
+                case JmpGtInstruction jmpGt:
+                    HandleLoadToStack(jmpGt.Location);
+                    AddInstruction(ScriptVm.Instruction.JmpGt);
+                    break;
+                case JmpGteInstruction jmpGte:
+                    HandleLoadToStack(jmpGte.Location);
+                    AddInstruction(ScriptVm.Instruction.JmpGte);
+                    break;
+                case JmpLtInstruction jmpLt:
+                    HandleLoadToStack(jmpLt.Location);
+                    AddInstruction(ScriptVm.Instruction.JmpLt);
+                    break;
+                case JmpLteInstruction jmpLte:
+                    HandleLoadToStack(jmpLte.Location);
+                    AddInstruction(ScriptVm.Instruction.JmpLte);
+                    break;
+                case PrintInstruction _:
+                    AddInstruction(ScriptVm.Instruction.Print);
+                    break;
+                case PrintIntInstruction _:
+                    AddInstruction(ScriptVm.Instruction.PrintInt);
+                    break;
+                case PrintUIntInstruction _:
+                    AddInstruction(ScriptVm.Instruction.PrintUInt);
+                    break;
+                case PrintFloatInstruction _:
+                    AddInstruction(ScriptVm.Instruction.PrintFloat);
+                    break;
+                case MemReadInstruction _:
+                    AddInstruction(ScriptVm.Instruction.MemRead);
+                    break;
+                case MemWriteInstruction _:
+                    AddInstruction(ScriptVm.Instruction.MemWrite);
+                    break;
+                case MemCopyInstruction _:
+                    AddInstruction(ScriptVm.Instruction.MemRead);
+                    AddInstruction(ScriptVm.Instruction.MemWrite);
+                    break;
+                case MovInstruction mov:
+                    // Mov dest, src -> RegisterToStack src, StackToRegister dest
+                    HandleLoadToStack(mov.From);
+                    HandleSaveFromStack(mov.To);
+                    break;
+            }
+        }
+
+        private void HandleLoadToStack(Value location) {
+            if (location is Register reg) {
+                AddInstruction(ScriptVm.Instruction.RegisterToStack);
+                AddInstruction(reg.Number.ToString());
+            } else if (location is Label label) {
+                AddInstruction(ScriptVm.Instruction.Literal);
+                AddInstruction("RESOLVELABEL" + label.ToString());
+            } else if (location is StaticLabel staticLabel) {
+                AddInstruction(ScriptVm.Instruction.Literal);
+                AddInstruction(_userDataIndexes[staticLabel.ToString().TrimStart('!')].ToString());
+            } else if (location is StringLabel stringLabel) {
+                AddInstruction(ScriptVm.Instruction.Literal);
+                AddInstruction(_userDataIndexes[stringLabel.ToString().TrimStart('!')].ToString());
+            } else if (location is NumericConstant literal) {
+                AddInstruction(ScriptVm.Instruction.Literal);
+                AddInstruction(((uint)literal.Amount).ToString());
+            }
+        }
+
+        private void HandleSaveFromStack(Location location) {
+            if (location is Register reg) {
+                AddInstruction(ScriptVm.Instruction.StackToRegister);
+                AddInstruction(reg.Number.ToString());
+            } else {
+                throw new CompileException("Cannot save from stack to non-register location: " + location, 0, 0);
+            }
         }
 
         private void Process() {

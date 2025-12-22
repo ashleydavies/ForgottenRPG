@@ -1,15 +1,15 @@
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
     public class MovInstruction : Instruction {
-        private readonly Location _to;
-        private readonly Value _from;
+        public Location To { get; }
+        public Value From { get; }
         
         public MovInstruction(Location to, Value @from) {
-            _to = to;
-            _from = @from;
+            To = to;
+            From = @from;
         }
 
         protected override string AsString() {
-            return $"MOV {_to} {_from}";
+            return $"MOV {To} {From}";
         }
     }
 }

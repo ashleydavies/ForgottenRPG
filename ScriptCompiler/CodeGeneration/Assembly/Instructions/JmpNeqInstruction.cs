@@ -1,13 +1,13 @@
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
     public class JmpNeqInstruction : Instruction {
-        private readonly Location _to;
+        public Location Location { get; }
         
-        public JmpNeqInstruction(Location to) {
-            _to = to;
+        public JmpNeqInstruction(Location location) {
+            Location = location;
         }
 
         protected override string AsString() {
-            return $"JNEQ {_to}";
+            return $"JNEQ {Location}";
         }
     }
 }

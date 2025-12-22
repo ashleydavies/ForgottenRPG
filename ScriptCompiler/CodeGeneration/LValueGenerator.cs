@@ -37,17 +37,27 @@ namespace ScriptCompiler.CodeGeneration {
         public (List<Instruction>, Register) Visit(VariableAccessNode node) {
             var (_, offset, guid) = _stackFrame.Lookup(node.Identifier);
             var reg = _regManager.NewRegister();
+            var instructions = new List<Instruction>();
             
             if (offset != null) {
-                return (new List<Instruction> {
-                    new MovInstruction(reg, _regManager.StackPointer),
-                    new AddInstruction(reg, offset)
-                }, reg);
+                // reg = SP
+                instructions.Add(new RegisterToStackInstruction(_regManager.StackPointer.Number));
+                instructions.Add(new StackToRegisterInstruction(reg.Number));
+                
+                // reg += offset
+                instructions.Add(new RegisterToStackInstruction(reg.Number));
+                instructions.Add(new LiteralInstruction((uint)offset));
+                instructions.Add(new AddInstruction());
+                instructions.Add(new StackToRegisterInstruction(reg.Number));
+                
+                return (instructions, reg);
             }
 
-            return (new List<Instruction> {
-                new MovInstruction(reg, new StaticLabel(guid.GetValueOrDefault()))
-            }, reg);
+            // reg = Label
+            instructions.Add(new LabelLiteralInstruction(new StaticLabel(guid.GetValueOrDefault())));
+            instructions.Add(new StackToRegisterInstruction(reg.Number));
+            
+            return (instructions, reg);
         }
 
         public (List<Instruction>, Register) Visit(StructAccessNode node) {
@@ -56,13 +66,24 @@ namespace ScriptCompiler.CodeGeneration {
             if (!(leftType is UserType structType)) {
                 throw new CompileException($"Attempt to access field of non-user-type {leftType}", 0, 0);
             }
-            instructions.Add(new AddInstruction(reg, structType.OffsetOfField(node.Field)));
+            
+            // reg += offset
+            instructions.Add(new RegisterToStackInstruction(reg.Number));
+            instructions.Add(new LiteralInstruction((uint)structType.OffsetOfField(node.Field)));
+            instructions.Add(new AddInstruction());
+            instructions.Add(new StackToRegisterInstruction(reg.Number));
+            
             return (instructions, reg);
         }
 
         public (List<Instruction>, Register) Visit(DereferenceNode node) {
             var (instructions, reg) = Generate(node.Expression);
-            instructions.Add(new MemReadInstruction(reg, reg));
+            
+            // reg = *reg
+            instructions.Add(new RegisterToStackInstruction(reg.Number));
+            instructions.Add(new MemReadInstruction());
+            instructions.Add(new StackToRegisterInstruction(reg.Number));
+            
             return (instructions, reg);
         }
     }

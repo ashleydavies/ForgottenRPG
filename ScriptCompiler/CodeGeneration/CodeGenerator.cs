@@ -76,20 +76,15 @@ namespace ScriptCompiler.CodeGeneration {
             var stackFrame      = new StackFrame();
             var registerManager = new RegisterManager();
 
-            var returnType = _functionTypeRepository.ReturnType(functionNode.Reference(_userTypeRepository));
-            if (!ReferenceEquals(returnType, SType.SVoid)) {
-                stackFrame.AddIdentifier(returnType, StackFrame.ReturnIdentifier);
-                stackFrame = new StackFrame(stackFrame);
-            }
-
+            // Set up the stack frame for the function parameters
             // Set up the stack frame for the function parameters
             foreach (var (type, depth, name) in functionNode.ParameterDefinitions) {
                 stackFrame.AddIdentifier(SType.FromTypeString(type, _userTypeRepository, depth), name);
             }
 
             // The return pointer
-            stackFrame.Pushed(SType.SInteger);
-
+            stackFrame.AddIdentifier(SType.SInteger, "__RET_ADDR__");
+            
             stackFrame = new StackFrame(stackFrame);
             instructions.Add(new LabelInstruction(functionNode.Label)
                                  .WithComment($"Entry point of {functionNode.Name}"));
@@ -103,12 +98,23 @@ namespace ScriptCompiler.CodeGeneration {
 
             // Pop the stack
             var (_, length) = stackFrame.Purge();
-            instructions.Add(new SubInstruction(registerManager.StackPointer, length)
-                                 .WithComment("Pop function locals"));
+            // StackPointer -= length
+            instructions.Add(new RegisterToStackInstruction(registerManager.StackPointer.Number));
+            instructions.Add(new LiteralInstruction((uint)length));
+            instructions.Add(new SubInstruction());
+            instructions.Add(new StackToRegisterInstruction(registerManager.StackPointer.Number));
+
             // Pop the instruction pointer and return to it
-            instructions.Add(new SubInstruction(registerManager.StackPointer, 1));
-            instructions.Add(new MemReadInstruction(registerManager.InstructionPointer, registerManager.StackPointer)
-                                 .WithComment($"Return from {functionNode.Name}"));
+            // StackPointer -= 1
+            instructions.Add(new RegisterToStackInstruction(registerManager.StackPointer.Number));
+            instructions.Add(new LiteralInstruction(1));
+            instructions.Add(new SubInstruction());
+            instructions.Add(new StackToRegisterInstruction(registerManager.StackPointer.Number));
+
+            // Read Return Address into IP
+            instructions.Add(new RegisterToStackInstruction(registerManager.StackPointer.Number));
+            instructions.Add(new MemReadInstruction());
+            instructions.Add(new StackToRegisterInstruction(registerManager.InstructionPointer.Number));
 
             return instructions;
         }

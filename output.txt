@@ -1,0 +1,47 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  ForgottenRPG -> /Users/ashley/ShaRPG/ForgottenRPG/bin/Debug/netcoreapp9.0/ForgottenRPG.dll
+/Users/ashley/ShaRPG/ScriptCompiler/Assembler.cs(40,34): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Assembler.cs(38,16): warning CS8618: Non-nullable field '_instructionsInput' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the field as nullable. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Assembler.cs(49,22): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Assembler.cs(48,16): warning CS8618: Non-nullable field '_lines' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the field as nullable. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(23,28): warning CS8600: Converting null literal or possible null value to non-nullable type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(27,51): warning CS8604: Possible null reference argument for parameter 'filename' in 'Parser Parser.FromFile(string filename)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(44,48): warning CS8604: Possible null reference argument for parameter 'filename' in 'Parser Parser.FromFile(string filename)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(56,48): warning CS8604: Possible null reference argument for parameter 'filename' in 'Parser Parser.FromFile(string filename)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/ExpressionGenerator.cs(372,34): warning CS8602: Dereference of a possibly null reference. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/ExpressionGenerator.cs(394,33): warning CS8602: Dereference of a possibly null reference. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(242,21): warning CS8600: Converting null literal or possible null value to non-nullable type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(243,41): warning CS8604: Possible null reference argument for parameter 'token' in 'InfixParseRule? Parser.GetMatchingInfixRule(LexToken token, Precedence precedence)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(244,30): warning CS8602: Dereference of a possibly null reference. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(245,25): warning CS8600: Converting null literal or possible null value to non-nullable type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(284,20): warning CS8603: Possible null reference return. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(410,30): warning CS8600: Converting null literal or possible null value to non-nullable type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+  ScriptCompiler -> /Users/ashley/ShaRPG/ScriptCompiler/bin/Debug/netcoreapp9.0/ScriptCompiler.dll
+  ScriptCompilerTests -> /Users/ashley/ShaRPG/ScriptCompilerTests/bin/Debug/netcoreapp9.0/ScriptCompilerTests.dll
+Test run for /Users/ashley/ShaRPG/ScriptCompilerTests/bin/Debug/netcoreapp9.0/ScriptCompilerTests.dll (.NETCoreApp,Version=v9.0)
+VSTest version 17.14.0 (arm64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.2501405]     ScriptCompilerTests.IntegrationTests.CanCallFunctionsWithParameters [FAIL]
+  Failed ScriptCompilerTests.IntegrationTests.CanCallFunctionsWithParameters [53 ms]
+  Error Message:
+   NUnit.Framework.AssertionException :   Expected is <System.Collections.Generic.List`1[System.String]> with 1 elements, actual is <System.Collections.Generic.List`1[System.String]> with 4 elements
+  Values differ at index [0]
+  Expected string length 1 but was 5. Strings differ at index 0.
+  Expected: "5"
+  But was:  "99999"
+  -----------^
+
+  Stack Trace:
+     at NUnit.Framework.Assert.ReportFailure(String message)
+   at NUnit.Framework.Assert.ReportFailure(ConstraintResult result, String message, Object[] args)
+   at NUnit.Framework.Assert.That[TActual](TActual actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.CollectionAssert.AreEqual(IEnumerable expected, IEnumerable actual, String message, Object[] args)
+   at NUnit.Framework.CollectionAssert.AreEqual(IEnumerable expected, IEnumerable actual)
+   at ScriptCompilerTests.IntegrationTests.CanCallFunctionsWithParameters() in /Users/ashley/ShaRPG/ScriptCompilerTests/IntegrationTests.cs:line 95
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 53 ms - ScriptCompilerTests.dll (net9.0)

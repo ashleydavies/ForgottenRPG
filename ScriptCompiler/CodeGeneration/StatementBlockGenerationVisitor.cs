@@ -52,7 +52,6 @@ namespace ScriptCompiler.CodeGeneration {
 
         public List<Instruction> Visit(DeclarationStatementNode node) {
             if (_stackFrame.ExistsLocalAny(node.Identifier)) {
-                // TODO: Add line and col numbers (as well as other debug info) to all nodes, and report correctly here
                 throw new CompileException($"Attempt to redefine identifier {node.Identifier}", 0, 0);
             }
 
@@ -75,34 +74,58 @@ namespace ScriptCompiler.CodeGeneration {
             }
             
             _stackFrame.AddIdentifier(type, node.Identifier);
-            // Adjust stack pointer
-            instructions.Add(new AddInstruction(StackPointer, type.Length)
-                                 .WithComment($"Declaring {node.Identifier}"));
+            // Adjust stack pointer to allocate space
+            instructions.AddRange(AddStackPointer(type.Length));
 
             // Set up with default value, if any
             if (node.InitialValue != null) {
                 instructions.AddRange(ExpressionGenerator.Generate(node.InitialValue));
 
-                // The result is now at the top of the stack so copy it where we want it
-                // Set up a register offset from the stack pointer by type.Length
-                using var writeLocation = _regManager.NewRegister();
-                instructions.Add(new MovInstruction(writeLocation, StackPointer));
-                instructions.Add(new SubInstruction(writeLocation, type.Length));
+                // Value is on Operand Stack.
+                // We need to write it to the allocated space.
+                // Dest = StackPointer - type.Length
+                
+                // Loop to pop and write.
+                // Operand Stack: [W0, W1, ...]. Top is W(Last).
+                // Memory: [W0, W1, ...].
+                // We want to write W(Last) to Dest + Length - 1.
+                // W(Last-1) to Dest + Length - 2.
+                
                 for (int i = 0; i < type.Length; i++) {
-                    // Use that register to copy across the object
-                    instructions.Add(new SubInstruction(StackPointer, 1));
-                    instructions.Add(new SubInstruction(writeLocation, 1));
-                    instructions.Add(new MemCopyInstruction(writeLocation, StackPointer));
+                    int offset = type.Length - 1 - i;
+                    
+                    // Pop Value to Temp Reg
+                    var tempReg = _regManager.NewRegister();
+                    using (tempReg) {
+                        instructions.Add(new StackToRegisterInstruction(tempReg.Number));
+                        
+                        // Push Dest Address (StackPointer - type.Length + offset)
+                        // = StackPointer - (type.Length - offset)
+                        // = StackPointer - (i + 1)
+                        
+                        instructions.Add(new RegisterToStackInstruction(StackPointer.Number));
+                        instructions.Add(new LiteralInstruction((uint)(i + 1)));
+                        instructions.Add(new SubInstruction());
+                        
+                        // Push Value
+                        instructions.Add(new RegisterToStackInstruction(tempReg.Number));
+                        
+                        instructions.Add(new MemWriteInstruction());
+                    }
                 }
-
-                // We dealt with the stack push from the expression, so let the stack frame know
-                _stackFrame.Popped(type);
             } else {
-                instructions.Add(new SubInstruction(StackPointer, type.Length)
-                                     .WithComment("Move to start of object to write zeros"));
+                // Move to start of object to write zeros
+                // Actually, we can just loop and write zeros.
+                // Dest = StackPointer - type.Length
+                
                 for (int i = 0; i < type.Length; i++) {
-                    instructions.Add(new MemWriteInstruction(StackPointer, 0));
-                    instructions.Add(new AddInstruction(StackPointer, 1));
+                    // Write 0 to StackPointer - 1 - i
+                    instructions.Add(new RegisterToStackInstruction(StackPointer.Number));
+                    instructions.Add(new LiteralInstruction((uint)(i + 1)));
+                    instructions.Add(new SubInstruction());
+                    
+                    instructions.Add(new LiteralInstruction(0));
+                    instructions.Add(new MemWriteInstruction());
                 }
             }
 
@@ -110,26 +133,21 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public List<Instruction> Visit(PrintStatementNode node) {
-            // We can only currently print one word things...
             var expressionType = TypeIdentifier.Identify(node.Expression);
             if (expressionType.Length != 1) {
                 throw new CompileException("Unable to print multi-word expression", 0, 0);
             }
 
             var instructions = ExpressionGenerator.Generate(node.Expression);
-            instructions.Add(PopStack(expressionType));
-
-            using var register = _regManager.NewRegister();
-            instructions.Add(new MemReadInstruction(register, StackPointer));
-
+            
             if (ReferenceEquals(expressionType, SType.SString)) {
-                instructions.Add(new PrintInstruction(register));
+                instructions.Add(new PrintInstruction());
             } else if (ReferenceEquals(expressionType, SType.SUInteger)) {
-                instructions.Add(new PrintUIntInstruction(register));
+                instructions.Add(new PrintUIntInstruction());
             } else if (ReferenceEquals(expressionType, SType.SFloat)) {
-                instructions.Add(new PrintFloatInstruction(register));
+                instructions.Add(new PrintFloatInstruction());
             } else {
-                instructions.Add(new PrintIntInstruction(register));
+                instructions.Add(new PrintIntInstruction());
             }
 
             return instructions;
@@ -138,21 +156,18 @@ namespace ScriptCompiler.CodeGeneration {
         public List<Instruction> Visit(IfStatementNode node) {
             var instructions = new List<Instruction>();
 
-            // We expect this to add a bool to the stack
             instructions.AddRange(ExpressionGenerator.Generate(node.Expression));
 
             var elseLabel = new Label(Guid.NewGuid().ToString());
             var endLabel  = new Label(Guid.NewGuid().ToString());
 
-            instructions.Add(PopStack(SType.SBool));
-            using var resultReg = _regManager.NewRegister();
-            using var cmpReg    = _regManager.NewRegister();
-
-            // Condition
-            instructions.Add(new MemReadInstruction(resultReg, StackPointer));
-            instructions.Add(new MovInstruction(cmpReg, 0));
-            instructions.Add(new CmpInstruction(resultReg, cmpReg));
+            // Condition is on stack (0 or 1)
+            // Push 0 to compare
+            instructions.Add(new LiteralInstruction(0));
+            
+            // If 0 (False), Jump to Else
             instructions.Add(new JmpEqInstruction(node.ElseBlock != null ? elseLabel : endLabel));
+            
             instructions.AddRange(VisitStatementBlock(node.IfBlock.Statements));
             if (node.ElseBlock != null) {
                 instructions.Add(new JmpInstruction(endLabel));
@@ -171,26 +186,17 @@ namespace ScriptCompiler.CodeGeneration {
             var endLabel = new Label(Guid.NewGuid().ToString());
 
             NewStackFrame();
-            // Initialise the variable
             if (node.Declaration != null) {
                 instructions.AddRange(Visit(node.Declaration as dynamic));
             }
             
-            // Start label
             instructions.Add(new LabelInstruction(startLabel));
 
-            // We expect this to add a bool to the stack
             if (node.Condition != null) {
                 instructions.AddRange(ExpressionGenerator.Generate(node.Condition));
 
-                instructions.Add(PopStack(SType.SBool));
-                using var resultReg = _regManager.NewRegister();
-                using var cmpReg    = _regManager.NewRegister();
-
-                // Condition
-                instructions.Add(new MemReadInstruction(resultReg, StackPointer));
-                instructions.Add(new MovInstruction(cmpReg, 0));
-                instructions.Add(new CmpInstruction(resultReg, cmpReg));
+                // Condition is on stack
+                instructions.Add(new LiteralInstruction(0));
                 instructions.Add(new JmpEqInstruction(endLabel));
             }
             
@@ -200,7 +206,12 @@ namespace ScriptCompiler.CodeGeneration {
 
             if (node.Update != null) {
                 instructions.AddRange(ExpressionGenerator.Generate(node.Update));
-                instructions.Add(PopStack(TypeIdentifier.Identify(node.Update)));
+                // Discard result of update expression
+                var type = TypeIdentifier.Identify(node.Update);
+                for(int i=0; i<type.Length; i++) {
+                    // Pop to dummy register
+                    instructions.Add(new StackToRegisterInstruction(2)); 
+                }
             }
             
             instructions.Add(new JmpInstruction(startLabel));
@@ -212,7 +223,7 @@ namespace ScriptCompiler.CodeGeneration {
         private void PopStackFrame(List<Instruction> instructions) {
             var (newFrame, len) = _stackFrame.Purge();
             _stackFrame         = newFrame!;
-            instructions.Add(new SubInstruction(StackPointer, len));
+            instructions.AddRange(SubStackPointer(len));
         }
 
         private StackFrame NewStackFrame() {
@@ -222,44 +233,88 @@ namespace ScriptCompiler.CodeGeneration {
         public List<Instruction> Visit(ReturnStatementNode node) {
             var instructions = ExpressionGenerator.Generate(node.Expression);
 
-            // Copy the result over to the return position
-            // We know this will be offset rather than guid since it's not a static
-            var (type, offset, _) = _stackFrame.Lookup(StackFrame.ReturnIdentifier);
+            // Value is on Operand Stack.
+            // We need to:
+            // 1. Read RetAddr (from Memory) to a Temp Register.
+            // 2. SubStackPointer (Locals + RetAddr).
+            // 3. Jump to RetAddr (by writing to IP).
 
-            using var copyRegister = _regManager.NewRegister();
-            // Ret1 | Ret2 | Ret3 | Stk1 | Stk2 | Stk3 | Res1 | Res2 | Res3 | 0
-            //                                                                ^ Initial stack pointer
-            // ^ StackPointer + offset
-            //                       ^ StackPointer + offset + type.Length
-            instructions.Add(new MovInstruction(copyRegister, StackPointer));
-            instructions.Add(new AddInstruction(copyRegister, offset.GetValueOrDefault() + type.Length));
-
-            for (int i = 0; i < type.Length; i++) {
-                instructions.Add(new SubInstruction(StackPointer, 1));
-                instructions.Add(new SubInstruction(copyRegister, 1));
-                instructions.Add(new MemCopyInstruction(copyRegister, StackPointer));
+            var (type, offset, _) = _stackFrame.Lookup("__RET_ADDR__");
+            if (offset == null) {
+                throw new CompileException("Return address not found in stack frame", 0, 0);
             }
 
-            _stackFrame.Popped(type);
+            // 1. Read RetAddr to Temp Reg
+            var retAddrReg = _regManager.NewRegister();
+            using (retAddrReg) {
+                // Push Address of RetAddr (SP + offset)
+                instructions.Add(new RegisterToStackInstruction(StackPointer.Number));
+                instructions.Add(new LiteralInstruction((uint)Math.Abs(offset.Value)));
+                if (offset.Value > 0) {
+                    instructions.Add(new AddInstruction());
+                } else {
+                    instructions.Add(new SubInstruction());
+                }
+                
+                // Read RetAddr
+                instructions.Add(new MemReadInstruction());
+                
+                // Pop RetAddr to Reg
+                instructions.Add(new StackToRegisterInstruction(retAddrReg.Number));
+                
+                // 2. SubStackPointer
+                // We need to pop Locals and RetAddr.
+                // StackFrame.Purge() gives us Locals size.
+                // RetAddr size is 1.
+                var (_, localsSize) = _stackFrame.Purge();
+                instructions.AddRange(SubStackPointer(localsSize + 1));
+                
+                // 3. Jump to RetAddr
+                // Push RetAddr from Reg
+                instructions.Add(new RegisterToStackInstruction(retAddrReg.Number));
+                // Pop to IP
+                instructions.Add(new StackToRegisterInstruction(_regManager.InstructionPointer.Number));
+            }
+
             return instructions;
         }
 
         public List<Instruction> Visit(ExpressionNode node) {
-            // Process the expression and then discard the result
-            var type         = TypeIdentifier.Identify(node);
             var instructions = ExpressionGenerator.Generate(node);
-            instructions.Add(PopStack(TypeIdentifier.Identify(node)));
+            // Discard result
+            var type = TypeIdentifier.Identify(node);
+            for(int i=0; i<type.Length; i++) {
+                instructions.Add(new StackToRegisterInstruction(2)); 
+            }
             return instructions;
         }
 
-        private Instruction PushStack(SType type) {
+        private List<Instruction> PushStack(SType type) {
             _stackFrame.Pushed(type);
-            return new AddInstruction(StackPointer, type.Length);
+            return AddStackPointer(type.Length);
         }
 
-        private Instruction PopStack(SType type) {
+        private List<Instruction> PopStack(SType type) {
             _stackFrame.Popped(type);
-            return new SubInstruction(StackPointer, type.Length);
+            return SubStackPointer(type.Length);
+        }
+        
+        private List<Instruction> AddStackPointer(int amount) {
+            var instructions = new List<Instruction>();
+            instructions.Add(new RegisterToStackInstruction(StackPointer.Number));
+            instructions.Add(new LiteralInstruction((uint)amount));
+            instructions.Add(new AddInstruction());
+            instructions.Add(new StackToRegisterInstruction(StackPointer.Number));
+            return instructions;
+        }
+        
+        private List<Instruction> SubStackPointer(int amount) {
+            var instructions = new List<Instruction>();
+            instructions.Add(new RegisterToStackInstruction(StackPointer.Number));
+            instructions.Add(new LiteralInstruction((uint)amount));
+            instructions.Add(new SubInstruction());
+            instructions.Add(new StackToRegisterInstruction(StackPointer.Number));
+            return instructions;
         }
     }
 }

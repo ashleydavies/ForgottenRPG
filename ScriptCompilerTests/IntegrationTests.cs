@@ -272,9 +272,8 @@ print d;");
         }
 
         private void ExecuteCode(string code) {
-            var compiled = new Parser(code).Compile();
-            var assembled =
-                new Assembler(compiled.Split(new[] {Environment.NewLine}, StringSplitOptions.None).ToList()).Compile();
+            var compiled = new Parser(code).CompileInstructions();
+            var assembled = new Assembler(compiled).Compile();
             var       bytecodeString = string.Join(",", assembled);
             List<uint> bytecode       = bytecodeString.Split(',').Select(uint.Parse).ToList();
             var       vm             = new ScriptVm(bytecode);
