@@ -1,6 +1,9 @@
 ﻿using SFML.Graphics;
 
+using ForgottenRPG.NativeFunctions;
+
 namespace ForgottenRPG.Items {
+    [ScriptReference("Item")]
     public interface IItem {
         int Id { get; }
         string Name { get; }

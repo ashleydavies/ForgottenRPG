@@ -1,0 +1,17 @@
+import "ScriptCompiler/mem";
+
+print("Testing Dynamic String:");
+print(item_get_name(0)); // Should print "Unknown Item"
+
+print("Testing Dynamic List:");
+int* list = test_get_list();
+print("List Address:");
+print(list);
+print("List Length:");
+print(!list);
+print("List Elements:");
+print(!(list + 1));
+print(!(list + 2));
+print(!(list + 3));
+print(!(list + 4));
+print(!(list + 5));

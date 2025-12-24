@@ -21,6 +21,11 @@ namespace ScriptCompiler.CodeGeneration {
         private readonly StaticVariableRepository _staticVariableRepository = new StaticVariableRepository();
         private readonly UserTypeRepository _userTypeRepository = new UserTypeRepository();
         private readonly Dictionary<string, StringLabel> _stringPoolAliases = new Dictionary<string, StringLabel>();
+        private readonly ForgottenRPG.NativeFunctions.NativeFunctionRegistry _nativeRegistry;
+
+        public CodeGenerator(ForgottenRPG.NativeFunctions.NativeFunctionRegistry nativeRegistry = null) {
+            _nativeRegistry = nativeRegistry;
+        }
 
         public List<Instruction> Generate(ProgramNode program) {
             List<Instruction> instructions = new List<Instruction>();
@@ -33,13 +38,20 @@ namespace ScriptCompiler.CodeGeneration {
             // Begin code section
             instructions.Add(Section.CodeSection);
 
+            // Initialize stack pointer (r1) to a safe high address
+            var registerManager = new RegisterManager();
+            instructions.Add(new MovInstruction(registerManager.StackPointer, 1000000)
+                                 .WithComment("Initialize stack pointer to safe address"));
+
             // Main statements
             instructions.AddRange(
                 new StatementBlockGenerationVisitor(
                     _functionTypeRepository,
                     _userTypeRepository,
                     _staticVariableRepository,
-                    _stringPoolAliases).VisitStatementBlock(program.StatementNodes)
+                    _stringPoolAliases,
+                    null,
+                    _nativeRegistry).VisitStatementBlock(program.StatementNodes)
             );
 
             // Jump to the end to avoid falling to function definitions
@@ -47,6 +59,8 @@ namespace ScriptCompiler.CodeGeneration {
 
             // Function definitions
             foreach (var functionNode in programNodes.SelectMany(n => n.FunctionNodes)) {
+                if (functionNode.IsExtern) continue;
+                instructions.Add(new ExportInstruction(functionNode.Label, functionNode.Name));
                 instructions.AddRange(GenerateFunction(functionNode));
             }
 
@@ -98,7 +112,8 @@ namespace ScriptCompiler.CodeGeneration {
                                       _userTypeRepository,
                                       _staticVariableRepository,
                                       _stringPoolAliases,
-                                      stackFrame
+                                      stackFrame,
+                                      _nativeRegistry
                                   ).VisitStatementBlock(functionNode.CodeBlock.Statements));
 
             // Pop the stack
@@ -148,11 +163,21 @@ namespace ScriptCompiler.CodeGeneration {
             foreach (var f in functionNodes) {
                 _functionTypeRepository.Register(f.Reference(_userTypeRepository),
                                                  f.TypeNode.GetSType(_userTypeRepository),
-                                                 f.ParameterTypes(_userTypeRepository));
+                                                 f.ParameterTypes(_userTypeRepository),
+                                                 f.IsExtern);
             }
         }
 
         private void InitialiseUserTypeRepo(List<ProgramNode> programNodes) {
+            // Inject native reference types
+            if (_nativeRegistry != null) {
+                foreach (var (scriptName, _) in _nativeRegistry.GetRegisteredTypes()) {
+                    if (!_userTypeRepository.ExistsType(scriptName)) {
+                        _userTypeRepository[scriptName] = new UserType(scriptName, new List<(string, SType)>());
+                    }
+                }
+            }
+
             // TODO: Validation of no repeat names etc.
             Dictionary<string, StructNode> userTypeNodeMapping
                 = programNodes.SelectMany(f => f.StructNodes)
@@ -172,6 +197,7 @@ namespace ScriptCompiler.CodeGeneration {
                     var unknownDependencies = structNode.DeclarationNodes
                                                         .Where(n => n.TypeNode.IsOfUnknownType(_userTypeRepository))
                                                         .ToList();
+
                     if (unknownDependencies.Count > 0) {
                         unknownDependencies.ForEach(dep => dependencies.Enqueue(dep.TypeNode.TypeString));
                         dependencies.Enqueue(next);

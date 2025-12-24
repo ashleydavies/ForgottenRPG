@@ -1,4 +1,5 @@
-﻿using System.Reflection.Metadata.Ecma335;
+﻿using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 
 namespace ScriptCompiler.Types {
     public class SType {
@@ -48,6 +49,29 @@ namespace ScriptCompiler.Types {
             }
 
             return type;
+        }
+
+        public static SType FromType(System.Type type) {
+            if (type == typeof(int)) return SInteger;
+            if (type == typeof(uint)) return SUInteger;
+            if (type == typeof(float)) return SFloat;
+            if (type == typeof(bool)) return SBool;
+            if (type == typeof(char)) return SChar;
+            if (type == typeof(string)) return SString;
+            if (type == typeof(void)) return SVoid;
+            
+            if (type.IsArray) {
+                return new ReferenceType(FromType(type.GetElementType()!));
+            }
+            
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>)) {
+                return new ReferenceType(FromType(type.GetGenericArguments()[0]));
+            }
+
+            // Treat other reference types as integer handles
+            if (!type.IsValueType) return SInteger;
+            
+            return SNoType;
         }
 
         private static SType FromTypeString(string nodeTypeString, UserTypeRepository utr) {

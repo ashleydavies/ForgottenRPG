@@ -16,7 +16,7 @@ namespace ScriptCompiler {
     public class Assembler {
         // Hardcoded constant strings etc begin at index 2, as index 0 contains a pointer to the start of executable code
         // and index 1 contains the length of the space allocated to storing static variable values.
-        private const int UserDataOffset = 2;
+        private const int UserDataOffset = 3;
 
         private int _instructionId;
         private readonly List<string> _lines;
@@ -32,6 +32,7 @@ namespace ScriptCompiler {
         // Technically static variables are a subset of user data for the purposes of assembling so we use the same map
         private readonly Dictionary<string, int> _userDataIndexes;
         private readonly Dictionary<string, string> _labels;
+        private readonly List<(int position, string symbol)> _relocations = new();
 
         public Assembler(List<string> lines) {
             _lines           = lines;
@@ -131,6 +132,14 @@ namespace ScriptCompiler {
                     break;
                 case "jmp":
                     HandleLoadToStack(components[1]);
+                    AddInstruction(ScriptVm.Instruction.Jmp);
+                    break;
+                case "jmp_extern":
+                    // A jmp_extern is basically PUSH 0 (placeholder), JMP
+                    // We need to record a relocation for the 0
+                    AddInstruction(ScriptVm.Instruction.Literal);
+                    _relocations.Add((_instructionId, components[1]));
+                    AddInstruction("0");
                     AddInstruction(ScriptVm.Instruction.Jmp);
                     break;
                 case "jeq":
@@ -239,6 +248,23 @@ namespace ScriptCompiler {
                     AddInstruction(ScriptVm.Instruction.MemRead);
                     AddInstruction(ScriptVm.Instruction.MemWrite);
                     break;
+                case "callnative":
+                    AddInstruction(ScriptVm.Instruction.CallNative);
+                    AddInstruction(components[1]);
+                    break;
+                case "call_native_extern":
+                    AddInstruction(ScriptVm.Instruction.CallNative);
+                    _relocations.Add((_instructionId, components[1]));
+                    AddInstruction("0");
+                    break;
+                case "memread_stack":
+                    // Expects address on stack. Pushes value to stack.
+                    AddInstruction(ScriptVm.Instruction.MemRead);
+                    break;
+                case "memwrite_stack":
+                    // Expects [pos, val] on stack.
+                    AddInstruction(ScriptVm.Instruction.MemWrite);
+                    break;
             }
         }
 
@@ -281,7 +307,22 @@ namespace ScriptCompiler {
             newInstructions.Insert(0, codeOffset.ToString());
             // This points to the end of the static section, at which point a "page break" needs inserting by the VM
             newInstructions.Insert(1, (_staticLength + UserDataOffset).ToString());
+            
+            // Relocation table will start after the code
+            int relocationTableOffset = codeOffset + _instructions.Count;
+            newInstructions.Insert(2, relocationTableOffset.ToString());
+
             newInstructions.AddRange(_instructions);
+
+            // Append relocation table
+            newInstructions.Add(_relocations.Count.ToString());
+            foreach (var (pos, symbol) in _relocations) {
+                newInstructions.Add((pos + codeOffset).ToString());
+                newInstructions.Add(symbol.Length.ToString());
+                foreach (char c in symbol) {
+                    newInstructions.Add(((uint) c).ToString());
+                }
+            }
 
             _instructions = newInstructions
                             .Select(x => x.StartsWith("RESOLVELABEL")

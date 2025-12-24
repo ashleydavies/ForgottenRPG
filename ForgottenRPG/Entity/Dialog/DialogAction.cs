@@ -32,7 +32,14 @@ namespace ForgottenRPG.Entity.Dialog {
         }
 
         public override void Execute(Dialog dialog) {
-            new ScriptVm(new List<uint>(_code)).Execute();
+            var vm = new ScriptVm(new List<uint>(_code));
+            
+            // Register native functions
+            var registry = new ForgottenRPG.NativeFunctions.NativeFunctionRegistry();
+            registry.ScanType(typeof(ForgottenRPG.Scripting.GameScriptLibrary));
+            vm.RegisterNativeFunctions(registry);
+            
+            vm.Execute();
         }
     }
 }

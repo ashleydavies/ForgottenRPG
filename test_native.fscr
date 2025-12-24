@@ -1,0 +1,5 @@
+// Test native function calls from script
+// This script should call get_player and entity_get_max_health
+// and print the result
+
+print get_player();

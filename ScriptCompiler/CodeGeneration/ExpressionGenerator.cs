@@ -19,13 +19,14 @@ namespace ScriptCompiler.CodeGeneration {
         private readonly UserTypeRepository _userTypeRepository;
         private readonly Dictionary<string, StringLabel> _stringPoolAliases;
         private readonly RegisterManager _regManager;
+        private readonly ForgottenRPG.NativeFunctions.NativeFunctionRegistry _nativeRegistry;
 
         private StackFrame _stackFrame;
 
         private Register StackPointer => _regManager.StackPointer;
 
         private TypeIdentifier TypeIdentifier => new TypeIdentifier(
-            _functionTypeRepository, _userTypeRepository, _stackFrame);
+            _functionTypeRepository, _userTypeRepository, _stackFrame, _nativeRegistry);
 
         private AddressabilityChecker AddressabilityChecker => new AddressabilityChecker(
             _functionTypeRepository, _userTypeRepository, _stackFrame);
@@ -35,12 +36,13 @@ namespace ScriptCompiler.CodeGeneration {
 
         public ExpressionGenerator(FunctionTypeRepository functionTypeRepository, UserTypeRepository userTypeRepository,
                                    Dictionary<string, StringLabel> stringPoolAliases, StackFrame stackFrame,
-                                   RegisterManager regManager) {
+                                   RegisterManager regManager, ForgottenRPG.NativeFunctions.NativeFunctionRegistry nativeRegistry = null) {
             _functionTypeRepository = functionTypeRepository;
             _userTypeRepository     = userTypeRepository;
             _stringPoolAliases      = stringPoolAliases;
             _stackFrame             = stackFrame;
             _regManager             = regManager;
+            _nativeRegistry         = nativeRegistry;
         }
 
         public List<Instruction> Generate(ExpressionNode node) {
@@ -81,6 +83,111 @@ namespace ScriptCompiler.CodeGeneration {
 
         public List<Instruction> Visit(FunctionCallNode node) {
             var instructions = new List<Instruction>();
+
+            // Check if this is a native function call
+            if (_nativeRegistry != null && node.Function is VariableAccessNode vn) {
+                string functionName = vn.Identifier;
+                if (_nativeRegistry.HasFunction(functionName)) {
+                    var funcInfo = _nativeRegistry.GetByName(functionName);
+                    
+                    // 1. Generate arguments (pushes them to memory stack, then we move to VM stack)
+                    foreach (var arg in node.Args) {
+                        var type = TypeIdentifier.Identify(arg);
+                        instructions.AddRange(Generate(arg));
+                        
+                        // Move from memory stack to VM stack
+                        using var argReg = _regManager.NewRegister();
+                        instructions.Add(new MovInstruction(argReg, StackPointer));
+                        instructions.Add(new SubInstruction(argReg, (int)type.Length));
+                        instructions.Add(new RegisterToStackInstruction(argReg));
+                        instructions.Add(new MemReadStackInstruction());
+                        
+                        // Pop from memory stack (it's now on VM stack)
+                        instructions.Add(PopStack(type));
+                    }
+                    
+                    // 2. Emit CallNative instruction
+                    instructions.Add(new CallNativeExternInstruction(functionName)
+                        .WithComment($"Call native function {functionName}"));
+                    
+                    var nativeReturnType = SType.FromType(funcInfo.Method.ReturnType);
+                    bool isReferenceType = nativeReturnType is ReferenceType;
+
+                    if (isReferenceType) {
+                        // Dynamic Marshalling Protocol:
+                        // 1. Native call just pushed the required size in words to VM stack.
+                        // 2. Call malloc(size)
+                        
+                        // Push dummy return value slot for malloc
+                        instructions.Add(new MemWriteInstruction(StackPointer, 0));
+                        instructions.Add(new AddInstruction(StackPointer, 1));
+                        _stackFrame.Pushed(SType.SInteger);
+
+                        // Move size from VM stack to memory stack for malloc
+                        using var sizeReg = _regManager.NewRegister();
+                        instructions.Add(new StackToRegisterInstruction(sizeReg));
+                        instructions.Add(new RegisterToStackInstruction(StackPointer));
+                        instructions.Add(new RegisterToStackInstruction(sizeReg));
+                        instructions.Add(new MemWriteStackInstruction());
+                        instructions.Add(new AddInstruction(StackPointer, 1));
+                        _stackFrame.Pushed(SType.SInteger);
+                        
+                        // Push return address for malloc
+                        var mallocReturnLabel = new Label($"malloc_return_{Guid.NewGuid()}");
+                        instructions.Add(new MemWriteInstruction(StackPointer, mallocReturnLabel));
+                        instructions.Add(new AddInstruction(StackPointer, 1));
+                        _stackFrame.Pushed(SType.SInteger);
+                        
+                        // Jump to malloc
+                        instructions.Add(new JmpInstruction(new Label("func_!malloc")));
+                        instructions.Add(new LabelInstruction(mallocReturnLabel));
+                        
+                        // 3. malloc result (address) is on memory stack at r1-2 (since ReturnAddr was popped by callee).
+                        // Move it to VM stack.
+                        using var addrReg = _regManager.NewRegister();
+                        instructions.Add(new MovInstruction(addrReg, StackPointer));
+                        instructions.Add(new SubInstruction(addrReg, 2));
+                        instructions.Add(new RegisterToStackInstruction(addrReg));
+                        instructions.Add(new MemReadStackInstruction());
+                        
+                        // 4. Clean up memory stack (pop size and DummyResult. ReturnAddr already popped by callee)
+                        instructions.Add(new SubInstruction(StackPointer, 2));
+                        _stackFrame.Popped(SType.SInteger); // Return address (popped by callee)
+                        _stackFrame.Popped(SType.SInteger); // size
+                        _stackFrame.Popped(SType.SInteger); // DummyResult
+                        
+                        // 5. Call _internal_commit_data(address)
+                        var commitFunc = _nativeRegistry.GetByName("_internal_commit_data");
+                        if (commitFunc == null) {
+                            throw new CompileException("Internal commit function not found", 0, 0);
+                        }
+                        instructions.Add(new CallNativeInstruction(commitFunc.Id)
+                            .WithComment("Commit cached data to allocated buffer"));
+                    }
+                    
+                    // 2. Handle return value (on VM stack)
+                    if (!ReferenceEquals(nativeReturnType, SType.SVoid)) {
+                        // Move from VM stack to memory stack
+                        using var tempReg = _regManager.NewRegister();
+                        instructions.Add(new StackToRegisterInstruction(tempReg)); // Pop result from VM stack
+                        
+                        // Push target address on memory stack
+                        instructions.Add(new RegisterToStackInstruction(StackPointer));
+                        // Push value to write
+                        instructions.Add(new RegisterToStackInstruction(tempReg));
+                        // Write to memory
+                        instructions.Add(new MemWriteStackInstruction());
+                        
+                        // Update StackFrame and r1 to reflect that we pushed to memory
+                        instructions.Add(new AddInstruction(StackPointer, 1));
+                        _stackFrame.Pushed(nativeReturnType);
+                    }
+
+                    return instructions;
+                }
+            }
+
+            // Original function call logic (not a native function)
             var returnType   = _functionTypeRepository.ReturnType(node.FunctionRef(TypeIdentifier));
 
             // ToList as we need deterministic iteration order
@@ -114,7 +221,13 @@ namespace ScriptCompiler.CodeGeneration {
             instructions.Add(new MemWriteInstruction(_regManager.StackPointer, returnLabel));
             // TODO: Check this logic? Make sure all stack operations make sense
             instructions.Add(new AddInstruction(_regManager.StackPointer, 1));
-            instructions.Add(new JmpInstruction(new Label(node.AsmLabel(TypeIdentifier))));
+
+            var functionRef = node.FunctionRef(TypeIdentifier);
+            if (_functionTypeRepository.IsExtern(functionRef)) {
+                instructions.Add(new JmpExternInstruction(node.AsmLabel(TypeIdentifier)));
+            } else {
+                instructions.Add(new JmpInstruction(new Label(node.AsmLabel(TypeIdentifier))));
+            }
             // The return address
             instructions.Add(new LabelInstruction(returnLabel));
             // Pop the arguments

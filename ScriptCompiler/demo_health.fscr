@@ -1,0 +1,8 @@
+// Demo script - prints player max health
+// This should be compiled into bytecode for the dialogue
+
+func void printPlayerHealth() {
+    // Note: These are placeholder function calls
+    // The actual native functions would need compiler support
+    print "Player max health: 10000";
+}

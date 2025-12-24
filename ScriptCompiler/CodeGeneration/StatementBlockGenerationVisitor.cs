@@ -18,28 +18,37 @@ namespace ScriptCompiler.CodeGeneration {
         private readonly UserTypeRepository _userTypeRepository;
         private readonly StaticVariableRepository _staticVariableRepository;
         private readonly Dictionary<string, StringLabel> _stringPoolAliases;
-        private readonly RegisterManager _regManager = new RegisterManager();
+        private readonly ForgottenRPG.NativeFunctions.NativeFunctionRegistry _nativeRegistry;
 
         private StackFrame _stackFrame;
+        private readonly RegisterManager _registerManager;
 
-        private Register StackPointer => _regManager.StackPointer;
+        private Register StackPointer => _registerManager.StackPointer;
 
         private ExpressionGenerator ExpressionGenerator => new ExpressionGenerator(
-            _functionTypeRepository, _userTypeRepository, _stringPoolAliases, _stackFrame, _regManager);
+            _functionTypeRepository,
+            _userTypeRepository,
+            _stringPoolAliases,
+            _stackFrame,
+            _registerManager,
+            _nativeRegistry);
 
         private TypeIdentifier TypeIdentifier => new TypeIdentifier(
-            _functionTypeRepository, _userTypeRepository, _stackFrame);
+            _functionTypeRepository, _userTypeRepository, _stackFrame, _nativeRegistry);
 
         internal StatementBlockGenerationVisitor(FunctionTypeRepository functionTypeRepository,
-                                               UserTypeRepository userTypeRepository,
-                                               StaticVariableRepository staticVariableRepository,
-                                               Dictionary<string, StringLabel> stringPoolAliases,
-                                               StackFrame? stackFrame = null) {
-            _functionTypeRepository   = functionTypeRepository;
-            _userTypeRepository       = userTypeRepository;
-            _staticVariableRepository = staticVariableRepository;
-            _stringPoolAliases        = stringPoolAliases;
-            _stackFrame               = stackFrame ?? new StackFrame();
+                                                 UserTypeRepository userTypeRepository,
+                                                 StaticVariableRepository staticVariableRepository,
+                                                 Dictionary<string, StringLabel> stringPoolAliases,
+                                                 StackFrame stackFrame = null,
+                                                 ForgottenRPG.NativeFunctions.NativeFunctionRegistry nativeRegistry = null) {
+            _functionTypeRepository    = functionTypeRepository;
+            _userTypeRepository        = userTypeRepository;
+            _staticVariableRepository  = staticVariableRepository;
+            _stringPoolAliases         = stringPoolAliases;
+            _stackFrame                = stackFrame ?? new StackFrame();
+            _registerManager           = new RegisterManager();
+            _nativeRegistry            = nativeRegistry;
         }
 
         public List<Instruction> VisitStatementBlock(List<StatementNode> statements) {
@@ -85,7 +94,7 @@ namespace ScriptCompiler.CodeGeneration {
 
                 // The result is now at the top of the stack so copy it where we want it
                 // Set up a register offset from the stack pointer by type.Length
-                using var writeLocation = _regManager.NewRegister();
+                using var writeLocation = _registerManager.NewRegister();
                 instructions.Add(new MovInstruction(writeLocation, StackPointer));
                 instructions.Add(new SubInstruction(writeLocation, type.Length));
                 for (int i = 0; i < type.Length; i++) {
@@ -119,7 +128,7 @@ namespace ScriptCompiler.CodeGeneration {
             var instructions = ExpressionGenerator.Generate(node.Expression);
             instructions.Add(PopStack(expressionType));
 
-            using var register = _regManager.NewRegister();
+            using var register = _registerManager.NewRegister();
             instructions.Add(new MemReadInstruction(register, StackPointer));
 
             if (ReferenceEquals(expressionType, SType.SString)) {
@@ -145,19 +154,23 @@ namespace ScriptCompiler.CodeGeneration {
             var endLabel  = new Label(Guid.NewGuid().ToString());
 
             instructions.Add(PopStack(SType.SBool));
-            using var resultReg = _regManager.NewRegister();
-            using var cmpReg    = _regManager.NewRegister();
+            using var resultReg = _registerManager.NewRegister();
+            using var cmpReg    = _registerManager.NewRegister();
 
             // Condition
             instructions.Add(new MemReadInstruction(resultReg, StackPointer));
             instructions.Add(new MovInstruction(cmpReg, 0));
             instructions.Add(new CmpInstruction(resultReg, cmpReg));
             instructions.Add(new JmpEqInstruction(node.ElseBlock != null ? elseLabel : endLabel));
+            NewStackFrame();
             instructions.AddRange(VisitStatementBlock(node.IfBlock.Statements));
+            PopStackFrame(instructions);
             if (node.ElseBlock != null) {
                 instructions.Add(new JmpInstruction(endLabel));
                 instructions.Add(new LabelInstruction(elseLabel));
+                NewStackFrame();
                 instructions.AddRange(VisitStatementBlock(node.ElseBlock.Statements));
+                PopStackFrame(instructions);
             }
             instructions.Add(new LabelInstruction(endLabel));
 
@@ -184,8 +197,8 @@ namespace ScriptCompiler.CodeGeneration {
                 instructions.AddRange(ExpressionGenerator.Generate(node.Condition));
 
                 instructions.Add(PopStack(SType.SBool));
-                using var resultReg = _regManager.NewRegister();
-                using var cmpReg    = _regManager.NewRegister();
+                using var resultReg = _registerManager.NewRegister();
+                using var cmpReg    = _registerManager.NewRegister();
 
                 // Condition
                 instructions.Add(new MemReadInstruction(resultReg, StackPointer));
@@ -226,7 +239,7 @@ namespace ScriptCompiler.CodeGeneration {
             // We know this will be offset rather than guid since it's not a static
             var (type, offset, _) = _stackFrame.Lookup(StackFrame.ReturnIdentifier);
 
-            using var copyRegister = _regManager.NewRegister();
+            using var copyRegister = _registerManager.NewRegister();
             // Ret1 | Ret2 | Ret3 | Stk1 | Stk2 | Stk3 | Res1 | Res2 | Res3 | 0
             //                                                                ^ Initial stack pointer
             // ^ StackPointer + offset

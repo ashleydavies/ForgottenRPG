@@ -53,9 +53,42 @@ namespace ScriptCompiler {
                 Console.WriteLine("Assembled code:");
                 Console.WriteLine(bytecodeString);
                 Console.WriteLine($"{assembled.Count} words in total");
+            } else if (args[0] == "native-compile") {
+                var registry = new ForgottenRPG.NativeFunctions.NativeFunctionRegistry();
+                registry.ScanType(typeof(ForgottenRPG.Scripting.GameScriptLibrary));
+                registry.ScanType(typeof(ForgottenRPG.Entity.GameEntity));
+                registry.ScanType(typeof(ForgottenRPG.Items.IItem));
+
+                Console.WriteLine("Native functions registered:");
+                for (int i = 0; i < 20; i++) {
+                    try {
+                        var func = registry.GetById(i);
+                        Console.WriteLine($"  {i}: {func.ScriptName}");
+                    } catch {
+                        break;
+                    }
+                }
+
+                var compiled = Parser.FromFile(fileName).Compile(registry);
+                Console.WriteLine("Compiled code:");
+                Console.WriteLine(compiled);
+
+                var assembled =
+                    new Assembler(compiled.Split(new[] {Environment.NewLine}, StringSplitOptions.None).ToList())
+                        .Compile();
+                string bytecodeString = string.Join(",", assembled);
+
+                Console.WriteLine("Assembled code:");
+                Console.WriteLine(bytecodeString);
+                Console.WriteLine($"{assembled.Count} words in total");
             } else if (args[0] == "execute") {
                 ServiceLocator.LogService = new SimpleLogger();
-                var compiled = Parser.FromFile(fileName).Compile();
+                var registry = new ForgottenRPG.NativeFunctions.NativeFunctionRegistry();
+                registry.ScanType(typeof(ForgottenRPG.Scripting.GameScriptLibrary));
+                registry.ScanType(typeof(ForgottenRPG.Entity.GameEntity));
+                registry.ScanType(typeof(ForgottenRPG.Items.IItem));
+
+                var compiled = Parser.FromFile(fileName).Compile(registry);
                 ServiceLocator.LogService.Log(LogType.Info, "Compiled code:");
                 ServiceLocator.LogService.Log(LogType.Info, compiled);
 
@@ -69,7 +102,9 @@ namespace ScriptCompiler {
                 ServiceLocator.LogService.Log(LogType.Info, $"{assembled.Count} words in total");
 
                 List<uint> bytecode = bytecodeString.Split(',').Select(uint.Parse).ToList();
-                new ScriptVm(bytecode).Execute();
+                var vm = new ScriptVm(bytecode);
+                vm.RegisterNativeFunctions(registry);
+                vm.Execute();
             } else {
                 Console.WriteLine($"Unexpected argument {args[0]}");
             }

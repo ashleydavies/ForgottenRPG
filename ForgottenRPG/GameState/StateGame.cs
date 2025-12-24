@@ -75,6 +75,9 @@ namespace ForgottenRPG.GameState {
 
             if (Player == null) throw new EntityException("No player was created during map loading time");
 
+            // Initialize scripting library with player
+            Scripting.GameScriptLibrary.Initialize(Player);
+
             Player.GetComponent<InventoryComponent>().Inventory
                   .PickupItem(new ItemStack(_itemManager.GetItem("iron_longsword"), 1));
 

@@ -12,20 +12,22 @@ namespace ScriptCompiler.AST {
         public readonly ExplicitTypeNode TypeNode;
         public readonly CodeBlockNode CodeBlock;
         public readonly List<(string type, int pointerDepth, string name)> ParameterDefinitions;
+        public readonly bool IsExtern;
 
         public Label Label => new Label($"func_{ObjectName}!{Name}");
 
         public FunctionReference Reference(UserTypeRepository utr) =>
             new FunctionReference(ObjectName != null ? SType.FromTypeString(ObjectName, utr) : null, Name);
 
-        public FunctionNode(string functionName, ExplicitTypeNode typeNode, CodeBlockNode codeBlock,
+        public FunctionNode(string functionName, ExplicitTypeNode typeNode, CodeBlockNode? codeBlock,
                             List<(string type, int pointerDepth, string name)> parameterDefinitions,
-                            string? objectName) {
+                            string? objectName, bool isExtern = false) {
             Name                 = functionName;
             TypeNode             = typeNode;
             CodeBlock            = codeBlock;
             ParameterDefinitions = parameterDefinitions;
             ObjectName           = objectName;
+            IsExtern             = isExtern;
             if (objectName != null) {
                 parameterDefinitions.Insert(0, (objectName, 1, "this"));
             }
@@ -37,7 +39,9 @@ namespace ScriptCompiler.AST {
         }
 
         public override List<ASTNode> Children() {
-            return new List<ASTNode> {TypeNode, CodeBlock};
+            var children = new List<ASTNode> {TypeNode};
+            if (CodeBlock != null) children.Add(CodeBlock);
+            return children;
         }
     }
 }

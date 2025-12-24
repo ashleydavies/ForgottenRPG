@@ -7,7 +7,10 @@ using ForgottenRPG.Service;
 using ForgottenRPG.Util.Coordinate;
 using SFML.Graphics;
 
+using ForgottenRPG.NativeFunctions;
+
 namespace ForgottenRPG.Entity {
+    [ScriptReference("Entity")]
     public class GameEntity {
         public string Name { get; }
         public int Id { get; }

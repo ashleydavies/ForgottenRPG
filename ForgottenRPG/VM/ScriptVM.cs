@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using ForgottenRPG.Service;
+using ForgottenRPG.NativeFunctions;
 using static System.BitConverter;
 
 namespace ForgottenRPG.VM {
@@ -16,6 +17,9 @@ namespace ForgottenRPG.VM {
         private readonly Dictionary<uint, IMemoryPage> _memory = new Dictionary<uint, IMemoryPage>();
         private readonly uint _stackPointerBase;
         private readonly uint _maxExecutionAddress;
+        private readonly Dictionary<int, object> _entityRegistry = new Dictionary<int, object>();
+        private readonly Stack<object> _pendingData = new Stack<object>();
+        private NativeFunctionRegistry _nativeFunctionRegistry;
         public Action<string> PrintMethod { get; set; } = s => ServiceLocator.LogService.Log(LogType.Info, "VM : " + s);
 
         public ScriptVm(List<uint> bytes) {
@@ -67,6 +71,70 @@ namespace ForgottenRPG.VM {
                 ExecuteInstruction();
             }
         }
+
+        /// <summary>
+        /// Register native functions that can be called from scripts
+        /// </summary>
+        public void RegisterNativeFunctions(NativeFunctionRegistry registry) {
+            _nativeFunctionRegistry = registry;
+            foreach (var func in registry.AllFunctions) {
+                GlobalSymbolRegistry.Register(func.ScriptName, (uint)func.Id);
+            }
+        }
+
+        public void ResolveRelocations() {
+            if (_bytes.Count < 3) return;
+            uint relocationTableOffset = _bytes[2];
+            if (relocationTableOffset >= _bytes.Count) return;
+
+            int i = (int)relocationTableOffset;
+            uint count = _bytes[i++];
+            for (uint r = 0; r < count; r++) {
+                uint addressToPatch = _bytes[i++];
+                uint nameLen = _bytes[i++];
+                char[] nameChars = new char[nameLen];
+                for (uint c = 0; c < nameLen; c++) {
+                    nameChars[c] = (char)_bytes[i++];
+                }
+                string symbolName = new string(nameChars);
+
+                if (GlobalSymbolRegistry.TryGet(symbolName, out uint resolvedAddress)) {
+                    WriteMemory(addressToPatch, resolvedAddress);
+                } else {
+                    PrintMethod($"Warning: Could not resolve symbol {symbolName}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Register all symbols exported by this script into the global registry.
+        /// Symbols are basically any label in the script.
+        /// </summary>
+        public void RegisterSymbols(Dictionary<string, int> labels, uint loadOffset) {
+            // Wait, currently labels are resolved by the assembler.
+            // If we want to export them, the assembler needs to include a symbol table.
+            // For now, let's assume we want to export EVERYTHING that looks like a function.
+        }
+
+        /// <summary>
+        /// Register an entity in the VM's entity registry and return its handle ID
+        /// </summary>
+        public int RegisterEntity(object entity) {
+            int id = _entityRegistry.Count + 1; // Start from 1, 0 is null
+            while (_entityRegistry.ContainsKey(id)) {
+                id++;
+            }
+            _entityRegistry[id] = entity;
+            return id;
+        }
+
+        public object GetEntity(int entityId) {
+            if (_entityRegistry.TryGetValue(entityId, out var entity)) {
+                return entity;
+            }
+            throw new InvalidOperationException($"Entity with ID {entityId} not found in VM registry");
+        }
+
 
         // TODO: Migrate fully from stack to register machine for performance improvements.
         // The whole VM was originally intended to be a full stack machine, but the higher level
@@ -195,6 +263,25 @@ namespace ForgottenRPG.VM {
                     var loc = PopStack();
                     _stack.Push(ReadMemory(loc));
                     break;
+                case Instruction.CallNative:
+                    // Read function ID from instruction stream
+                    int functionId = (int)ReadInstructionByte();
+                    
+                    if (_nativeFunctionRegistry == null) {
+                        PrintMethod($"Error: No native function registry registered");
+                        break;
+                    }
+                    
+                    var funcInfo = _nativeFunctionRegistry.GetById(functionId);
+                    if (funcInfo == null) {
+                        PrintMethod($"Error: Native function with ID {functionId} not found");
+                        break;
+                    }
+                    
+                    // Create context and invoke the marshalled delegate
+                    var context = new ScriptNativeContext(_stack, _entityRegistry, _pendingData, WriteMemory, ReadMemory);
+                    funcInfo.MarshalledDelegate(context);
+                    break;
                 default:
                     PrintMethod("Unexpected instruction");
                     break;
@@ -242,7 +329,11 @@ namespace ForgottenRPG.VM {
         }
 
         private void        IncrementIr()     => _registers[InstructionRegister] += 1;
-        private Instruction ReadInstruction() => (Instruction) ReadInstructionByte();
+        private Instruction ReadInstruction() {
+            var ir = _registers[InstructionRegister];
+            var instr = (Instruction) ReadInstructionByte();
+            return instr;
+        }
 
         private uint ReadInstructionByte() {
             var data = ReadMemory(_registers[InstructionRegister]);
@@ -288,7 +379,12 @@ namespace ForgottenRPG.VM {
             var index = sindex;
             var (page, offset) = GetPageAndOffset(index);
             if (!_memory.ContainsKey(page)) _memory[page] = new MemoryPage();
-            _memory[page].WriteAddress(offset, value);
+
+            try {
+                _memory[page].WriteAddress(offset, value);
+            } catch (IllegalMemoryAccessException e) {
+                throw new IllegalMemoryAccessException($"{e.Message} (Page {page}, Address {index}, r1={_registers[StackPointerRegister]})");
+            }
 
 #if DEBUG_MEM
             Console.WriteLine($"Writing {value} to {index}");
@@ -340,6 +436,7 @@ namespace ForgottenRPG.VM {
             PrintFloat,
             MemWrite,
             MemRead,
+            CallNative,
         }
 
         private class Flags {

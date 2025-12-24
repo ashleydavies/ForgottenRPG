@@ -109,6 +109,12 @@
     <None Update="Resources\Data\XML\Map\abandoned-forest.tmx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\Data\XML\Map\derelict-fields.tmx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Data\XML\Map\kran.tmx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
 		<PackageReference Include="SFML.Net" Version="2.6.1" />

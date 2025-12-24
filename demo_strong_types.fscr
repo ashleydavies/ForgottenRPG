@@ -1,0 +1,25 @@
+import "ScriptCompiler/mem";
+
+Entity* player = get_player();
+
+print("Player ID:");
+print(entity_get_id(player));
+
+print("Has Primary Equipped:");
+if (entity_has_primary_equipped(player)) {
+    print("Yes");
+    Item* item = entity_get_primary_item(player);
+    print("Primary Item Hash:");
+    print(item_get_name_hash(item));
+    
+    print("Primary Item Name:");
+    print(item_get_name(item));
+} else {
+    print("No");
+}
+
+print("Sending 1 damage...");
+entity_send_damage(player, 1);
+
+print("New Health:");
+print(entity_get_health(player));

@@ -11,7 +11,7 @@
         }
 
         public void WriteAddress(uint offset, uint value) {
-            if (_locked) throw new IllegalMemoryAccessException("Attempt to write to protected page");
+            if (_locked) throw new IllegalMemoryAccessException($"Attempt to write to protected page at offset {offset}");
             _memory[offset] = value;
         }
 

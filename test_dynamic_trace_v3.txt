@@ -1,0 +1,378 @@
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/CodeGenerator.cs(26,99): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/ExpressionGenerator.cs(39,133): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(96,100): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/TypeIdentifier.cs(17,123): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/StatementBlockGenerationVisitor.cs(43,74): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/StatementBlockGenerationVisitor.cs(44,119): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/CodeGenerator.cs(48,21): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(23,28): warning CS8600: Converting null literal or possible null value to non-nullable type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(27,51): warning CS8604: Possible null reference argument for parameter 'filename' in 'Parser Parser.FromFile(string filename)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(44,48): warning CS8604: Possible null reference argument for parameter 'filename' in 'Parser Parser.FromFile(string filename)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(72,48): warning CS8604: Possible null reference argument for parameter 'filename' in 'Parser Parser.FromFile(string filename)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(91,48): warning CS8604: Possible null reference argument for parameter 'filename' in 'Parser Parser.FromFile(string filename)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(239,21): warning CS8600: Converting null literal or possible null value to non-nullable type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(240,41): warning CS8604: Possible null reference argument for parameter 'token' in 'InfixParseRule? Parser.GetMatchingInfixRule(LexToken token, Precedence precedence)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(241,30): warning CS8602: Dereference of a possibly null reference. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(242,25): warning CS8600: Converting null literal or possible null value to non-nullable type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(281,20): warning CS8603: Possible null reference return. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(407,30): warning CS8600: Converting null literal or possible null value to non-nullable type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+Info: Dropping to naked expression parsing for SymbolToken<!> [14:5] IdentifierToken<mallocHead> [14:5]
+Info: Dropping to naked expression parsing for IdentifierToken<x> [29:0] SymbolToken<->> [29:3]
+Info: Dropping to naked expression parsing for IdentifierToken<y> [31:0] SymbolToken<->> [31:3]
+Info: Dropping to naked expression parsing for IdentifierToken<x> [32:0] SymbolToken<->> [32:3]
+Info: Dropping to naked expression parsing for IdentifierToken<y> [33:0] SymbolToken<->> [33:3]
+Info: Compiled code:
+Info: .static
+STATIC $stc_cfbee49e-f650-4a64-b7f3-f5f83dcd0c28 2147483648
+STATIC $stc_f992ae18-436f-4faf-ae77-2be840a110ad 2147483647
+STATIC $stc_2536db60-673e-4dc8-8858-8b0bae4686a3 1024
+.data
+STRING $str_0 Testing Dynamic String:
+STRING $str_1 Testing Dynamic List:
+STRING $str_2 List Address:
+STRING $str_3 List Length:
+STRING $str_4 List Elements:
+.text
+MEMWRITE r1 !$str_0
+MEMREAD r2 r1
+PRINT r2
+MEMWRITE r1 0
+ADD r1 1
+CALLNATIVE 13 # Call native function item_get_name
+MEMWRITE r1 0
+ADD r1 1
+POP r2
+PUSH r1
+PUSH r2
+MEMWRITE_STACK
+ADD r1 1
+MEMWRITE r1 $malloc_return_a410458c-738f-4d9d-b2b7-782da5c93cc7
+ADD r1 1
+JMP $func_!malloc
+LABEL malloc_return_a410458c-738f-4d9d-b2b7-782da5c93cc7
+MOV r3 r1
+SUB r3 2
+PUSH r3
+MEMREAD_STACK
+SUB r1 2
+CALLNATIVE 12 # Commit cached data to allocated buffer
+POP r2
+PUSH r1
+PUSH r2
+MEMWRITE_STACK
+MEMREAD r2 r1
+PRINT r2
+MEMWRITE r1 !$str_1
+MEMREAD r2 r1
+PRINT r2
+ADD r1 1 # Declaring list
+CALLNATIVE 15 # Call native function test_get_list
+MEMWRITE r1 0
+ADD r1 1
+POP r2
+PUSH r1
+PUSH r2
+MEMWRITE_STACK
+ADD r1 1
+MEMWRITE r1 $malloc_return_c03b420d-4679-4323-9a63-3c477a055c3a
+ADD r1 1
+JMP $func_!malloc
+LABEL malloc_return_c03b420d-4679-4323-9a63-3c477a055c3a
+MOV r3 r1
+SUB r3 2
+PUSH r3
+MEMREAD_STACK
+SUB r1 2
+CALLNATIVE 12 # Commit cached data to allocated buffer
+POP r2
+PUSH r1
+PUSH r2
+MEMWRITE_STACK
+ADD r1 1
+MOV r2 r1
+SUB r2 1
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+MEMWRITE r1 !$str_2
+MEMREAD r2 r1
+PRINT r2
+MOV r2 r1 # Begin access list
+ADD r2 -1
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+PRINTINT r2
+MEMWRITE r1 !$str_3
+MEMREAD r2 r1
+PRINT r2
+MOV r2 r1 # Begin access list
+ADD r2 -1
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MEMREAD r2 r1
+PRINTINT r2
+MEMWRITE r1 !$str_4
+MEMREAD r2 r1
+PRINT r2
+MOV r2 r1 # Begin access list
+ADD r2 -1
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMWRITE r1 1
+MEMREAD r3 r1
+ADD r2 r3
+MEMWRITE r1 r2
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MEMREAD r2 r1
+PRINTINT r2
+MOV r2 r1 # Begin access list
+ADD r2 -1
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMWRITE r1 2
+MEMREAD r3 r1
+ADD r2 r3
+MEMWRITE r1 r2
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MEMREAD r2 r1
+PRINTINT r2
+MOV r2 r1 # Begin access list
+ADD r2 -1
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMWRITE r1 3
+MEMREAD r3 r1
+ADD r2 r3
+MEMWRITE r1 r2
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MEMREAD r2 r1
+PRINTINT r2
+MOV r2 r1 # Begin access list
+ADD r2 -1
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMWRITE r1 4
+MEMREAD r3 r1
+ADD r2 r3
+MEMWRITE r1 r2
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MEMREAD r2 r1
+PRINTINT r2
+MOV r2 r1 # Begin access list
+ADD r2 -1
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMWRITE r1 5
+MEMREAD r3 r1
+ADD r2 r3
+MEMWRITE r1 r2
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MEMREAD r2 r1
+PRINTINT r2
+JMP $END # Standard termination
+LABEL func_!malloc # Entry point of malloc
+ADD r1 1 # Declaring allocatedPageStart
+MOV r2 !$stc_cfbee49e-f650-4a64-b7f3-f5f83dcd0c28 # Begin static access mallocBase
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MOV r3 !$stc_f992ae18-436f-4faf-ae77-2be840a110ad # Begin static access mallocHead
+MEMCOPY r1 r3
+ADD r3 1
+MEMREAD r3 r1
+MEMCOPY r1 r3
+ADD r1 1
+ADD r3 1
+SUB r1 1
+MEMREAD r3 r1
+MOV r4 !$stc_2536db60-673e-4dc8-8858-8b0bae4686a3 # Begin static access pageLength
+MEMCOPY r1 r4
+ADD r4 1
+MEMREAD r4 r1
+MUL r3 r4
+MEMWRITE r1 r3
+MEMREAD r3 r1
+ADD r2 r3
+MEMWRITE r1 r2
+ADD r1 1
+MOV r2 r1
+SUB r2 1
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+ADD r1 1 # Declaring thisPageLength
+MOV r2 r1 # Begin access size
+ADD r2 -4
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MOV r3 !$stc_2536db60-673e-4dc8-8858-8b0bae4686a3 # Begin static access pageLength
+MEMCOPY r1 r3
+ADD r3 1
+MEMREAD r3 r1
+DIV r2 r3
+MEMWRITE r1 r2
+MEMREAD r2 r1
+MEMWRITE r1 1
+MEMREAD r3 r1
+ADD r2 r3
+MEMWRITE r1 r2
+ADD r1 1
+MOV r2 r1
+SUB r2 1
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+MOV r2 !$stc_f992ae18-436f-4faf-ae77-2be840a110ad # Begin assignment
+MEMREAD r2 r2
+MOV r3 !$stc_f992ae18-436f-4faf-ae77-2be840a110ad # Begin static access mallocHead
+MEMCOPY r1 r3
+ADD r3 1
+MEMREAD r3 r1
+MEMCOPY r1 r3
+ADD r1 1
+ADD r3 1
+SUB r1 1
+MEMREAD r3 r1
+MOV r4 r1 # Begin access thisPageLength
+ADD r4 -1
+MEMCOPY r1 r4
+ADD r4 1
+MEMREAD r4 r1
+ADD r3 r4
+MEMWRITE r1 r3
+MEMCOPY r2 r1
+ADD r2 1
+MOV r2 r1 # Begin access allocatedPageStart
+ADD r2 -2
+MEMCOPY r1 r2
+ADD r2 1
+ADD r1 1
+MOV r2 r1
+ADD r2 -5
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+SUB r1 3
+MEMREAD r0 r1 # Return from malloc
+LABEL END
+Info: Assigning label malloc_return_a410458c-738f-4d9d-b2b7-782da5c93cc7 to instruction ID 68
+Info: Assigning label malloc_return_c03b420d-4679-4323-9a63-3c477a055c3a to instruction ID 169
+Info: Assigning label func_!malloc to instruction ID 830
+Info: Assigning label end to instruction ID 1328
+Info: Assembled code:
+Info: 4184,5,2147483648,2147483647,1024,23,84,101,115,116,105,110,103,32,68,121,110,97,109,105,99,32,83,116,114,105,110,103,58,21,84,101,115,116,105,110,103,32,68,121,110,97,109,105,99,32,76,105,115,116,58,13,76,105,115,116,32,65,100,100,114,101,115,115,58,12,76,105,115,116,32,76,101,110,103,116,104,58,14,76,105,115,116,32,69,108,101,109,101,110,116,115,58,13,1,1,4096,28,13,1,29,12,2,13,2,24,13,1,1,0,28,13,1,1,1,2,12,1,30,13,13,1,1,0,28,13,1,1,1,2,12,1,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,1,4252,28,13,1,1,1,2,12,1,1,5014,17,13,1,12,3,13,3,1,2,4,12,3,13,3,29,13,1,1,2,4,12,1,30,12,12,2,13,1,13,2,28,13,1,29,12,2,13,2,24,13,1,1,4120,28,13,1,29,12,2,13,2,24,13,1,1,1,2,12,1,30,15,13,1,1,0,28,13,1,1,1,2,12,1,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,1,4353,28,13,1,1,1,2,12,1,1,5014,17,13,1,12,3,13,3,1,2,4,12,3,13,3,29,13,1,1,2,4,12,1,30,12,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,1,4,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,4142,28,13,1,29,12,2,13,2,24,13,1,12,2,13,2,1,4294967295,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,2,25,13,1,1,4156,28,13,1,29,12,2,13,2,24,13,1,12,2,13,2,1,4294967295,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,29,12,2,13,2,25,13,1,1,4169,28,13,1,29,12,2,13,2,24,13,1,12,2,13,2,1,4294967295,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,1,1,28,13,1,29,12,3,13,2,13,3,2,12,2,13,1,13,2,28,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,29,12,2,13,2,25,13,1,12,2,13,2,1,4294967295,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,1,2,28,13,1,29,12,3,13,2,13,3,2,12,2,13,1,13,2,28,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,29,12,2,13,2,25,13,1,12,2,13,2,1,4294967295,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,1,3,28,13,1,29,12,3,13,2,13,3,2,12,2,13,1,13,2,28,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,29,12,2,13,2,25,13,1,12,2,13,2,1,4294967295,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,1,4,28,13,1,29,12,3,13,2,13,3,2,12,2,13,1,13,2,28,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,29,12,2,13,2,25,13,1,12,2,13,2,1,4294967295,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,1,5,28,13,1,29,12,3,13,2,13,3,2,12,2,13,1,13,2,28,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,29,12,2,13,2,25,1,5512,17,13,1,1,1,2,12,1,1,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,1,3,12,3,13,1,13,3,29,28,13,3,1,1,2,12,3,13,1,29,12,3,13,1,13,3,29,28,13,1,1,1,2,12,1,13,3,1,1,2,12,3,13,1,1,1,4,12,1,13,1,29,12,3,1,4,12,4,13,1,13,4,29,28,13,4,1,1,2,12,4,13,1,29,12,4,13,3,13,4,6,12,3,13,1,13,3,28,13,1,29,12,3,13,2,13,3,2,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,1,4,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967292,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,1,4,12,3,13,1,13,3,29,28,13,3,1,1,2,12,3,13,1,29,12,3,13,2,13,3,8,12,2,13,1,13,2,28,13,1,29,12,2,13,1,1,1,28,13,1,29,12,3,13,2,13,3,2,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,1,4,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,1,3,12,2,13,2,29,12,2,1,3,12,3,13,1,13,3,29,28,13,3,1,1,2,12,3,13,1,29,12,3,13,1,13,3,29,28,13,1,1,1,2,12,1,13,3,1,1,2,12,3,13,1,1,1,4,12,1,13,1,29,12,3,13,1,12,4,13,4,1,4294967295,2,12,4,13,1,13,4,29,28,13,4,1,1,2,12,4,13,1,29,12,4,13,3,13,4,2,12,3,13,1,13,3,28,13,2,13,1,29,28,13,2,1,1,2,12,2,13,1,12,2,13,2,1,4294967294,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967291,2,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,3,4,12,1,13,1,29,12,0
+Info: 1421 words in total
+Info: VM : DEBUG: Read from 4184 (r1=8192)
+Info: VM : DEBUG: Executing RegisterToStack at 4184 (r1=8192)
+Info: VM : DEBUG: Read from 4185 (r1=8192)
+Info: VM : DEBUG: Read from 4185 (r1=8192)
+Info: VM : DEBUG: Read from 4186 (r1=8192)
+Info: VM : DEBUG: Executing Literal at 4186 (r1=8192)
+Info: VM : DEBUG: Read from 4187 (r1=8192)
+Info: VM : DEBUG: Read from 4188 (r1=8192)
+Info: VM : DEBUG: Executing MemWrite at 4188 (r1=8192)
+Info: VM : DEBUG: Read from 4189 (r1=8192)
+Info: VM : DEBUG: Executing RegisterToStack at 4189 (r1=8192)
+Info: VM : DEBUG: Read from 4190 (r1=8192)
+Info: VM : DEBUG: Read from 4190 (r1=8192)
+Info: VM : DEBUG: Read from 4191 (r1=8192)
+Info: VM : DEBUG: Executing MemRead at 4191 (r1=8192)
+Info: VM : DEBUG: Read from 4192 (r1=8192)
+Info: VM : DEBUG: Executing StackToRegister at 4192 (r1=8192)
+Info: VM : DEBUG: Read from 4193 (r1=8192)
+Info: VM : DEBUG: Read from 4194 (r1=8192)
+Info: VM : DEBUG: Executing RegisterToStack at 4194 (r1=8192)
+Info: VM : DEBUG: Read from 4195 (r1=8192)
+Info: VM : DEBUG: Read from 4195 (r1=8192)
+Info: VM : DEBUG: Read from 4196 (r1=8192)
+Info: VM : DEBUG: Executing Print at 4196 (r1=8192)
+Info: VM : DEBUG: Read from 4096 (r1=8192)
+Info: VM : DEBUG: Read from 4097 (r1=8192)
+Info: VM : DEBUG: Read from 4098 (r1=8192)
+Info: VM : DEBUG: Read from 4099 (r1=8192)
+Info: VM : DEBUG: Read from 4100 (r1=8192)
+Info: VM : DEBUG: Read from 4101 (r1=8192)
+Info: VM : DEBUG: Read from 4102 (r1=8192)
+Info: VM : DEBUG: Read from 4103 (r1=8192)
+Info: VM : DEBUG: Read from 4104 (r1=8192)
+Info: VM : DEBUG: Read from 4105 (r1=8192)
+Info: VM : DEBUG: Read from 4106 (r1=8192)
+Info: VM : DEBUG: Read from 4107 (r1=8192)
+Info: VM : DEBUG: Read from 4108 (r1=8192)
+Info: VM : DEBUG: Read from 4109 (r1=8192)
+Info: VM : DEBUG: Read from 4110 (r1=8192)
+Info: VM : DEBUG: Read from 4111 (r1=8192)
+Info: VM : DEBUG: Read from 4112 (r1=8192)
+Info: VM : DEBUG: Read from 4113 (r1=8192)
+Info: VM : DEBUG: Read from 4114 (r1=8192)
+Info: VM : DEBUG: Read from 4115 (r1=8192)
+Info: VM : DEBUG: Read from 4116 (r1=8192)
+Info: VM : DEBUG: Read from 4117 (r1=8192)
+Info: VM : DEBUG: Read from 4118 (r1=8192)
+Info: VM : DEBUG: Read from 4119 (r1=8192)
+Info: VM : Testing Dynamic String:
+Info: VM : DEBUG: Read from 4197 (r1=8192)
+Info: VM : DEBUG: Executing RegisterToStack at 4197 (r1=8192)
+Info: VM : DEBUG: Read from 4198 (r1=8192)
+Info: VM : DEBUG: Read from 4198 (r1=8192)
+Info: VM : DEBUG: Read from 4199 (r1=8192)
+Info: VM : DEBUG: Executing Literal at 4199 (r1=8192)
+Info: VM : DEBUG: Read from 4200 (r1=8192)
+Info: VM : DEBUG: Read from 4201 (r1=8192)
+Info: VM : DEBUG: Executing MemWrite at 4201 (r1=8192)
+Info: VM : DEBUG: Read from 4202 (r1=8192)
+Info: VM : DEBUG: Executing RegisterToStack at 4202 (r1=8192)
+Info: VM : DEBUG: Read from 4203 (r1=8192)
+Info: VM : DEBUG: Read from 4203 (r1=8192)
+Info: VM : DEBUG: Read from 4204 (r1=8192)
+Info: VM : DEBUG: Executing Literal at 4204 (r1=8192)
+Info: VM : DEBUG: Read from 4205 (r1=8192)
+Info: VM : DEBUG: Read from 4206 (r1=8192)
+Info: VM : DEBUG: Executing Add at 4206 (r1=8192)
+Info: VM : DEBUG: Read from 4207 (r1=8192)
+Info: VM : DEBUG: Executing StackToRegister at 4207 (r1=8192)
+Info: VM : DEBUG: Read from 4208 (r1=8192)
+Info: VM : DEBUG: Read from 4209 (r1=8193)
+Info: VM : DEBUG: Executing CallNative at 4209 (r1=8193)
+Info: VM : DEBUG: Read from 4210 (r1=8193)
+Unhandled exception. System.InvalidOperationException: Stack empty.
+   at System.Collections.Generic.Stack`1.ThrowForEmptyStack()
+   at System.Collections.Generic.Stack`1.Pop()
+   at ForgottenRPG.NativeFunctions.ScriptNativeContext.PopInt() in /Users/ashley/ShaRPG/ForgottenRPG/NativeFunctions/ScriptNativeContext.cs:line 41
+   at ForgottenRPG.NativeFunctions.NativeFunctionRegistry.PopValueFromStack(ScriptNativeContext ctx, Type type) in /Users/ashley/ShaRPG/ForgottenRPG/NativeFunctions/NativeFunctionRegistry.cs:line 129
+   at ForgottenRPG.NativeFunctions.NativeFunctionRegistry.<>c__DisplayClass7_0.<CreateMarshallingWrapper>b__0(ScriptNativeContext ctx) in /Users/ashley/ShaRPG/ForgottenRPG/NativeFunctions/NativeFunctionRegistry.cs:line 75
+   at ForgottenRPG.VM.ScriptVm.ExecuteInstruction() in /Users/ashley/ShaRPG/ForgottenRPG/VM/ScriptVM.cs:line 246
+   at ForgottenRPG.VM.ScriptVm.Execute() in /Users/ashley/ShaRPG/ForgottenRPG/VM/ScriptVM.cs:line 71
+   at ScriptCompiler.MainClass.Main(String[] args) in /Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs:line 107

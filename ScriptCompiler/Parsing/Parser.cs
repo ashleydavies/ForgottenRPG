@@ -93,9 +93,9 @@ namespace ScriptCompiler.Parsing {
             };
         }
 
-        public string Compile() {
+        public string Compile(ForgottenRPG.NativeFunctions.NativeFunctionRegistry nativeRegistry = null) {
             return string.Join('\n', Optimiser.Optimise(
-                                   new CodeGenerator().Generate(Parse())
+                                   new CodeGenerator(nativeRegistry).Generate(Parse())
                                ).Select(p => p.ToString()));
         }
 
@@ -119,6 +119,9 @@ namespace ScriptCompiler.Parsing {
                 switch (token) {
                     case IdentifierToken("func"):
                         functions.Add(ParseFunctionNode());
+                        break;
+                    case IdentifierToken("extern"):
+                        functions.Add(ParseFunctionNode(isExtern: true));
                         break;
                     case IdentifierToken("import") when importProcessing:
                         imports.Add(ParseImportStatementNode());
@@ -212,7 +215,7 @@ namespace ScriptCompiler.Parsing {
             }
 
             var pointerDepth = 0;
-            while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) pointerDepth++;
+            while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@" || s.Symbol == "*")) pointerDepth++;
             var typeNode = new ExplicitTypeNode(identifier, pointerDepth);
 
             var variableIdentifier = Expecting<IdentifierToken>().Content;
@@ -321,12 +324,15 @@ namespace ScriptCompiler.Parsing {
             return importStatementNode;
         }
 
-        private FunctionNode ParseFunctionNode() {
-            Expecting<IdentifierToken>(t => t.Content == "func");
+        private FunctionNode ParseFunctionNode(bool isExtern = false) {
+            Expecting<IdentifierToken>(t => t.Content == (isExtern ? "extern" : "func"));
+            if (isExtern) {
+                Expecting<IdentifierToken>(t => t.Content == "func");
+            }
             var typeToken = Expecting<IdentifierToken>();
             int pointerDepth = 0;
-            while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) pointerDepth++;
-
+            while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@" || s.Symbol == "*")) pointerDepth++;
+            
             var nameToken = Expecting<IdentifierToken>();
             IdentifierToken? objectName = null;
             if (PeekIgnoreMatch<SymbolToken>(t => t.Symbol == "::")) {
@@ -341,7 +347,7 @@ namespace ScriptCompiler.Parsing {
                 // Parse parameter expression and include it in the list
                 var paramType = Expecting<IdentifierToken>();
                 int depth     = 0;
-                while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@")) depth++;
+                while (PeekIgnoreMatch<SymbolToken>(s => s.Symbol == "@" || s.Symbol == "*")) depth++;
                 var paramName = Expecting<IdentifierToken>();
                 paramDefinitions.Add((paramType.Content, depth, paramName.Content));
                 if (PeekIgnoreMatch<SymbolToken>(t => t.Symbol == ",")) continue;
@@ -349,6 +355,13 @@ namespace ScriptCompiler.Parsing {
             }
 
             Expecting<SymbolToken>(t => t.Symbol == ")");
+            
+            if (isExtern) {
+                Expecting<SymbolToken>(t => t.Symbol == ";");
+                return new FunctionNode(nameToken.Content, new ExplicitTypeNode(typeToken.Content, pointerDepth), null,
+                                        paramDefinitions, objectName?.Content, true);
+            }
+            
             var block = ParseCodeBlock();
             return new FunctionNode(nameToken.Content, new ExplicitTypeNode(typeToken.Content, pointerDepth), block,
                                     paramDefinitions, objectName?.Content);
@@ -372,7 +385,7 @@ namespace ScriptCompiler.Parsing {
         /// </summary>
         private bool PeekDeclaration() {
             return PeekToken() is IdentifierToken && PeekToken(1) is IdentifierToken ||
-                   PeekToken(1) is SymbolToken s && s.Symbol == "@";
+                   PeekToken(1) is SymbolToken s && (s.Symbol == "@" || s.Symbol == "*");
         }
 
         private T Expecting<T>(Func<T, bool>? predicate = null) where T : class {

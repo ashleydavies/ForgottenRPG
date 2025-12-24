@@ -1,0 +1,1132 @@
+/Users/ashley/ShaRPG/ForgottenRPG/Util/Coordinate/TileCoordinate.cs(5,18): warning CS0659: 'TileCoordinate' overrides Object.Equals(object o) but does not override Object.GetHashCode() [/Users/ashley/ShaRPG/ForgottenRPG/ForgottenRPG.csproj]
+/Users/ashley/ShaRPG/ForgottenRPG/Util/FPSCounter.cs(22,17): warning CS0618: 'Text.Color' is obsolete: 'Use FillColor and OutlineColor' [/Users/ashley/ShaRPG/ForgottenRPG/ForgottenRPG.csproj]
+/Users/ashley/ShaRPG/ForgottenRPG/VM/ScriptVM.cs(376,22): warning CS0414: The field 'ScriptVm._maxMem' is assigned but its value is never used [/Users/ashley/ShaRPG/ForgottenRPG/ForgottenRPG.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/CodeGenerator.cs(26,99): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/TypeIdentifier.cs(17,123): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/StatementBlockGenerationVisitor.cs(43,74): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/StatementBlockGenerationVisitor.cs(44,119): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(96,100): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/ExpressionGenerator.cs(39,133): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/AST/FunctionNode.cs(27,36): warning CS8601: Possible null reference assignment. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/AST/FunctionNode.cs(22,16): warning CS8618: Non-nullable field 'CodeBlock' must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring the field as nullable. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(23,28): warning CS8600: Converting null literal or possible null value to non-nullable type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(27,51): warning CS8604: Possible null reference argument for parameter 'filename' in 'Parser Parser.FromFile(string filename)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(44,48): warning CS8604: Possible null reference argument for parameter 'filename' in 'Parser Parser.FromFile(string filename)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(72,48): warning CS8604: Possible null reference argument for parameter 'filename' in 'Parser Parser.FromFile(string filename)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/MainClass.cs(91,48): warning CS8604: Possible null reference argument for parameter 'filename' in 'Parser Parser.FromFile(string filename)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/CodeGeneration/CodeGenerator.cs(53,21): warning CS8625: Cannot convert null literal to non-nullable reference type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(242,21): warning CS8600: Converting null literal or possible null value to non-nullable type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(243,41): warning CS8604: Possible null reference argument for parameter 'token' in 'InfixParseRule? Parser.GetMatchingInfixRule(LexToken token, Precedence precedence)'. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(244,30): warning CS8602: Dereference of a possibly null reference. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(245,25): warning CS8600: Converting null literal or possible null value to non-nullable type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(284,20): warning CS8603: Possible null reference return. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+/Users/ashley/ShaRPG/ScriptCompiler/Parsing/Parser.cs(420,30): warning CS8600: Converting null literal or possible null value to non-nullable type. [/Users/ashley/ShaRPG/ScriptCompiler/ScriptCompiler.csproj]
+Native functions registered:
+  0: entity_get_health
+  1: entity_get_id
+  2: entity_get_max_health
+  3: entity_get_name_hash
+  4: entity_get_primary_item
+  5: entity_has_combat
+  6: entity_has_health
+  7: entity_has_inventory
+  8: entity_has_primary_equipped
+  9: entity_is_dead
+  10: entity_send_damage
+  11: get_player
+  12: _internal_commit_data
+  13: item_get_name
+  14: item_get_name_hash
+  15: test_get_list
+Info: Dropping to naked expression parsing for IdentifierToken<player> [38:0] SymbolToken<->> [38:8]
+Error: Logging to NullLogService
+Info: Dropping to naked expression parsing for SymbolToken<!> [14:5] IdentifierToken<mallocHead> [14:5]
+Error: Logging to NullLogService
+Info: Dropping to naked expression parsing for IdentifierToken<x> [29:0] SymbolToken<->> [29:3]
+Error: Logging to NullLogService
+Info: Dropping to naked expression parsing for IdentifierToken<y> [31:0] SymbolToken<->> [31:3]
+Error: Logging to NullLogService
+Info: Dropping to naked expression parsing for IdentifierToken<x> [32:0] SymbolToken<->> [32:3]
+Error: Logging to NullLogService
+Info: Dropping to naked expression parsing for IdentifierToken<y> [33:0] SymbolToken<->> [33:3]
+Error: Logging to NullLogService
+Info: Dropping to naked expression parsing for IdentifierToken<e> [13:4] SymbolToken<->> [13:7]
+Error: Logging to NullLogService
+Info: Dropping to naked expression parsing for IdentifierToken<item> [43:4] SymbolToken<->> [43:10]
+Error: Logging to NullLogService
+Info: Dropping to naked expression parsing for IdentifierToken<entity_send_damage> [48:4] SymbolToken<(> [48:23]
+Error: Logging to NullLogService
+Compiled code:
+.static
+STATIC $stc_abd6b66e-b894-4f37-8e04-fca1424590cf 2147483648
+STATIC $stc_fefb08bb-62c7-41a4-a053-2057a66076a8 2147483647
+STATIC $stc_06764ff1-79b5-4f84-a5ef-55f45d2cf37a 1024
+.data
+STRING $str_0 OO Player ID:
+STRING $str_1 OO Name Hash:
+STRING $str_2 OO Max Health:
+STRING $str_3 OO Current Health:
+STRING $str_4 OO Is Dead:
+STRING $str_8 Yes
+STRING $str_11 No
+STRING $str_7 OO Has Primary Equipped:
+STRING $str_9 OO Primary Item Hash:
+STRING $str_10 OO Primary Item Name:
+STRING $str_12 OO Sending 2 damage...
+STRING $str_13 OO New Health:
+STRING $str_14 Farmer Joe says: 'Looks like these new wrappers work just fine.'
+.text
+MOV r1 1000000 # Initialize stack pointer to safe address
+ADD r1 2
+MEMWRITE r1 $return_a1891aa6-8e07-43ef-8522-b3fdb956e875
+ADD r1 1
+JMP $func_!entity_from_player
+LABEL return_a1891aa6-8e07-43ef-8522-b3fdb956e875
+MOV r2 r1
+SUB r2 1
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+MEMWRITE r1 !$str_0
+MEMREAD r2 r1
+PRINT r2
+ADD r1 1
+MOV r2 r1
+ADD r2 -2
+MEMREAD r2 r2
+MEMWRITE r1 r2
+ADD r1 1
+MEMWRITE r1 $return_0b9f11a5-2434-47ad-9a7d-0b4664df93bf
+ADD r1 1
+JMP $func_EntityWrap!id
+LABEL return_0b9f11a5-2434-47ad-9a7d-0b4664df93bf
+SUB r1 2
+MEMREAD r3 r1
+PRINTINT r3
+MEMWRITE r1 !$str_1
+MEMREAD r3 r1
+PRINT r3
+MEMWRITE r1 r2 # Back up local r2
+ADD r1 2
+MOV r3 r1
+ADD r3 -3
+MEMREAD r3 r3
+MEMWRITE r1 r3
+ADD r1 1
+MEMWRITE r1 $return_a40ba379-2247-4955-b38f-b4d15d05845e
+ADD r1 1
+JMP $func_EntityWrap!name_hash
+LABEL return_a40ba379-2247-4955-b38f-b4d15d05845e
+SUB r1 3
+MEMREAD r2 r1
+MOV r4 r1
+ADD r4 1
+MEMCOPY r1 r4
+ADD r1 1
+ADD r4 1
+SUB r1 1
+MEMREAD r4 r1
+PRINTINT r4
+MEMWRITE r1 !$str_2
+MEMREAD r4 r1
+PRINT r4
+MEMWRITE r1 r2 # Back up local r2
+ADD r1 1
+MEMWRITE r1 r3 # Back up local r3
+ADD r1 2
+MOV r4 r1
+ADD r4 -4
+MEMREAD r4 r4
+MEMWRITE r1 r4
+ADD r1 1
+MEMWRITE r1 $return_508a4879-0445-4f7c-bae1-75e36cf9540a
+ADD r1 1
+JMP $func_EntityWrap!max_health
+LABEL return_508a4879-0445-4f7c-bae1-75e36cf9540a
+SUB r1 3
+MEMREAD r3 r1
+SUB r1 1
+MEMREAD r2 r1
+MOV r5 r1
+ADD r5 2
+MEMCOPY r1 r5
+ADD r1 1
+ADD r5 1
+SUB r1 1
+MEMREAD r5 r1
+PRINTINT r5
+MEMWRITE r1 !$str_3
+MEMREAD r5 r1
+PRINT r5
+MEMWRITE r1 r2 # Back up local r2
+ADD r1 1
+MEMWRITE r1 r3 # Back up local r3
+ADD r1 1
+MEMWRITE r1 r4 # Back up local r4
+ADD r1 2
+MOV r5 r1
+ADD r5 -5
+MEMREAD r5 r5
+MEMWRITE r1 r5
+ADD r1 1
+MEMWRITE r1 $return_52c516b1-34bc-41d3-a9be-26718cc6bc75
+ADD r1 1
+JMP $func_EntityWrap!health
+LABEL return_52c516b1-34bc-41d3-a9be-26718cc6bc75
+SUB r1 3
+MEMREAD r4 r1
+SUB r1 1
+MEMREAD r3 r1
+SUB r1 1
+MEMREAD r2 r1
+MOV r6 r1
+ADD r6 3
+MEMCOPY r1 r6
+ADD r1 1
+ADD r6 1
+SUB r1 1
+MEMREAD r6 r1
+PRINTFLOAT r6
+MEMWRITE r1 !$str_4
+MEMREAD r6 r1
+PRINT r6
+MEMWRITE r1 r2 # Back up local r2
+ADD r1 1
+MEMWRITE r1 r3 # Back up local r3
+ADD r1 1
+MEMWRITE r1 r4 # Back up local r4
+ADD r1 1
+MEMWRITE r1 r5 # Back up local r5
+ADD r1 2
+MOV r6 r1
+ADD r6 -6
+MEMREAD r6 r6
+MEMWRITE r1 r6
+ADD r1 1
+MEMWRITE r1 $return_99876046-0bc9-4860-8489-e0692f3eaf6d
+ADD r1 1
+JMP $func_EntityWrap!is_dead
+LABEL return_99876046-0bc9-4860-8489-e0692f3eaf6d
+SUB r1 3
+MEMREAD r5 r1
+SUB r1 1
+MEMREAD r4 r1
+SUB r1 1
+MEMREAD r3 r1
+SUB r1 1
+MEMREAD r2 r1
+MOV r7 r1
+ADD r7 4
+MEMCOPY r1 r7
+ADD r1 1
+ADD r7 1
+SUB r1 1
+MEMREAD r7 r1
+MOV r8 0
+CMP r7 r8
+JEQ $26c3bbc4-a8db-4dea-af0d-34c69af0b196
+MEMWRITE r1 !$str_8
+MEMREAD r9 r1
+PRINT r9
+JMP $cc818520-70aa-447a-b6e5-173fd37c483a
+LABEL 26c3bbc4-a8db-4dea-af0d-34c69af0b196
+MEMWRITE r1 !$str_11
+MEMREAD r9 r1
+PRINT r9
+LABEL cc818520-70aa-447a-b6e5-173fd37c483a
+MEMWRITE r1 !$str_7
+MEMREAD r7 r1
+PRINT r7
+MEMWRITE r1 r2 # Back up local r2
+ADD r1 1
+MEMWRITE r1 r3 # Back up local r3
+ADD r1 1
+MEMWRITE r1 r4 # Back up local r4
+ADD r1 1
+MEMWRITE r1 r5 # Back up local r5
+ADD r1 1
+MEMWRITE r1 r6 # Back up local r6
+ADD r1 2
+MOV r7 r1
+ADD r7 -7
+MEMREAD r7 r7
+MEMWRITE r1 r7
+ADD r1 1
+MEMWRITE r1 $return_fb402e56-6d30-4013-8865-e6a317a82bd9
+ADD r1 1
+JMP $func_EntityWrap!has_primary
+LABEL return_fb402e56-6d30-4013-8865-e6a317a82bd9
+SUB r1 3
+MEMREAD r6 r1
+SUB r1 1
+MEMREAD r5 r1
+SUB r1 1
+MEMREAD r4 r1
+SUB r1 1
+MEMREAD r3 r1
+SUB r1 1
+MEMREAD r2 r1
+MOV r8 r1
+ADD r8 5
+MEMCOPY r1 r8
+ADD r1 1
+ADD r8 1
+SUB r1 1
+MEMREAD r8 r1
+MOV r9 0
+CMP r8 r9
+JEQ $dc57e3f4-5935-4a8a-9637-a7ad4bc56a26
+MEMWRITE r1 !$str_8
+MEMREAD r10 r1
+PRINT r10
+ADD r1 1 # Declaring item
+MEMWRITE r1 r2 # Back up local r2
+ADD r1 1
+MEMWRITE r1 r3 # Back up local r3
+ADD r1 1
+MEMWRITE r1 r4 # Back up local r4
+ADD r1 1
+MEMWRITE r1 r5 # Back up local r5
+ADD r1 1
+MEMWRITE r1 r6 # Back up local r6
+ADD r1 1
+MEMWRITE r1 r7 # Back up local r7
+ADD r1 1
+MEMWRITE r1 r8 # Back up local r8
+ADD r1 1
+MEMWRITE r1 r9 # Back up local r9
+ADD r1 2
+MOV r10 r1
+ADD r10 -11
+MEMREAD r10 r10
+MEMWRITE r1 r10
+ADD r1 1
+MEMWRITE r1 $return_6fda272a-0d5b-47df-84b9-d8c2a3ae6095
+ADD r1 1
+JMP $func_EntityWrap!primary_item
+LABEL return_6fda272a-0d5b-47df-84b9-d8c2a3ae6095
+SUB r1 3
+MEMREAD r9 r1
+SUB r1 1
+MEMREAD r8 r1
+SUB r1 1
+MEMREAD r7 r1
+SUB r1 1
+MEMREAD r6 r1
+SUB r1 1
+MEMREAD r5 r1
+SUB r1 1
+MEMREAD r4 r1
+SUB r1 1
+MEMREAD r3 r1
+SUB r1 1
+MEMREAD r2 r1
+MOV r11 r1
+ADD r11 8
+MEMCOPY r1 r11
+ADD r1 1
+ADD r11 1
+MOV r11 r1
+SUB r11 1
+SUB r1 1
+SUB r11 1
+MEMCOPY r11 r1
+MEMWRITE r1 !$str_9
+MEMREAD r11 r1
+PRINT r11
+MEMWRITE r1 r2 # Back up local r2
+ADD r1 1
+MEMWRITE r1 r3 # Back up local r3
+ADD r1 1
+MEMWRITE r1 r4 # Back up local r4
+ADD r1 1
+MEMWRITE r1 r5 # Back up local r5
+ADD r1 1
+MEMWRITE r1 r6 # Back up local r6
+ADD r1 1
+MEMWRITE r1 r7 # Back up local r7
+ADD r1 1
+MEMWRITE r1 r8 # Back up local r8
+ADD r1 1
+MEMWRITE r1 r9 # Back up local r9
+ADD r1 1
+MEMWRITE r1 r10 # Back up local r10
+ADD r1 2
+MOV r11 r1
+ADD r11 -11
+MEMREAD r11 r11
+MEMWRITE r1 r11
+ADD r1 1
+MEMWRITE r1 $return_daa5e7f9-c654-42fa-b76f-e66a0cea1979
+ADD r1 1
+JMP $func_ItemWrap!name_hash
+LABEL return_daa5e7f9-c654-42fa-b76f-e66a0cea1979
+SUB r1 3
+MEMREAD r10 r1
+SUB r1 1
+MEMREAD r9 r1
+SUB r1 1
+MEMREAD r8 r1
+SUB r1 1
+MEMREAD r7 r1
+SUB r1 1
+MEMREAD r6 r1
+SUB r1 1
+MEMREAD r5 r1
+SUB r1 1
+MEMREAD r4 r1
+SUB r1 1
+MEMREAD r3 r1
+SUB r1 1
+MEMREAD r2 r1
+MOV r12 r1
+ADD r12 9
+MEMCOPY r1 r12
+ADD r1 1
+ADD r12 1
+SUB r1 1
+MEMREAD r12 r1
+PRINTINT r12
+MEMWRITE r1 !$str_10
+MEMREAD r12 r1
+PRINT r12
+MEMWRITE r1 r2 # Back up local r2
+ADD r1 1
+MEMWRITE r1 r3 # Back up local r3
+ADD r1 1
+MEMWRITE r1 r4 # Back up local r4
+ADD r1 1
+MEMWRITE r1 r5 # Back up local r5
+ADD r1 1
+MEMWRITE r1 r6 # Back up local r6
+ADD r1 1
+MEMWRITE r1 r7 # Back up local r7
+ADD r1 1
+MEMWRITE r1 r8 # Back up local r8
+ADD r1 1
+MEMWRITE r1 r9 # Back up local r9
+ADD r1 1
+MEMWRITE r1 r10 # Back up local r10
+ADD r1 1
+MEMWRITE r1 r11 # Back up local r11
+ADD r1 2
+MOV r12 r1
+ADD r12 -12
+MEMREAD r12 r12
+MEMWRITE r1 r12
+ADD r1 1
+MEMWRITE r1 $return_0c456244-7d2d-447d-999e-1b9a0e45d693
+ADD r1 1
+JMP $func_ItemWrap!name
+LABEL return_0c456244-7d2d-447d-999e-1b9a0e45d693
+SUB r1 3
+MEMREAD r11 r1
+SUB r1 1
+MEMREAD r10 r1
+SUB r1 1
+MEMREAD r9 r1
+SUB r1 1
+MEMREAD r8 r1
+SUB r1 1
+MEMREAD r7 r1
+SUB r1 1
+MEMREAD r6 r1
+SUB r1 1
+MEMREAD r5 r1
+SUB r1 1
+MEMREAD r4 r1
+SUB r1 1
+MEMREAD r3 r1
+SUB r1 1
+MEMREAD r2 r1
+MOV r13 r1
+ADD r13 10
+MEMCOPY r1 r13
+ADD r1 1
+ADD r13 1
+SUB r1 1
+MEMREAD r13 r1
+PRINT r13
+SUB r1 1
+JMP $c224a1e9-6c47-442e-b7da-7f020ccf5ac0
+LABEL dc57e3f4-5935-4a8a-9637-a7ad4bc56a26
+MEMWRITE r1 !$str_11
+MEMREAD r13 r1
+PRINT r13
+LABEL c224a1e9-6c47-442e-b7da-7f020ccf5ac0
+MEMWRITE r1 !$str_12
+MEMREAD r8 r1
+PRINT r8
+MEMWRITE r1 r2 # Back up local r2
+ADD r1 1
+MEMWRITE r1 r3 # Back up local r3
+ADD r1 1
+MEMWRITE r1 r4 # Back up local r4
+ADD r1 1
+MEMWRITE r1 r5 # Back up local r5
+ADD r1 1
+MEMWRITE r1 r6 # Back up local r6
+ADD r1 1
+MEMWRITE r1 r7 # Back up local r7
+ADD r1 1
+MEMWRITE r1 r10 # Back up local r10
+ADD r1 1
+MEMWRITE r1 r11 # Back up local r11
+ADD r1 1
+MEMWRITE r1 r12 # Back up local r12
+ADD r1 1
+MOV r8 r1
+ADD r8 -10
+MEMREAD r8 r8
+MEMWRITE r1 r8
+ADD r1 1
+MEMWRITE r1 2
+ADD r1 1
+MEMWRITE r1 $return_93968b5e-aaed-4431-b50d-39a6ff1cedb8
+ADD r1 1
+JMP $func_EntityWrap!send_damage
+LABEL return_93968b5e-aaed-4431-b50d-39a6ff1cedb8
+SUB r1 3
+MEMREAD r12 r1
+SUB r1 1
+MEMREAD r11 r1
+SUB r1 1
+MEMREAD r10 r1
+SUB r1 1
+MEMREAD r7 r1
+SUB r1 1
+MEMREAD r6 r1
+SUB r1 1
+MEMREAD r5 r1
+SUB r1 1
+MEMREAD r4 r1
+SUB r1 1
+MEMREAD r3 r1
+SUB r1 1
+MEMREAD r2 r1
+MOV r9 r1
+ADD r9 9
+MEMWRITE r1 !$str_13
+MEMREAD r9 r1
+PRINT r9
+MEMWRITE r1 r2 # Back up local r2
+ADD r1 1
+MEMWRITE r1 r3 # Back up local r3
+ADD r1 1
+MEMWRITE r1 r4 # Back up local r4
+ADD r1 1
+MEMWRITE r1 r5 # Back up local r5
+ADD r1 1
+MEMWRITE r1 r6 # Back up local r6
+ADD r1 1
+MEMWRITE r1 r7 # Back up local r7
+ADD r1 1
+MEMWRITE r1 r8 # Back up local r8
+ADD r1 1
+MEMWRITE r1 r10 # Back up local r10
+ADD r1 1
+MEMWRITE r1 r11 # Back up local r11
+ADD r1 1
+MEMWRITE r1 r12 # Back up local r12
+ADD r1 2
+MOV r9 r1
+ADD r9 -12
+MEMREAD r9 r9
+MEMWRITE r1 r9
+ADD r1 1
+MEMWRITE r1 $return_51c7392a-053b-47d6-952a-cc4384c254c1
+ADD r1 1
+JMP $func_EntityWrap!health
+LABEL return_51c7392a-053b-47d6-952a-cc4384c254c1
+SUB r1 3
+MEMREAD r12 r1
+SUB r1 1
+MEMREAD r11 r1
+SUB r1 1
+MEMREAD r10 r1
+SUB r1 1
+MEMREAD r8 r1
+SUB r1 1
+MEMREAD r7 r1
+SUB r1 1
+MEMREAD r6 r1
+SUB r1 1
+MEMREAD r5 r1
+SUB r1 1
+MEMREAD r4 r1
+SUB r1 1
+MEMREAD r3 r1
+SUB r1 1
+MEMREAD r2 r1
+MOV r13 r1
+ADD r13 10
+MEMCOPY r1 r13
+ADD r1 1
+ADD r13 1
+SUB r1 1
+MEMREAD r13 r1
+PRINTFLOAT r13
+MEMWRITE r1 !$str_14
+MEMREAD r13 r1
+PRINT r13
+JMP $END # Standard termination
+EXPORT $func_!malloc malloc
+LABEL func_!malloc # Entry point of malloc
+ADD r1 1 # Declaring allocatedPageStart
+MOV r2 !$stc_abd6b66e-b894-4f37-8e04-fca1424590cf # Begin static access mallocBase
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MOV r3 !$stc_fefb08bb-62c7-41a4-a053-2057a66076a8 # Begin static access mallocHead
+MEMCOPY r1 r3
+ADD r3 1
+MEMREAD r3 r1
+MEMCOPY r1 r3
+ADD r1 1
+ADD r3 1
+SUB r1 1
+MEMREAD r3 r1
+MOV r4 !$stc_06764ff1-79b5-4f84-a5ef-55f45d2cf37a # Begin static access pageLength
+MEMCOPY r1 r4
+ADD r4 1
+MEMREAD r4 r1
+MUL r3 r4
+MEMWRITE r1 r3
+MEMREAD r3 r1
+ADD r2 r3
+MEMWRITE r1 r2
+ADD r1 1
+MOV r2 r1
+SUB r2 1
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+ADD r1 1 # Declaring thisPageLength
+MOV r2 r1 # Begin access size
+ADD r2 -4
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MOV r3 !$stc_06764ff1-79b5-4f84-a5ef-55f45d2cf37a # Begin static access pageLength
+MEMCOPY r1 r3
+ADD r3 1
+MEMREAD r3 r1
+DIV r2 r3
+MEMWRITE r1 r2
+MEMREAD r2 r1
+MEMWRITE r1 1
+MEMREAD r3 r1
+ADD r2 r3
+MEMWRITE r1 r2
+ADD r1 1
+MOV r2 r1
+SUB r2 1
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+MOV r2 !$stc_fefb08bb-62c7-41a4-a053-2057a66076a8 # Begin assignment
+MEMREAD r2 r2
+MOV r3 !$stc_fefb08bb-62c7-41a4-a053-2057a66076a8 # Begin static access mallocHead
+MEMCOPY r1 r3
+ADD r3 1
+MEMREAD r3 r1
+MEMCOPY r1 r3
+ADD r1 1
+ADD r3 1
+SUB r1 1
+MEMREAD r3 r1
+MOV r4 r1 # Begin access thisPageLength
+ADD r4 -1
+MEMCOPY r1 r4
+ADD r4 1
+MEMREAD r4 r1
+ADD r3 r4
+MEMWRITE r1 r3
+MEMCOPY r2 r1
+ADD r2 1
+MOV r2 r1 # Begin access allocatedPageStart
+ADD r2 -2
+MEMCOPY r1 r2
+ADD r2 1
+ADD r1 1
+MOV r2 r1
+ADD r2 -5
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+SUB r1 3
+MEMREAD r0 r1 # Return from malloc
+EXPORT $func_!entity_from_player entity_from_player
+LABEL func_!entity_from_player # Entry point of entity_from_player
+ADD r1 2
+MEMWRITE r1 1
+ADD r1 1
+MEMWRITE r1 $return_393317dd-1849-4e56-a1f6-f69433969bee
+ADD r1 1
+JMP $func_!malloc
+LABEL return_393317dd-1849-4e56-a1f6-f69433969bee
+SUB r1 1
+MOV r2 r1
+SUB r2 1
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+MOV r2 r1 # Begin assignment
+ADD r2 -1
+MEMREAD r2 r2
+CALL_NATIVE_EXTERN get_player # Call native function get_player
+POP r3
+PUSH r1
+PUSH r3
+MEMWRITE_STACK
+MEMCOPY r2 r1
+ADD r2 1
+MOV r2 r1 # Begin access e
+ADD r2 -1
+MEMCOPY r1 r2
+ADD r2 1
+ADD r1 1
+MOV r2 r1
+ADD r2 -3
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+SUB r1 2
+MEMREAD r0 r1 # Return from entity_from_player
+EXPORT $func_EntityWrap!id id
+LABEL func_EntityWrap!id # Entry point of id
+MOV r2 r1 # Begin access this
+ADD r2 -2
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MOV r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+MOV r2 r1
+SUB r2 1
+PUSH r2
+MEMREAD_STACK
+SUB r1 1
+CALL_NATIVE_EXTERN entity_get_id # Call native function entity_get_id
+POP r2
+PUSH r1
+PUSH r2
+MEMWRITE_STACK
+ADD r1 1
+MOV r2 r1
+ADD r2 -3
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+SUB r1 1
+MEMREAD r0 r1 # Return from id
+EXPORT $func_EntityWrap!name_hash name_hash
+LABEL func_EntityWrap!name_hash # Entry point of name_hash
+MOV r2 r1 # Begin access this
+ADD r2 -2
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MOV r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+MOV r2 r1
+SUB r2 1
+PUSH r2
+MEMREAD_STACK
+SUB r1 1
+CALL_NATIVE_EXTERN entity_get_name_hash # Call native function entity_get_name_hash
+POP r2
+PUSH r1
+PUSH r2
+MEMWRITE_STACK
+ADD r1 1
+MOV r2 r1
+ADD r2 -3
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+SUB r1 1
+MEMREAD r0 r1 # Return from name_hash
+EXPORT $func_EntityWrap!max_health max_health
+LABEL func_EntityWrap!max_health # Entry point of max_health
+MOV r2 r1 # Begin access this
+ADD r2 -2
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MOV r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+MOV r2 r1
+SUB r2 1
+PUSH r2
+MEMREAD_STACK
+SUB r1 1
+CALL_NATIVE_EXTERN entity_get_max_health # Call native function entity_get_max_health
+POP r2
+PUSH r1
+PUSH r2
+MEMWRITE_STACK
+ADD r1 1
+MOV r2 r1
+ADD r2 -3
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+SUB r1 1
+MEMREAD r0 r1 # Return from max_health
+EXPORT $func_EntityWrap!health health
+LABEL func_EntityWrap!health # Entry point of health
+MOV r2 r1 # Begin access this
+ADD r2 -2
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MOV r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+MOV r2 r1
+SUB r2 1
+PUSH r2
+MEMREAD_STACK
+SUB r1 1
+CALL_NATIVE_EXTERN entity_get_health # Call native function entity_get_health
+POP r2
+PUSH r1
+PUSH r2
+MEMWRITE_STACK
+ADD r1 1
+MOV r2 r1
+ADD r2 -3
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+SUB r1 1
+MEMREAD r0 r1 # Return from health
+EXPORT $func_EntityWrap!is_dead is_dead
+LABEL func_EntityWrap!is_dead # Entry point of is_dead
+MOV r2 r1 # Begin access this
+ADD r2 -2
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MOV r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+MOV r2 r1
+SUB r2 1
+PUSH r2
+MEMREAD_STACK
+SUB r1 1
+CALL_NATIVE_EXTERN entity_is_dead # Call native function entity_is_dead
+POP r2
+PUSH r1
+PUSH r2
+MEMWRITE_STACK
+ADD r1 1
+MOV r2 r1
+ADD r2 -3
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+SUB r1 1
+MEMREAD r0 r1 # Return from is_dead
+EXPORT $func_EntityWrap!has_primary has_primary
+LABEL func_EntityWrap!has_primary # Entry point of has_primary
+MOV r2 r1 # Begin access this
+ADD r2 -2
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MOV r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+MOV r2 r1
+SUB r2 1
+PUSH r2
+MEMREAD_STACK
+SUB r1 1
+CALL_NATIVE_EXTERN entity_has_primary_equipped # Call native function entity_has_primary_equipped
+POP r2
+PUSH r1
+PUSH r2
+MEMWRITE_STACK
+ADD r1 1
+MOV r2 r1
+ADD r2 -3
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+SUB r1 1
+MEMREAD r0 r1 # Return from has_primary
+EXPORT $func_EntityWrap!primary_item primary_item
+LABEL func_EntityWrap!primary_item # Entry point of primary_item
+ADD r1 2
+MEMWRITE r1 1
+ADD r1 1
+MEMWRITE r1 $return_42fcd489-0e7d-4773-9ac1-9f640a6b8343
+ADD r1 1
+JMP $func_!malloc
+LABEL return_42fcd489-0e7d-4773-9ac1-9f640a6b8343
+SUB r1 1
+MOV r2 r1
+SUB r2 1
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+MOV r2 r1 # Begin assignment
+ADD r2 -1
+MEMREAD r2 r2
+MOV r3 r1 # Begin access this
+ADD r3 -3
+MEMCOPY r1 r3
+ADD r3 1
+MEMREAD r3 r1
+MEMCOPY r1 r3
+ADD r1 1
+ADD r3 1
+SUB r1 1
+MOV r3 r1
+MEMCOPY r1 r3
+ADD r1 1
+ADD r3 1
+MOV r3 r1
+SUB r3 1
+PUSH r3
+MEMREAD_STACK
+SUB r1 1
+CALL_NATIVE_EXTERN entity_get_primary_item # Call native function entity_get_primary_item
+POP r3
+PUSH r1
+PUSH r3
+MEMWRITE_STACK
+MEMCOPY r2 r1
+ADD r2 1
+MOV r2 r1 # Begin access item
+ADD r2 -1
+MEMCOPY r1 r2
+ADD r2 1
+ADD r1 1
+MOV r2 r1
+ADD r2 -4
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+SUB r1 2
+MEMREAD r0 r1 # Return from primary_item
+EXPORT $func_EntityWrap!send_damage send_damage
+LABEL func_EntityWrap!send_damage # Entry point of send_damage
+MOV r2 r1 # Begin access this
+ADD r2 -3
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MOV r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+MOV r2 r1
+SUB r2 1
+PUSH r2
+MEMREAD_STACK
+SUB r1 1
+MOV r2 r1 # Begin access amount
+ADD r2 -2
+MEMCOPY r1 r2
+ADD r2 1
+ADD r1 1
+MOV r2 r1
+SUB r2 1
+PUSH r2
+MEMREAD_STACK
+SUB r1 1
+CALL_NATIVE_EXTERN entity_send_damage # Call native function entity_send_damage
+SUB r1 1
+MEMREAD r0 r1 # Return from send_damage
+EXPORT $func_ItemWrap!name name
+LABEL func_ItemWrap!name # Entry point of name
+MOV r2 r1 # Begin access this
+ADD r2 -2
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MOV r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+MOV r2 r1
+SUB r2 1
+PUSH r2
+MEMREAD_STACK
+SUB r1 1
+CALL_NATIVE_EXTERN item_get_name # Call native function item_get_name
+MEMWRITE r1 0
+ADD r1 1
+POP r2
+PUSH r1
+PUSH r2
+MEMWRITE_STACK
+ADD r1 1
+MEMWRITE r1 $malloc_return_02d508b9-740c-4593-910c-597c6b9ae104
+ADD r1 1
+JMP $func_!malloc
+LABEL malloc_return_02d508b9-740c-4593-910c-597c6b9ae104
+MOV r3 r1
+SUB r3 2
+PUSH r3
+MEMREAD_STACK
+SUB r1 2
+CALLNATIVE 12 # Commit cached data to allocated buffer
+POP r2
+PUSH r1
+PUSH r2
+MEMWRITE_STACK
+ADD r1 1
+MOV r2 r1
+ADD r2 -3
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+SUB r1 1
+MEMREAD r0 r1 # Return from name
+EXPORT $func_ItemWrap!name_hash name_hash
+LABEL func_ItemWrap!name_hash # Entry point of name_hash
+MOV r2 r1 # Begin access this
+ADD r2 -2
+MEMCOPY r1 r2
+ADD r2 1
+MEMREAD r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+SUB r1 1
+MOV r2 r1
+MEMCOPY r1 r2
+ADD r1 1
+ADD r2 1
+MOV r2 r1
+SUB r2 1
+PUSH r2
+MEMREAD_STACK
+SUB r1 1
+CALL_NATIVE_EXTERN item_get_name_hash # Call native function item_get_name_hash
+POP r2
+PUSH r1
+PUSH r2
+MEMWRITE_STACK
+ADD r1 1
+MOV r2 r1
+ADD r2 -3
+SUB r1 1
+SUB r2 1
+MEMCOPY r2 r1
+SUB r1 1
+MEMREAD r0 r1 # Return from name_hash
+LABEL END
+Info: Assigning label return_a1891aa6-8e07-43ef-8522-b3fdb956e875 to instruction ID 26
+Error: Logging to NullLogService
+Info: Assigning label return_0b9f11a5-2434-47ad-9a7d-0b4664df93bf to instruction ID 120
+Error: Logging to NullLogService
+Info: Assigning label return_a40ba379-2247-4955-b38f-b4d15d05845e to instruction ID 203
+Error: Logging to NullLogService
+Info: Assigning label return_508a4879-0445-4f7c-bae1-75e36cf9540a to instruction ID 341
+Error: Logging to NullLogService
+Info: Assigning label return_52c516b1-34bc-41d3-a9be-26718cc6bc75 to instruction ID 503
+Error: Logging to NullLogService
+Info: Assigning label return_99876046-0bc9-4860-8489-e0692f3eaf6d to instruction ID 689
+Error: Logging to NullLogService
+Info: Assigning label 26c3bbc4-a8db-4dea-af0d-34c69af0b196 to instruction ID 808
+Error: Logging to NullLogService
+Info: Assigning label cc818520-70aa-447a-b6e5-173fd37c483a to instruction ID 821
+Error: Logging to NullLogService
+Info: Assigning label return_fb402e56-6d30-4013-8865-e6a317a82bd9 to instruction ID 937
+Error: Logging to NullLogService
+Info: Assigning label return_6fda272a-0d5b-47df-84b9-d8c2a3ae6095 to instruction ID 1211
+Error: Logging to NullLogService
+Info: Assigning label return_daa5e7f9-c654-42fa-b76f-e66a0cea1979 to instruction ID 1533
+Error: Logging to NullLogService
+Info: Assigning label return_0c456244-7d2d-447d-999e-1b9a0e45d693 to instruction ID 1863
+Error: Logging to NullLogService
+Info: Assigning label dc57e3f4-5935-4a8a-9637-a7ad4bc56a26 to instruction ID 2039
+Error: Logging to NullLogService
+Info: Assigning label c224a1e9-6c47-442e-b7da-7f020ccf5ac0 to instruction ID 2052
+Error: Logging to NullLogService
+Info: Assigning label return_93968b5e-aaed-4431-b50d-39a6ff1cedb8 to instruction ID 2228
+Error: Logging to NullLogService
+Info: Assigning label return_51c7392a-053b-47d6-952a-cc4384c254c1 to instruction ID 2523
+Error: Logging to NullLogService
+Info: Assigning label func_!malloc to instruction ID 2705
+Error: Logging to NullLogService
+Info: Assigning label func_!entity_from_player to instruction ID 3203
+Error: Logging to NullLogService
+Info: Assigning label return_393317dd-1849-4e56-a1f6-f69433969bee to instruction ID 3237
+Error: Logging to NullLogService
+Info: Assigning label func_entitywrap!id to instruction ID 3387
+Error: Logging to NullLogService
+Info: Assigning label func_entitywrap!name_hash to instruction ID 3547
+Error: Logging to NullLogService
+Info: Assigning label func_entitywrap!max_health to instruction ID 3707
+Error: Logging to NullLogService
+Info: Assigning label func_entitywrap!health to instruction ID 3867
+Error: Logging to NullLogService
+Info: Assigning label func_entitywrap!is_dead to instruction ID 4027
+Error: Logging to NullLogService
+Info: Assigning label func_entitywrap!has_primary to instruction ID 4187
+Error: Logging to NullLogService
+Info: Assigning label func_entitywrap!primary_item to instruction ID 4347
+Error: Logging to NullLogService
+Info: Assigning label return_42fcd489-0e7d-4773-9ac1-9f640a6b8343 to instruction ID 4381
+Error: Logging to NullLogService
+Info: Assigning label func_entitywrap!send_damage to instruction ID 4632
+Error: Logging to NullLogService
+Info: Assigning label func_itemwrap!name to instruction ID 4799
+Error: Logging to NullLogService
+Info: Assigning label malloc_return_02d508b9-740c-4593-910c-597c6b9ae104 to instruction ID 4943
+Error: Logging to NullLogService
+Info: Assigning label func_itemwrap!name_hash to instruction ID 5023
+Error: Logging to NullLogService
+Info: Assigning label end to instruction ID 5183
+Error: Logging to NullLogService
+Assembled code:
+4349,6,9532,2147483648,2147483647,1024,13,79,79,32,80,108,97,121,101,114,32,73,68,58,13,79,79,32,78,97,109,101,32,72,97,115,104,58,14,79,79,32,77,97,120,32,72,101,97,108,116,104,58,18,79,79,32,67,117,114,114,101,110,116,32,72,101,97,108,116,104,58,11,79,79,32,73,115,32,68,101,97,100,58,3,89,101,115,2,78,111,24,79,79,32,72,97,115,32,80,114,105,109,97,114,121,32,69,113,117,105,112,112,101,100,58,21,79,79,32,80,114,105,109,97,114,121,32,73,116,101,109,32,72,97,115,104,58,21,79,79,32,80,114,105,109,97,114,121,32,73,116,101,109,32,78,97,109,101,58,22,79,79,32,83,101,110,100,105,110,103,32,50,32,100,97,109,97,103,101,46,46,46,14,79,79,32,78,101,119,32,72,101,97,108,116,104,58,64,70,97,114,109,101,114,32,74,111,101,32,115,97,121,115,58,32,39,76,111,111,107,115,32,108,105,107,101,32,116,104,101,115,101,32,110,101,119,32,119,114,97,112,112,101,114,115,32,119,111,114,107,32,106,117,115,116,32,102,105,110,101,46,39,1,1000000,12,1,13,1,1,2,2,12,1,13,1,1,4375,28,13,1,1,1,2,12,1,1,7552,17,13,1,12,2,13,2,1,1,4,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,4096,28,13,1,29,12,2,13,2,24,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967294,2,12,2,13,2,29,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,1,4469,28,13,1,1,1,2,12,1,1,7736,17,13,1,1,2,4,12,1,13,1,29,12,3,13,3,25,13,1,1,4110,28,13,1,29,12,3,13,3,24,13,1,13,2,28,13,1,1,2,2,12,1,13,1,12,3,13,3,1,4294967293,2,12,3,13,3,29,12,3,13,1,13,3,28,13,1,1,1,2,12,1,13,1,1,4552,28,13,1,1,1,2,12,1,1,7896,17,13,1,1,3,4,12,1,13,1,29,12,2,13,1,12,4,13,4,1,1,2,12,4,13,1,13,4,29,28,13,1,1,1,2,12,1,13,4,1,1,2,12,4,13,1,1,1,4,12,1,13,1,29,12,4,13,4,25,13,1,1,4124,28,13,1,29,12,4,13,4,24,13,1,13,2,28,13,1,1,1,2,12,1,13,1,13,3,28,13,1,1,2,2,12,1,13,1,12,4,13,4,1,4294967292,2,12,4,13,4,29,12,4,13,1,13,4,28,13,1,1,1,2,12,1,13,1,1,4690,28,13,1,1,1,2,12,1,1,8056,17,13,1,1,3,4,12,1,13,1,29,12,3,13,1,1,1,4,12,1,13,1,29,12,2,13,1,12,5,13,5,1,2,2,12,5,13,1,13,5,29,28,13,1,1,1,2,12,1,13,5,1,1,2,12,5,13,1,1,1,4,12,1,13,1,29,12,5,13,5,25,13,1,1,4139,28,13,1,29,12,5,13,5,24,13,1,13,2,28,13,1,1,1,2,12,1,13,1,13,3,28,13,1,1,1,2,12,1,13,1,13,4,28,13,1,1,2,2,12,1,13,1,12,5,13,5,1,4294967291,2,12,5,13,5,29,12,5,13,1,13,5,28,13,1,1,1,2,12,1,13,1,1,4852,28,13,1,1,1,2,12,1,1,8216,17,13,1,1,3,4,12,1,13,1,29,12,4,13,1,1,1,4,12,1,13,1,29,12,3,13,1,1,1,4,12,1,13,1,29,12,2,13,1,12,6,13,6,1,3,2,12,6,13,1,13,6,29,28,13,1,1,1,2,12,1,13,6,1,1,2,12,6,13,1,1,1,4,12,1,13,1,29,12,6,13,6,27,13,1,1,4158,28,13,1,29,12,6,13,6,24,13,1,13,2,28,13,1,1,1,2,12,1,13,1,13,3,28,13,1,1,1,2,12,1,13,1,13,4,28,13,1,1,1,2,12,1,13,1,13,5,28,13,1,1,2,2,12,1,13,1,12,6,13,6,1,4294967290,2,12,6,13,6,29,12,6,13,1,13,6,28,13,1,1,1,2,12,1,13,1,1,5038,28,13,1,1,1,2,12,1,1,8376,17,13,1,1,3,4,12,1,13,1,29,12,5,13,1,1,1,4,12,1,13,1,29,12,4,13,1,1,1,4,12,1,13,1,29,12,3,13,1,1,1,4,12,1,13,1,29,12,2,13,1,12,7,13,7,1,4,2,12,7,13,1,13,7,29,28,13,1,1,1,2,12,1,13,7,1,1,2,12,7,13,1,1,1,4,12,1,13,1,29,12,7,1,0,12,8,13,8,13,7,16,1,5157,19,13,1,1,4170,28,13,1,29,12,9,13,9,24,1,5170,17,13,1,1,4174,28,13,1,29,12,9,13,9,24,13,1,1,4177,28,13,1,29,12,7,13,7,24,13,1,13,2,28,13,1,1,1,2,12,1,13,1,13,3,28,13,1,1,1,2,12,1,13,1,13,4,28,13,1,1,1,2,12,1,13,1,13,5,28,13,1,1,1,2,12,1,13,1,13,6,28,13,1,1,2,2,12,1,13,1,12,7,13,7,1,4294967289,2,12,7,13,7,29,12,7,13,1,13,7,28,13,1,1,1,2,12,1,13,1,1,5286,28,13,1,1,1,2,12,1,1,8536,17,13,1,1,3,4,12,1,13,1,29,12,6,13,1,1,1,4,12,1,13,1,29,12,5,13,1,1,1,4,12,1,13,1,29,12,4,13,1,1,1,4,12,1,13,1,29,12,3,13,1,1,1,4,12,1,13,1,29,12,2,13,1,12,8,13,8,1,5,2,12,8,13,1,13,8,29,28,13,1,1,1,2,12,1,13,8,1,1,2,12,8,13,1,1,1,4,12,1,13,1,29,12,8,1,0,12,9,13,9,13,8,16,1,6388,19,13,1,1,4170,28,13,1,29,12,10,13,10,24,13,1,1,1,2,12,1,13,1,13,2,28,13,1,1,1,2,12,1,13,1,13,3,28,13,1,1,1,2,12,1,13,1,13,4,28,13,1,1,1,2,12,1,13,1,13,5,28,13,1,1,1,2,12,1,13,1,13,6,28,13,1,1,1,2,12,1,13,1,13,7,28,13,1,1,1,2,12,1,13,1,13,8,28,13,1,1,1,2,12,1,13,1,13,9,28,13,1,1,2,2,12,1,13,1,12,10,13,10,1,4294967285,2,12,10,13,10,29,12,10,13,1,13,10,28,13,1,1,1,2,12,1,13,1,1,5560,28,13,1,1,1,2,12,1,1,8696,17,13,1,1,3,4,12,1,13,1,29,12,9,13,1,1,1,4,12,1,13,1,29,12,8,13,1,1,1,4,12,1,13,1,29,12,7,13,1,1,1,4,12,1,13,1,29,12,6,13,1,1,1,4,12,1,13,1,29,12,5,13,1,1,1,4,12,1,13,1,29,12,4,13,1,1,1,4,12,1,13,1,29,12,3,13,1,1,1,4,12,1,13,1,29,12,2,13,1,12,11,13,11,1,8,2,12,11,13,1,13,11,29,28,13,1,1,1,2,12,1,13,11,1,1,2,12,11,13,1,12,11,13,11,1,1,4,12,11,13,1,1,1,4,12,1,13,11,1,1,4,12,11,13,11,13,1,29,28,13,1,1,4202,28,13,1,29,12,11,13,11,24,13,1,13,2,28,13,1,1,1,2,12,1,13,1,13,3,28,13,1,1,1,2,12,1,13,1,13,4,28,13,1,1,1,2,12,1,13,1,13,5,28,13,1,1,1,2,12,1,13,1,13,6,28,13,1,1,1,2,12,1,13,1,13,7,28,13,1,1,1,2,12,1,13,1,13,8,28,13,1,1,1,2,12,1,13,1,13,9,28,13,1,1,1,2,12,1,13,1,13,10,28,13,1,1,2,2,12,1,13,1,12,11,13,11,1,4294967285,2,12,11,13,11,29,12,11,13,1,13,11,28,13,1,1,1,2,12,1,13,1,1,5882,28,13,1,1,1,2,12,1,1,9372,17,13,1,1,3,4,12,1,13,1,29,12,10,13,1,1,1,4,12,1,13,1,29,12,9,13,1,1,1,4,12,1,13,1,29,12,8,13,1,1,1,4,12,1,13,1,29,12,7,13,1,1,1,4,12,1,13,1,29,12,6,13,1,1,1,4,12,1,13,1,29,12,5,13,1,1,1,4,12,1,13,1,29,12,4,13,1,1,1,4,12,1,13,1,29,12,3,13,1,1,1,4,12,1,13,1,29,12,2,13,1,12,12,13,12,1,9,2,12,12,13,1,13,12,29,28,13,1,1,1,2,12,1,13,12,1,1,2,12,12,13,1,1,1,4,12,1,13,1,29,12,12,13,12,25,13,1,1,4224,28,13,1,29,12,12,13,12,24,13,1,13,2,28,13,1,1,1,2,12,1,13,1,13,3,28,13,1,1,1,2,12,1,13,1,13,4,28,13,1,1,1,2,12,1,13,1,13,5,28,13,1,1,1,2,12,1,13,1,13,6,28,13,1,1,1,2,12,1,13,1,13,7,28,13,1,1,1,2,12,1,13,1,13,8,28,13,1,1,1,2,12,1,13,1,13,9,28,13,1,1,1,2,12,1,13,1,13,10,28,13,1,1,1,2,12,1,13,1,13,11,28,13,1,1,2,2,12,1,13,1,12,12,13,12,1,4294967284,2,12,12,13,12,29,12,12,13,1,13,12,28,13,1,1,1,2,12,1,13,1,1,6212,28,13,1,1,1,2,12,1,1,9148,17,13,1,1,3,4,12,1,13,1,29,12,11,13,1,1,1,4,12,1,13,1,29,12,10,13,1,1,1,4,12,1,13,1,29,12,9,13,1,1,1,4,12,1,13,1,29,12,8,13,1,1,1,4,12,1,13,1,29,12,7,13,1,1,1,4,12,1,13,1,29,12,6,13,1,1,1,4,12,1,13,1,29,12,5,13,1,1,1,4,12,1,13,1,29,12,4,13,1,1,1,4,12,1,13,1,29,12,3,13,1,1,1,4,12,1,13,1,29,12,2,13,1,12,13,13,13,1,10,2,12,13,13,1,13,13,29,28,13,1,1,1,2,12,1,13,13,1,1,2,12,13,13,1,1,1,4,12,1,13,1,29,12,13,13,13,24,13,1,1,1,4,12,1,1,6401,17,13,1,1,4174,28,13,1,29,12,13,13,13,24,13,1,1,4246,28,13,1,29,12,8,13,8,24,13,1,13,2,28,13,1,1,1,2,12,1,13,1,13,3,28,13,1,1,1,2,12,1,13,1,13,4,28,13,1,1,1,2,12,1,13,1,13,5,28,13,1,1,1,2,12,1,13,1,13,6,28,13,1,1,1,2,12,1,13,1,13,7,28,13,1,1,1,2,12,1,13,1,13,10,28,13,1,1,1,2,12,1,13,1,13,11,28,13,1,1,1,2,12,1,13,1,13,12,28,13,1,1,1,2,12,1,13,1,12,8,13,8,1,4294967286,2,12,8,13,8,29,12,8,13,1,13,8,28,13,1,1,1,2,12,1,13,1,1,2,28,13,1,1,1,2,12,1,13,1,1,6577,28,13,1,1,1,2,12,1,1,8981,17,13,1,1,3,4,12,1,13,1,29,12,12,13,1,1,1,4,12,1,13,1,29,12,11,13,1,1,1,4,12,1,13,1,29,12,10,13,1,1,1,4,12,1,13,1,29,12,7,13,1,1,1,4,12,1,13,1,29,12,6,13,1,1,1,4,12,1,13,1,29,12,5,13,1,1,1,4,12,1,13,1,29,12,4,13,1,1,1,4,12,1,13,1,29,12,3,13,1,1,1,4,12,1,13,1,29,12,2,13,1,12,9,13,9,1,9,2,12,9,13,1,1,4269,28,13,1,29,12,9,13,9,24,13,1,13,2,28,13,1,1,1,2,12,1,13,1,13,3,28,13,1,1,1,2,12,1,13,1,13,4,28,13,1,1,1,2,12,1,13,1,13,5,28,13,1,1,1,2,12,1,13,1,13,6,28,13,1,1,1,2,12,1,13,1,13,7,28,13,1,1,1,2,12,1,13,1,13,8,28,13,1,1,1,2,12,1,13,1,13,10,28,13,1,1,1,2,12,1,13,1,13,11,28,13,1,1,1,2,12,1,13,1,13,12,28,13,1,1,2,2,12,1,13,1,12,9,13,9,1,4294967284,2,12,9,13,9,29,12,9,13,1,13,9,28,13,1,1,1,2,12,1,13,1,1,6872,28,13,1,1,1,2,12,1,1,8216,17,13,1,1,3,4,12,1,13,1,29,12,12,13,1,1,1,4,12,1,13,1,29,12,11,13,1,1,1,4,12,1,13,1,29,12,10,13,1,1,1,4,12,1,13,1,29,12,8,13,1,1,1,4,12,1,13,1,29,12,7,13,1,1,1,4,12,1,13,1,29,12,6,13,1,1,1,4,12,1,13,1,29,12,5,13,1,1,1,4,12,1,13,1,29,12,4,13,1,1,1,4,12,1,13,1,29,12,3,13,1,1,1,4,12,1,13,1,29,12,2,13,1,12,13,13,13,1,10,2,12,13,13,1,13,13,29,28,13,1,1,1,2,12,1,13,13,1,1,2,12,13,13,1,1,1,4,12,1,13,1,29,12,13,13,13,27,13,1,1,4284,28,13,1,29,12,13,13,13,24,1,9532,17,13,1,1,1,2,12,1,1,3,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,1,4,12,3,13,1,13,3,29,28,13,3,1,1,2,12,3,13,1,29,12,3,13,1,13,3,29,28,13,1,1,1,2,12,1,13,3,1,1,2,12,3,13,1,1,1,4,12,1,13,1,29,12,3,1,5,12,4,13,1,13,4,29,28,13,4,1,1,2,12,4,13,1,29,12,4,13,3,13,4,6,12,3,13,1,13,3,28,13,1,29,12,3,13,2,13,3,2,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,1,4,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967292,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,1,5,12,3,13,1,13,3,29,28,13,3,1,1,2,12,3,13,1,29,12,3,13,2,13,3,8,12,2,13,1,13,2,28,13,1,29,12,2,13,1,1,1,28,13,1,29,12,3,13,2,13,3,2,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,1,4,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,1,4,12,2,13,2,29,12,2,1,4,12,3,13,1,13,3,29,28,13,3,1,1,2,12,3,13,1,29,12,3,13,1,13,3,29,28,13,1,1,1,2,12,1,13,3,1,1,2,12,3,13,1,1,1,4,12,1,13,1,29,12,3,13,1,12,4,13,4,1,4294967295,2,12,4,13,1,13,4,29,28,13,4,1,1,2,12,4,13,1,29,12,4,13,3,13,4,2,12,3,13,1,13,3,28,13,2,13,1,29,28,13,2,1,1,2,12,2,13,1,12,2,13,2,1,4294967294,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967291,2,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,3,4,12,1,13,1,29,12,0,13,1,1,2,2,12,1,13,1,1,1,28,13,1,1,1,2,12,1,13,1,1,7586,28,13,1,1,1,2,12,1,1,7054,17,13,1,1,1,4,12,1,13,1,12,2,13,2,1,1,4,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,12,2,13,2,1,4294967295,2,12,2,13,2,29,12,2,30,0,12,3,13,1,13,3,28,13,2,13,1,29,28,13,2,1,1,2,12,2,13,1,12,2,13,2,1,4294967295,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967293,2,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,2,4,12,1,13,1,29,12,0,13,1,12,2,13,2,1,4294967294,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,12,2,13,2,1,1,4,12,2,13,2,29,13,1,1,1,4,12,1,30,0,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967293,2,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,1,4,12,1,13,1,29,12,0,13,1,12,2,13,2,1,4294967294,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,12,2,13,2,1,1,4,12,2,13,2,29,13,1,1,1,4,12,1,30,0,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967293,2,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,1,4,12,1,13,1,29,12,0,13,1,12,2,13,2,1,4294967294,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,12,2,13,2,1,1,4,12,2,13,2,29,13,1,1,1,4,12,1,30,0,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967293,2,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,1,4,12,1,13,1,29,12,0,13,1,12,2,13,2,1,4294967294,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,12,2,13,2,1,1,4,12,2,13,2,29,13,1,1,1,4,12,1,30,0,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967293,2,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,1,4,12,1,13,1,29,12,0,13,1,12,2,13,2,1,4294967294,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,12,2,13,2,1,1,4,12,2,13,2,29,13,1,1,1,4,12,1,30,0,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967293,2,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,1,4,12,1,13,1,29,12,0,13,1,12,2,13,2,1,4294967294,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,12,2,13,2,1,1,4,12,2,13,2,29,13,1,1,1,4,12,1,30,0,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967293,2,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,1,4,12,1,13,1,29,12,0,13,1,1,2,2,12,1,13,1,1,1,28,13,1,1,1,2,12,1,13,1,1,8730,28,13,1,1,1,2,12,1,1,7054,17,13,1,1,1,4,12,1,13,1,12,2,13,2,1,1,4,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,12,2,13,2,1,4294967295,2,12,2,13,2,29,12,2,13,1,12,3,13,3,1,4294967293,2,12,3,13,1,13,3,29,28,13,3,1,1,2,12,3,13,1,29,12,3,13,1,13,3,29,28,13,1,1,1,2,12,1,13,3,1,1,2,12,3,13,1,1,1,4,12,1,13,1,12,3,13,1,13,3,29,28,13,1,1,1,2,12,1,13,3,1,1,2,12,3,13,1,12,3,13,3,1,1,4,12,3,13,3,29,13,1,1,1,4,12,1,30,0,12,3,13,1,13,3,28,13,2,13,1,29,28,13,2,1,1,2,12,2,13,1,12,2,13,2,1,4294967295,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967292,2,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,2,4,12,1,13,1,29,12,0,13,1,12,2,13,2,1,4294967293,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,12,2,13,2,1,1,4,12,2,13,2,29,13,1,1,1,4,12,1,13,1,12,2,13,2,1,4294967294,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,1,1,2,12,1,13,1,12,2,13,2,1,1,4,12,2,13,2,29,13,1,1,1,4,12,1,30,0,13,1,1,1,4,12,1,13,1,29,12,0,13,1,12,2,13,2,1,4294967294,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,12,2,13,2,1,1,4,12,2,13,2,29,13,1,1,1,4,12,1,30,0,13,1,1,0,28,13,1,1,1,2,12,1,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,1,9292,28,13,1,1,1,2,12,1,1,7054,17,13,1,12,3,13,3,1,2,4,12,3,13,3,29,13,1,1,2,4,12,1,30,12,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967293,2,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,1,4,12,1,13,1,29,12,0,13,1,12,2,13,2,1,4294967294,2,12,2,13,1,13,2,29,28,13,2,1,1,2,12,2,13,1,29,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,1,1,4,12,1,13,1,12,2,13,1,13,2,29,28,13,1,1,1,2,12,1,13,2,1,1,2,12,2,13,1,12,2,13,2,1,1,4,12,2,13,2,29,13,1,1,1,4,12,1,30,0,12,2,13,1,13,2,28,13,1,1,1,2,12,1,13,1,12,2,13,2,1,4294967293,2,12,2,13,1,1,1,4,12,1,13,2,1,1,4,12,2,13,2,13,1,29,28,13,1,1,1,4,12,1,13,1,29,12,0,11,7641,10,103,101,116,95,112,108,97,121,101,114,7838,13,101,110,116,105,116,121,95,103,101,116,95,105,100,7998,20,101,110,116,105,116,121,95,103,101,116,95,110,97,109,101,95,104,97,115,104,8158,21,101,110,116,105,116,121,95,103,101,116,95,109,97,120,95,104,101,97,108,116,104,8318,17,101,110,116,105,116,121,95,103,101,116,95,104,101,97,108,116,104,8478,14,101,110,116,105,116,121,95,105,115,95,100,101,97,100,8638,27,101,110,116,105,116,121,95,104,97,115,95,112,114,105,109,97,114,121,95,101,113,117,105,112,112,101,100,8886,23,101,110,116,105,116,121,95,103,101,116,95,112,114,105,109,97,114,121,95,105,116,101,109,9135,18,101,110,116,105,116,121,95,115,101,110,100,95,100,97,109,97,103,101,9250,13,105,116,101,109,95,103,101,116,95,110,97,109,101,9474,18,105,116,101,109,95,103,101,116,95,110,97,109,101,95,104,97,115,104
+5659 words in total

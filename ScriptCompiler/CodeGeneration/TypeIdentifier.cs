@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using ScriptCompiler.AST;
 using ScriptCompiler.AST.Statements.Expressions;
 using ScriptCompiler.CompileUtil;
@@ -10,12 +11,14 @@ namespace ScriptCompiler.CodeGeneration {
         private readonly FunctionTypeRepository _functionTypeRepository;
         private readonly UserTypeRepository _userTypeRepository;
         private readonly StackFrame _stackFrame;
+        private readonly ForgottenRPG.NativeFunctions.NativeFunctionRegistry _nativeRegistry;
 
         public TypeIdentifier(FunctionTypeRepository functionTypeRepository, UserTypeRepository userTypeRepository,
-                              StackFrame stackFrame) {
+                              StackFrame stackFrame, ForgottenRPG.NativeFunctions.NativeFunctionRegistry nativeRegistry = null) {
             _functionTypeRepository = functionTypeRepository;
             _userTypeRepository     = userTypeRepository;
             _stackFrame             = stackFrame;
+            _nativeRegistry         = nativeRegistry;
         }
 
         public SType Identify(ASTNode node) {
@@ -27,6 +30,21 @@ namespace ScriptCompiler.CodeGeneration {
         }
 
         public SType Visit(FunctionCallNode node) {
+            if (_nativeRegistry != null && node.Function is VariableAccessNode vn && _nativeRegistry.HasFunction(vn.Identifier)) {
+                var func = _nativeRegistry.GetByName(vn.Identifier);
+                var returnType = func.Method.ReturnType;
+
+                // Check if it's a registered reference type
+                var registeredType = _nativeRegistry.GetRegisteredTypes().FirstOrDefault(x => x.Value == returnType);
+                if (registeredType.Key != null) {
+                    // It is! Return a pointer to the script type (e.g. Entity*)
+                    if (_userTypeRepository.ExistsType(registeredType.Key)) {
+                        return new ReferenceType(_userTypeRepository[registeredType.Key]);
+                    }
+                }
+
+                return SType.FromType(returnType);
+            }
             return _functionTypeRepository.ReturnType(node.FunctionRef(this));
         }
 
@@ -96,8 +114,16 @@ namespace ScriptCompiler.CodeGeneration {
             if (ReferenceEquals(typeL, typeR)) {
                 return typeL;
             }
+            
+            // Allow pointer arithmetic: Pointer + Int = Pointer
+            if (typeL is ReferenceType && ReferenceEquals(typeR, SType.SInteger)) {
+                return typeL;
+            }
+            if (typeR is ReferenceType && ReferenceEquals(typeL, SType.SInteger)) {
+                return typeR;
+            }
 
-            throw new Exception();
+            throw new Exception($"Type mismatch in binary operator: {typeL.Name} and {typeR.Name}");
         }
     }
 }
