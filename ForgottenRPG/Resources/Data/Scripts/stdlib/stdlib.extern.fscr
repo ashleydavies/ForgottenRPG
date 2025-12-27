@@ -1,0 +1,28 @@
+struct Vector2 {
+    float x;
+    float y;
+}
+
+struct Vector2I {
+    int x;
+    int y;
+}
+
+extern func void entity_get_position(EntityHandle* entity, Vector2* outPos);
+extern func void entity_get_tile_position(EntityHandle* entity, Vector2I* outPos);
+extern func bool entity_is_alive(EntityHandle* entity);
+extern func void entity_heal(EntityHandle* entity, int amount);
+extern func void entity_set_health(EntityHandle* entity, float value);
+
+extern func ItemHandle* item_get_by_id(int id);
+extern func ItemHandle* item_get_by_codename(string codename);
+extern func int item_get_id(ItemHandle* item);
+extern func string item_get_codename(ItemHandle* item);
+extern func string item_get_display_name(ItemHandle* item);
+extern func string item_get_description(ItemHandle* item);
+extern func int item_get_max_stack(ItemHandle* item);
+
+extern func int entity_get_item_count(EntityHandle* entity, ItemHandle* item);
+extern func bool entity_has_item(EntityHandle* entity, ItemHandle* item, int count);
+extern func bool entity_add_item(EntityHandle* entity, ItemHandle* item, int count);
+extern func int entity_remove_item(EntityHandle* entity, ItemHandle* item, int count);

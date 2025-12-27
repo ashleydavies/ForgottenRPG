@@ -107,13 +107,21 @@ namespace ScriptCompiler.CodeGeneration {
                     }
                     
                     // 2. Emit CallNative instruction
-                    instructions.Add(new CallNativeExternInstruction(functionName)
+                    var symbolHash = _nativeRegistry.GetSymbolHash(functionName);
+                    if (symbolHash == null) {
+                        throw new CompileException($"Native function symbol hash not found for {functionName}", 0, 0);
+                    }
+                    instructions.Add(new CallNativeExternInstruction(symbolHash.Value)
                         .WithComment($"Call native function {functionName}"));
                     
                     var nativeReturnType = SType.FromType(funcInfo.Method.ReturnType);
-                    bool isReferenceType = nativeReturnType is ReferenceType;
+                    bool requiresDynamicMarshalling =
+                        funcInfo.Method.ReturnType == typeof(string) ||
+                        funcInfo.Method.ReturnType.IsArray ||
+                        (funcInfo.Method.ReturnType.IsGenericType &&
+                         funcInfo.Method.ReturnType.GetGenericTypeDefinition() == typeof(List<>));
 
-                    if (isReferenceType) {
+                    if (requiresDynamicMarshalling) {
                         // Dynamic Marshalling Protocol:
                         // 1. Native call just pushed the required size in words to VM stack.
                         // 2. Call malloc(size)
@@ -138,8 +146,15 @@ namespace ScriptCompiler.CodeGeneration {
                         instructions.Add(new AddInstruction(StackPointer, 1));
                         _stackFrame.Pushed(SType.SInteger);
                         
-                        // Jump to malloc
-                        instructions.Add(new JmpInstruction(new Label("func_!malloc")));
+                        // Jump to malloc (extern if available)
+                        var mallocRef = new FunctionReference(null, "malloc");
+                        if (_functionTypeRepository.Has(mallocRef) && _functionTypeRepository.IsExtern(mallocRef)) {
+                            instructions.Add(new JmpExternInstruction(_functionTypeRepository.SymbolHash(mallocRef)));
+                        } else if (_functionTypeRepository.Has(mallocRef)) {
+                            instructions.Add(new JmpInstruction(new Label("func_!malloc")));
+                        } else {
+                            throw new CompileException("malloc is required for native reference returns", 0, 0);
+                        }
                         instructions.Add(new LabelInstruction(mallocReturnLabel));
                         
                         // 3. malloc result (address) is on memory stack at r1-2 (since ReturnAddr was popped by callee).
@@ -224,7 +239,7 @@ namespace ScriptCompiler.CodeGeneration {
 
             var functionRef = node.FunctionRef(TypeIdentifier);
             if (_functionTypeRepository.IsExtern(functionRef)) {
-                instructions.Add(new JmpExternInstruction(node.AsmLabel(TypeIdentifier)));
+                instructions.Add(new JmpExternInstruction(_functionTypeRepository.SymbolHash(functionRef)));
             } else {
                 instructions.Add(new JmpInstruction(new Label(node.AsmLabel(TypeIdentifier))));
             }

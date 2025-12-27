@@ -1,0 +1,15 @@
+import "stdlib/item.extern";
+
+struct Entity {
+    EntityHandle* handle;
+}
+
+extern func Entity @entity_from_player();
+extern func int Entity::id();
+extern func int Entity::name_hash();
+extern func int Entity::max_health();
+extern func float Entity::health();
+extern func bool Entity::is_dead();
+extern func bool Entity::has_primary();
+extern func Item @Entity::primary_item();
+extern func void Entity::send_damage(int amount);

@@ -16,6 +16,9 @@
     <None Update="Resources\Data\properties\Spritesheets.properties">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\Data\Scripts\Compiled\**\*.fscrbyte">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\Data\XML\Entity\farmerJoe.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -119,4 +122,17 @@
   <ItemGroup>
 		<PackageReference Include="SFML.Net" Version="2.6.1" />
   </ItemGroup>
+  <Target Name="BuildScripts" BeforeTargets="Build;Run" Condition="'$(SkipBuildScripts)' != 'true'">
+    <Exec Command="dotnet run --project &quot;$(ProjectDir)../ScriptCompiler/ScriptCompiler.csproj&quot; -p:SkipBuildScripts=true -- build-scripts &quot;$(ProjectDir)Resources/Data/Scripts&quot; &quot;$(ProjectDir)Resources/Data/Scripts/Compiled&quot;"
+          WorkingDirectory="$(ProjectDir).."
+          StandardOutputImportance="High"
+          StandardErrorImportance="High" />
+    <ItemGroup>
+      <CompiledScript Include="$(ProjectDir)Resources/Data/Scripts/Compiled/**\*.fscrbyte" />
+    </ItemGroup>
+    <MakeDir Directories="$(TargetDir)Resources/Data/Scripts/Compiled" />
+    <Copy SourceFiles="@(CompiledScript)"
+          DestinationFiles="@(CompiledScript->'$(TargetDir)Resources/Data/Scripts/Compiled/%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
 </Project>

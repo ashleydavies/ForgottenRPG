@@ -1,13 +1,13 @@
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
     public class CallNativeExternInstruction : Instruction {
-        private readonly string _functionName;
+        private readonly uint _symbolHash;
 
-        public CallNativeExternInstruction(string functionName) {
-            _functionName = functionName;
+        public CallNativeExternInstruction(uint symbolHash) {
+            _symbolHash = symbolHash;
         }
 
         protected override string AsString() {
-            return $"CALL_NATIVE_EXTERN {_functionName}";
+            return $"CALL_NATIVE_EXTERN {_symbolHash}";
         }
     }
 }

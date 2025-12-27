@@ -1,0 +1,51 @@
+import "stdlib/mem.extern";
+
+EntityHandle* player = get_player();
+
+print("Player ID:");
+print(entity_get_id(player));
+
+print("Name Hash:");
+print(entity_get_name_hash(player));
+
+print("Max Health:");
+print(entity_get_max_health(player));
+
+print("Current Health:");
+print(entity_get_health(player));
+
+print("Is Dead:");
+if (entity_is_dead(player)) {
+    print("Yes");
+} else {
+    print("No");
+}
+
+print("Has Health Component:");
+if (entity_has_health(player)) { print("Yes"); } else { print("No"); }
+
+print("Has Inventory Component:");
+if (entity_has_inventory(player)) { print("Yes"); } else { print("No"); }
+
+print("Has Combat Component:");
+if (entity_has_combat(player)) { print("Yes"); } else { print("No"); }
+
+print("Has Primary Equipped:");
+if (entity_has_primary_equipped(player)) {
+    print("Yes");
+    print("Primary Item Hash:");
+    ItemHandle* item = entity_get_primary_item(player);
+    print(item);
+    print("Primary Item Name:");
+    print(item_get_name(item));
+} else {
+    print("No");
+}
+
+print("Sending 1 damage...");
+entity_send_damage(player, 1);
+
+print("New Health:");
+print(entity_get_health(player));
+
+print("Farmer Joe says: 'Ah, I knew you would come eventually. Do you require the package?'");

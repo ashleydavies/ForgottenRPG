@@ -1,0 +1,43 @@
+import "stdlib/mem.extern";
+import "stdlib/entity.extern";
+
+Entity @player = entity_from_player();
+
+print("OO Player ID:");
+print(player->id());
+
+print("OO Name Hash:");
+print(player->name_hash());
+
+print("OO Max Health:");
+print(player->max_health());
+
+print("OO Current Health:");
+print(player->health());
+
+print("OO Is Dead:");
+if (player->is_dead()) {
+    print("Yes");
+} else {
+    print("No");
+}
+
+print("OO Has Primary Equipped:");
+if (player->has_primary()) {
+    print("Yes");
+    Item @item = player->primary_item();
+    print("OO Primary Item Hash:");
+    print(item->name_hash());
+    print("OO Primary Item Name:");
+    print(item->name());
+} else {
+    print("No");
+}
+
+print("OO Sending 2 damage...");
+player->send_damage(2);
+
+print("OO New Health:");
+print(player->health());
+
+print("Farmer Joe says: 'Looks like these new wrappers work just fine.'");

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>name</key>
+    <string>FSCR</string>
+    <key>uuid</key>
+    <string>6B5E40C6-7C1B-4B88-9F6E-1C1D2E6A7A01</string>
+    <key>description</key>
+    <string>FSCR script language bundle</string>
+</dict>
+</plist>

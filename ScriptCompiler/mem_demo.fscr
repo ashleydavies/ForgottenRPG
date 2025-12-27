@@ -1,0 +1,19 @@
+import "mem.extern";
+
+struct Player {
+    int health;
+    int mana;
+    int coins;
+}
+
+Player @x = malloc(sizeof Player);
+Player @y = malloc(sizeof Player);
+
+x->health = 5;
+
+y->health = 10;
+x->coins = 14;
+y->coins = x->coins + 15;
+print x->health;
+print y->health;
+print y->coins;

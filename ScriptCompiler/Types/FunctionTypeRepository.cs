@@ -13,6 +13,15 @@ namespace ScriptCompiler.Types {
             return _repository[reference].isExtern;
         }
 
+        public bool Has(FunctionReference reference) {
+            return _repository.ContainsKey(reference);
+        }
+
+        public uint SymbolHash(FunctionReference reference) {
+            var entry = _repository[reference];
+            return SymbolHasher.HashFunction(reference, entry.returnType, entry.@params);
+        }
+
         public SType ReturnType(FunctionReference reference) {
             return _repository[reference].returnType;
         }

@@ -1,0 +1,6 @@
+struct Item {
+    ItemHandle* handle;
+}
+
+extern func string Item::name();
+extern func int Item::name_hash();

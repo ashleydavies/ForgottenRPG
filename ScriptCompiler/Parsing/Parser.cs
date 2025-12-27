@@ -45,8 +45,35 @@ namespace ScriptCompiler.Parsing {
         private readonly List<InfixParseRule>
             _infixExpressionParseTable;
 
+        public static string ScriptsRoot { get; set; }
+
         public static Parser FromFile(string filename) {
-            return new Parser(File.ReadAllText(filename + MainClass.ScriptExtension));
+            string path = ResolveScriptPath(filename);
+            return new Parser(File.ReadAllText(path));
+        }
+
+        private static string ResolveScriptPath(string filename) {
+            string withExtension = filename.EndsWith(MainClass.ScriptExtension, StringComparison.OrdinalIgnoreCase)
+                ? filename
+                : filename + MainClass.ScriptExtension;
+
+            if (Path.IsPathRooted(withExtension) && File.Exists(withExtension)) {
+                return withExtension;
+            }
+
+            if (!string.IsNullOrWhiteSpace(ScriptsRoot)) {
+                string candidate = Path.Combine(ScriptsRoot, withExtension);
+                if (File.Exists(candidate)) {
+                    return candidate;
+                }
+            }
+
+            string cwdCandidate = Path.Combine(Directory.GetCurrentDirectory(), withExtension);
+            if (File.Exists(cwdCandidate)) {
+                return cwdCandidate;
+            }
+
+            return withExtension;
         }
 
         public Parser(string contents) {

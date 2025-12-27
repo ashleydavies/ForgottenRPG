@@ -18,6 +18,7 @@ namespace ForgottenRPG.NativeFunctions {
             public string ScriptName { get; set; }
             public MethodInfo Method { get; set; }
             public Action<ScriptNativeContext> MarshalledDelegate { get; set; }
+            public uint SymbolHash { get; set; }
         }
 
         /// <summary>
@@ -124,6 +125,12 @@ namespace ForgottenRPG.NativeFunctions {
                 return ctx.PopFloat();
             } else if (type == typeof(bool)) {
                 return ctx.PopInt() != 0;
+            } else if (type == typeof(string)) {
+                uint address = ctx.PopUInt();
+                return ctx.ReadString(address);
+            } else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ScriptValuePtr<>)) {
+                int address = ctx.PopInt();
+                return Activator.CreateInstance(type, address);
             } else {
                 // For reference types, assume it's an object handle (int) that needs lookup
                 int id = ctx.PopInt();
@@ -168,11 +175,13 @@ namespace ForgottenRPG.NativeFunctions {
             }
 
             int id = _nextId++;
+            uint symbolHash = SymbolHasher.HashFunction(scriptName, method, _registeredTypes);
             var info = new NativeFunctionInfo {
                 Id = id,
                 ScriptName = scriptName,
                 Method = method,
-                MarshalledDelegate = marshalledDelegate
+                MarshalledDelegate = marshalledDelegate,
+                SymbolHash = symbolHash
             };
 
             _functionsByName[scriptName] = info;
@@ -187,6 +196,11 @@ namespace ForgottenRPG.NativeFunctions {
                 return info;
             }
             return null;
+        }
+
+        public uint? GetSymbolHash(string scriptName) {
+            var info = GetByName(scriptName);
+            return info?.SymbolHash;
         }
 
         /// <summary>
@@ -212,4 +226,3 @@ namespace ForgottenRPG.NativeFunctions {
         public IEnumerable<NativeFunctionInfo> AllFunctions => _functionsById.Values;
     }
 }
-

@@ -82,5 +82,41 @@ namespace ForgottenRPG.Items {
                 }
             }
         }
+
+        public int CountItem(IItem item) {
+            if (item == null) return 0;
+            int total = 0;
+            foreach (var stack in _items) {
+                if (stack?.Item == item) {
+                    total += stack.Count;
+                }
+            }
+
+            return total;
+        }
+
+        public bool HasItem(IItem item, int count) {
+            if (count <= 0) return true;
+            return CountItem(item) >= count;
+        }
+
+        public int RemoveItem(IItem item, int count) {
+            if (item == null || count <= 0) return 0;
+
+            int remaining = count;
+            for (int i = 0; i < _items.Length && remaining > 0; i++) {
+                var stack = _items[i];
+                if (stack?.Item != item) continue;
+
+                int removed = stack.Remove(remaining);
+                remaining -= removed;
+
+                if (stack.Count == 0) {
+                    _items[i] = null;
+                }
+            }
+
+            return count - remaining;
+        }
     }
 }

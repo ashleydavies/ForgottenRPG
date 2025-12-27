@@ -5,6 +5,8 @@ using ForgottenRPG.Entity.Components;
 using ForgottenRPG.Entity.Components.Messages;
 using ForgottenRPG.Items;
 using ForgottenRPG.NativeFunctions;
+using ForgottenRPG.Util;
+using ForgottenRPG.Util.Coordinate;
 
 namespace ForgottenRPG.Scripting {
     /// <summary>
@@ -54,12 +56,14 @@ namespace ForgottenRPG.Scripting {
 
         // The player entity is stored in a special slot that will be set during initialization
         private static GameEntity _playerEntity;
+        private static ItemManager _itemManager;
 
         /// <summary>
         /// Initialize the library with the player entity reference
         /// </summary>
-        public static void Initialize(GameEntity player) {
+        public static void Initialize(GameEntity player, ItemManager itemManager) {
             _playerEntity = player;
+            _itemManager = itemManager;
         }
 
         // ===== Player Access =====
@@ -254,6 +258,162 @@ namespace ForgottenRPG.Scripting {
         [NativeFunction("entity_get_id")]
         public static int EntityGetId(GameEntity entity) {
             return entity.Id;
+        }
+
+        // ===== Position =====
+
+        /// <summary>
+        /// Get the entity world position (cartesian)
+        /// Parameters: entity handle (Entity*), output pointer (Vector2*)
+        /// </summary>
+        [NativeFunction("entity_get_position")]
+        public static void EntityGetPosition(GameEntity entity, ScriptValuePtr<Vector2F> outPos, ScriptNativeContext ctx) {
+            var pos = (GameCoordinate)entity.Position;
+            ctx.WriteValue((uint)outPos.Address, new Vector2F(pos.X, pos.Y));
+        }
+
+        /// <summary>
+        /// Get the entity tile position
+        /// Parameters: entity handle (Entity*), output pointer (Vector2I*)
+        /// </summary>
+        [NativeFunction("entity_get_tile_position")]
+        public static void EntityGetTilePosition(GameEntity entity, ScriptValuePtr<Vector2I> outPos, ScriptNativeContext ctx) {
+            var pos = entity.Position;
+            ctx.WriteValue((uint)outPos.Address, new Vector2I(pos.X, pos.Y));
+        }
+
+        /// <summary>
+        /// Check if an entity is alive
+        /// Parameters: entity handle (Entity*)
+        /// Returns: true if alive (bool)
+        /// </summary>
+        [NativeFunction("entity_is_alive")]
+        public static bool EntityIsAlive(GameEntity entity) {
+            var healthComponent = entity.GetComponent<HealthComponent>();
+            if (healthComponent == null) return true;
+            return !healthComponent.Dead;
+        }
+
+        /// <summary>
+        /// Heal an entity
+        /// Parameters: entity handle (Entity*), heal amount (int)
+        /// </summary>
+        [NativeFunction("entity_heal")]
+        public static void EntityHeal(GameEntity entity, int amount) {
+            if (amount <= 0) return;
+            var healthComponent = entity.GetComponent<HealthComponent>();
+            if (healthComponent == null) return;
+
+            var healthProperty = typeof(HealthComponent).GetProperty("Health",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (healthProperty == null) {
+                throw new InvalidOperationException("Could not access Health property");
+            }
+
+            float current = (float)healthProperty.GetValue(healthComponent);
+            healthProperty.SetValue(healthComponent, current + amount);
+        }
+
+        /// <summary>
+        /// Set an entity's health value directly
+        /// Parameters: entity handle (Entity*), health value (float)
+        /// </summary>
+        [NativeFunction("entity_set_health")]
+        public static void EntitySetHealth(GameEntity entity, float value) {
+            var healthComponent = entity.GetComponent<HealthComponent>();
+            if (healthComponent == null) return;
+
+            var healthProperty = typeof(HealthComponent).GetProperty("Health",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (healthProperty == null) {
+                throw new InvalidOperationException("Could not access Health property");
+            }
+
+            healthProperty.SetValue(healthComponent, value);
+        }
+
+        /// <summary>
+        /// Get an item by ID
+        /// Parameters: item id (int)
+        /// Returns: item handle (Item*)
+        /// </summary>
+        [NativeFunction("item_get_by_id")]
+        public static IItem ItemGetById(int id) {
+            if (_itemManager == null) return null;
+            return _itemManager.GetItem(id);
+        }
+
+        /// <summary>
+        /// Get an item by codename
+        /// Parameters: codename (string)
+        /// Returns: item handle (Item*)
+        /// </summary>
+        [NativeFunction("item_get_by_codename")]
+        public static IItem ItemGetByCodename(string codename) {
+            if (_itemManager == null) return null;
+            var item = _itemManager.GetItem(codename);
+            return _itemManager.GetItem(codename);
+        }
+
+        [NativeFunction("item_get_id")]
+        public static int ItemGetId(IItem item) {
+            return item?.Id ?? -1;
+        }
+
+        [NativeFunction("item_get_codename")]
+        public static string ItemGetCodename(IItem item) {
+            return item?.Codename ?? "";
+        }
+
+        [NativeFunction("item_get_display_name")]
+        public static string ItemGetDisplayName(IItem item) {
+            return item?.DisplayName ?? "";
+        }
+
+        [NativeFunction("item_get_description")]
+        public static string ItemGetDescription(IItem item) {
+            return item?.Description ?? "";
+        }
+
+        [NativeFunction("item_get_max_stack")]
+        public static int ItemGetMaxStack(IItem item) {
+            return item?.MaxStackSize ?? 0;
+        }
+
+        [NativeFunction("entity_get_item_count")]
+        public static int EntityGetItemCount(GameEntity entity, IItem item) {
+            var inventoryComponent = entity.GetComponent<InventoryComponent>();
+            if (inventoryComponent == null || item == null) return 0;
+            return inventoryComponent.Inventory.CountItem(item);
+        }
+
+        [NativeFunction("entity_has_item")]
+        public static bool EntityHasItem(GameEntity entity, IItem item, int count) {
+            var inventoryComponent = entity.GetComponent<InventoryComponent>();
+            if (inventoryComponent == null || item == null) return false;
+            return inventoryComponent.Inventory.HasItem(item, count);
+        }
+
+        [NativeFunction("entity_add_item")]
+        public static bool EntityAddItem(GameEntity entity, IItem item, int count) {
+            if (item == null || count <= 0) return false;
+            var inventoryComponent = entity.GetComponent<InventoryComponent>();
+            if (inventoryComponent == null) return false;
+
+            try {
+                inventoryComponent.Inventory.PickupItem(new ItemStack(item, count));
+                return true;
+            } catch (InventoryException) {
+                return false;
+            }
+        }
+
+        [NativeFunction("entity_remove_item")]
+        public static int EntityRemoveItem(GameEntity entity, IItem item, int count) {
+            if (item == null || count <= 0) return 0;
+            var inventoryComponent = entity.GetComponent<InventoryComponent>();
+            if (inventoryComponent == null) return 0;
+            return inventoryComponent.Inventory.RemoveItem(item, count);
         }
     }
 }

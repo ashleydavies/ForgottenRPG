@@ -1,0 +1,29 @@
+import "stdlib/mem.extern";
+import "stdlib/stdlib.extern";
+
+EntityHandle* player = get_player();
+
+Vector2 pos;
+Vector2I tile;
+
+entity_get_position(player, @pos);
+entity_get_tile_position(player, @tile);
+
+print("Player position:");
+print(pos.x);
+print(pos.y);
+
+print("Player tile:");
+print(tile.x);
+print(tile.y);
+
+ItemHandle* frog = item_get_by_codename("frog_sword");
+print("Has frog sword:");
+if (entity_has_item(player, frog, 1)) {
+    print("Yes");
+} else {
+    print("No");
+}
+
+print("Frog sword count:");
+print(entity_get_item_count(player, frog));

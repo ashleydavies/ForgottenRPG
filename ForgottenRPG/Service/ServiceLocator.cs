@@ -1,10 +1,12 @@
-﻿using ForgottenRPG.Service.Null;
+﻿using System.Collections.Generic;
+using ForgottenRPG.Service.Null;
 
 namespace ForgottenRPG.Service {
     public static class ServiceLocator {
         private static ILogService _logService;
         private static IAudioService _audioService;
         private static IScriptStoreService _scriptStoreService;
+        private static List<uint> _stdlibBytes;
         private static readonly ILogService NullLogService = new NullLogService();
         private static readonly IAudioService NullAudioService = new NullAudioService();
         private static readonly IScriptStoreService NullScriptStoreService = new NullScriptStoreService();
@@ -22,6 +24,11 @@ namespace ForgottenRPG.Service {
         public static IScriptStoreService ScriptStoreService {
             get => _scriptStoreService ?? NullScriptStoreService;
             set => _scriptStoreService = value;
+        }
+
+        public static List<uint> StdlibBytes {
+            get => _stdlibBytes;
+            set => _stdlibBytes = value;
         }
     }
 }

@@ -1,0 +1,47 @@
+{
+  "name": "FSCR",
+  "scopeName": "source.fscr",
+  "fileTypes": ["fscr"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#keywords" },
+    { "include": "#types" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.fscr", "begin": "//", "end": "$" }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.fscr",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            { "name": "constant.character.escape.fscr", "match": "\\\\." }
+          ]
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        { "name": "keyword.control.fscr", "match": "\\b(if|else|for|while|return|break|continue)\\b" },
+        { "name": "storage.type.fscr", "match": "\\b(func|extern|struct|static|import)\\b" }
+      ]
+    },
+    "types": {
+      "patterns": [
+        { "name": "storage.type.primitive.fscr", "match": "\\b(int|uint|float|bool|char|string|void)\\b" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        { "name": "constant.numeric.fscr", "match": "\\b\\d+(?:\\.\\d+)?\\b" }
+      ]
+    }
+  }
+}

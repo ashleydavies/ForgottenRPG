@@ -12,7 +12,7 @@ PRINT !loopmsg
 ADD r6 1
 
 INC r1
-JMP START
+JMP STAR
 LABEL END
 
 PRINT !endmsg

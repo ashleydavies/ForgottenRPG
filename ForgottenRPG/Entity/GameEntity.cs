@@ -10,7 +10,7 @@ using SFML.Graphics;
 using ForgottenRPG.NativeFunctions;
 
 namespace ForgottenRPG.Entity {
-    [ScriptReference("Entity")]
+    [ScriptReference("EntityHandle")]
     public class GameEntity {
         public string Name { get; }
         public int Id { get; }

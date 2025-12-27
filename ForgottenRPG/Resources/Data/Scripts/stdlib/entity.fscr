@@ -1,0 +1,46 @@
+import "stdlib/mem";
+import "stdlib/item";
+
+struct Entity {
+    EntityHandle* handle;
+}
+
+func Entity @entity_from_player() {
+    Entity @e = malloc(sizeof Entity);
+    e->handle = get_player();
+    return e;
+}
+
+func int Entity::id() {
+    return entity_get_id(this->handle);
+}
+
+func int Entity::name_hash() {
+    return entity_get_name_hash(this->handle);
+}
+
+func int Entity::max_health() {
+    return entity_get_max_health(this->handle);
+}
+
+func float Entity::health() {
+    return entity_get_health(this->handle);
+}
+
+func bool Entity::is_dead() {
+    return entity_is_dead(this->handle);
+}
+
+func bool Entity::has_primary() {
+    return entity_has_primary_equipped(this->handle);
+}
+
+func Item @Entity::primary_item() {
+    Item @item = malloc(sizeof Item);
+    item->handle = entity_get_primary_item(this->handle);
+    return item;
+}
+
+func void Entity::send_damage(int amount) {
+    entity_send_damage(this->handle, amount);
+}

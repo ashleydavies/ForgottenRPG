@@ -60,7 +60,9 @@ namespace ScriptCompiler.CodeGeneration {
             // Function definitions
             foreach (var functionNode in programNodes.SelectMany(n => n.FunctionNodes)) {
                 if (functionNode.IsExtern) continue;
-                instructions.Add(new ExportInstruction(functionNode.Label, functionNode.Name));
+                var functionRef = functionNode.Reference(_userTypeRepository);
+                var symbolHash = _functionTypeRepository.SymbolHash(functionRef);
+                instructions.Add(new ExportInstruction(functionNode.Label, symbolHash));
                 instructions.AddRange(GenerateFunction(functionNode));
             }
 

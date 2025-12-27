@@ -1,0 +1,14 @@
+// Demo script for Farmer Joe dialogue
+// Prints player's max health using native functions
+
+func void printPlayerMaxHealth() {
+    EntityHandle* playerHandle;
+    int maxHealth;
+    
+    playerHandle = get_player();
+    maxHealth = entity_get_max_health(playerHandle);
+    
+    print maxHealth;
+}
+
+printPlayerMaxHealth();

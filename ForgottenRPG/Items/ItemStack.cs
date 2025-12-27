@@ -20,5 +20,12 @@
             other.Count -= (Item.MaxStackSize - Count);
             Count = Item.MaxStackSize;
         }
+
+        public int Remove(int amount) {
+            if (amount <= 0) return 0;
+            int removed = amount <= Count ? amount : Count;
+            Count -= removed;
+            return removed;
+        }
     }
 }

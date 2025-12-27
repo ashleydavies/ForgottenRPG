@@ -1,4 +1,4 @@
-import "ScriptCompiler/mem";
+import "ForgottenRPG/Resources/Data/Scripts/stdlib/mem";
 
 int @ptr = malloc(10);
 print 12345; // Marker to see if we reached here

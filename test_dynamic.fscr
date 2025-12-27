@@ -1,4 +1,4 @@
-import "ScriptCompiler/mem";
+import "ForgottenRPG/Resources/Data/Scripts/stdlib/mem";
 
 print("Testing Dynamic String:");
 print(item_get_name(0)); // Should print "Unknown Item"

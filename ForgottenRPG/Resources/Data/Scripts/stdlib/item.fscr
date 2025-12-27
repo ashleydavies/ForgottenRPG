@@ -1,0 +1,13 @@
+import "stdlib/mem";
+
+struct Item {
+    ItemHandle* handle;
+}
+
+func string Item::name() {
+    return item_get_name(this->handle);
+}
+
+func int Item::name_hash() {
+    return item_get_name_hash(this->handle);
+}

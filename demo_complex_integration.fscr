@@ -1,4 +1,4 @@
-import "ScriptCompiler/mem";
+import "ForgottenRPG/Resources/Data/Scripts/stdlib/mem.extern";
 
 int player = get_player();
 

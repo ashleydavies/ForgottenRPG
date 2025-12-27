@@ -1,4 +1,4 @@
-import "ScriptCompiler/mem";
+import "ForgottenRPG/Resources/Data/Scripts/stdlib/mem";
 
 Entity* player = get_player();
 

@@ -37,6 +37,20 @@ namespace ForgottenRPG.NativeFunctions {
             return _memoryReader(address);
         }
 
+        public string ReadString(uint address) {
+            uint length = ReadMemory(address);
+            char[] chars = new char[length];
+            for (uint i = 0; i < length; i++) {
+                chars[i] = Convert.ToChar(ReadMemory(address + 1 + i));
+            }
+
+            return new string(chars);
+        }
+
+        public void WriteValue(uint address, object value) {
+            ScriptValueTypeMarshaller.WriteValue(this, address, value);
+        }
+
         // Stack operations for arguments and return values
         public int PopInt() => (int)_stack.Pop();
         public uint PopUInt() => _stack.Pop();

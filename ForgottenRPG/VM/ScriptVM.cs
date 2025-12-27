@@ -15,48 +15,27 @@ namespace ForgottenRPG.VM {
         private readonly Flags _flagRegister;
         private readonly Stack<uint> _stack;
         private readonly Dictionary<uint, IMemoryPage> _memory = new Dictionary<uint, IMemoryPage>();
+        private readonly List<MemoryPage> _instructionPages = new List<MemoryPage>();
+        private bool _instructionPagesLocked;
         private readonly uint _stackPointerBase;
         private readonly uint _maxExecutionAddress;
         private readonly Dictionary<int, object> _entityRegistry = new Dictionary<int, object>();
         private readonly Stack<object> _pendingData = new Stack<object>();
         private NativeFunctionRegistry _nativeFunctionRegistry;
+        private readonly uint _loadOffset;
+        private readonly List<uint>? _stdlibBytes;
+        private readonly uint _stdlibBase;
         public Action<string> PrintMethod { get; set; } = s => ServiceLocator.LogService.Log(LogType.Info, "VM : " + s);
 
         public ScriptVm(List<uint> bytes) {
             _bytes = bytes;
-            // Copy the bytes to memory
-            var allPreloadedPages = new List<MemoryPage>();
-            // Subset of allPreloadedPages; just instruction-related ones
-            var  instructionPages = new List<MemoryPage>();
-            uint addr             = 0;
-            for (uint i = 0; i < bytes.Count; i++, addr++) {
-                // Special case: if we are the last byte of the static section, we do a page jump
-                if (i == bytes[1]) {
-                    addr += (MemoryPage.PageSize - addr % MemoryPage.PageSize) % MemoryPage.PageSize;
-                }
+            _loadOffset = 0;
+            _stdlibBytes = null;
+            _stdlibBase = 0;
+            uint maxLoadedPage = 0;
+            _maxExecutionAddress = LoadModule(bytes, 0, _instructionPages, ref maxLoadedPage);
 
-                uint page   = addr / MemoryPage.PageSize;
-                uint offset = addr % MemoryPage.PageSize;
-
-                if (!_memory.ContainsKey(page)) {
-                    var memoryPage = new MemoryPage();
-                    _memory[page] = memoryPage;
-                    allPreloadedPages.Add(memoryPage);
-
-                    if (addr > bytes[1]) {
-                        instructionPages.Add(memoryPage);
-                    }
-                }
-
-                _memory[page].WriteAddress(offset, bytes[(int) i]);
-            }
-
-            _maxExecutionAddress = addr;
-
-            // Lock the pages for writing so programs can't overwrite instruction data
-            instructionPages.ForEach(x => x.Lock());
-
-            _stackPointerBase = (uint) allPreloadedPages.Count * MemoryPage.PageSize;
+            _stackPointerBase = (maxLoadedPage + 1) * MemoryPage.PageSize;
             _registers = new Dictionary<uint, uint> {
                 [InstructionRegister]  = bytes[0],
                 [StackPointerRegister] = _stackPointerBase
@@ -64,6 +43,40 @@ namespace ForgottenRPG.VM {
 
             _flagRegister = new Flags();
             _stack        = new Stack<uint>();
+
+            RegisterExports(bytes, _loadOffset);
+            ResolveBaseRelocations(bytes, _loadOffset);
+            LockInstructionPagesIfReady(bytes);
+        }
+
+        public ScriptVm(List<uint> stdlibBytes, List<uint> scriptBytes) {
+            _bytes = scriptBytes;
+            _stdlibBytes = stdlibBytes;
+            _stdlibBase = 0;
+            _loadOffset = CalculateStdlibReservedPages() * MemoryPage.PageSize;
+
+            uint maxLoadedPage = 0;
+            uint maxExecutionAddress = 0;
+
+            maxExecutionAddress = Math.Max(maxExecutionAddress, LoadModule(stdlibBytes, _stdlibBase, _instructionPages,
+                                                                           ref maxLoadedPage));
+            maxExecutionAddress = Math.Max(maxExecutionAddress, LoadModule(scriptBytes, _loadOffset, _instructionPages,
+                                                                           ref maxLoadedPage));
+            _maxExecutionAddress = maxExecutionAddress;
+
+            _stackPointerBase = (maxLoadedPage + 1) * MemoryPage.PageSize;
+            _registers = new Dictionary<uint, uint> {
+                [InstructionRegister]  = scriptBytes[0] + _loadOffset,
+                [StackPointerRegister] = _stackPointerBase
+            };
+
+            _flagRegister = new Flags();
+            _stack        = new Stack<uint>();
+
+            RegisterExports(stdlibBytes, _stdlibBase);
+            RegisterExports(scriptBytes, _loadOffset);
+            ResolveBaseRelocations(scriptBytes, _loadOffset);
+            LockInstructionPagesIfReady(stdlibBytes, scriptBytes);
         }
 
         public void Execute() {
@@ -78,32 +91,19 @@ namespace ForgottenRPG.VM {
         public void RegisterNativeFunctions(NativeFunctionRegistry registry) {
             _nativeFunctionRegistry = registry;
             foreach (var func in registry.AllFunctions) {
-                GlobalSymbolRegistry.Register(func.ScriptName, (uint)func.Id);
+                GlobalSymbolRegistry.Register(func.SymbolHash, (uint)func.Id);
             }
+
+            if (_stdlibBytes != null) {
+                ResolveRelocations(_stdlibBytes, _stdlibBase);
+            }
+            ResolveRelocations(_bytes, _loadOffset);
+            LockInstructionPages();
         }
 
         public void ResolveRelocations() {
-            if (_bytes.Count < 3) return;
-            uint relocationTableOffset = _bytes[2];
-            if (relocationTableOffset >= _bytes.Count) return;
-
-            int i = (int)relocationTableOffset;
-            uint count = _bytes[i++];
-            for (uint r = 0; r < count; r++) {
-                uint addressToPatch = _bytes[i++];
-                uint nameLen = _bytes[i++];
-                char[] nameChars = new char[nameLen];
-                for (uint c = 0; c < nameLen; c++) {
-                    nameChars[c] = (char)_bytes[i++];
-                }
-                string symbolName = new string(nameChars);
-
-                if (GlobalSymbolRegistry.TryGet(symbolName, out uint resolvedAddress)) {
-                    WriteMemory(addressToPatch, resolvedAddress);
-                } else {
-                    PrintMethod($"Warning: Could not resolve symbol {symbolName}");
-                }
-            }
+            ResolveRelocations(_bytes, _loadOffset);
+            LockInstructionPages();
         }
 
         /// <summary>
@@ -114,6 +114,118 @@ namespace ForgottenRPG.VM {
             // Wait, currently labels are resolved by the assembler.
             // If we want to export them, the assembler needs to include a symbol table.
             // For now, let's assume we want to export EVERYTHING that looks like a function.
+        }
+
+        private uint LoadModule(List<uint> bytes, uint baseOffset, List<MemoryPage> instructionPages,
+                                ref uint maxLoadedPage) {
+            uint addr = baseOffset;
+            uint? codeEndAddress = null;
+            uint relocationTableIndex = bytes.Count >= 3 ? bytes[2] : uint.MaxValue;
+            for (uint i = 0; i < bytes.Count; i++, addr++) {
+                // Special case: if we are the last byte of the static section, we do a page jump
+                if (i == bytes[1]) {
+                    addr += (MemoryPage.PageSize - addr % MemoryPage.PageSize) % MemoryPage.PageSize;
+                }
+
+                if (i == relocationTableIndex) {
+                    codeEndAddress = addr;
+                }
+
+                uint page   = addr / MemoryPage.PageSize;
+                uint offset = addr % MemoryPage.PageSize;
+
+                if (!_memory.ContainsKey(page)) {
+                    var memoryPage = new MemoryPage();
+                    _memory[page] = memoryPage;
+
+                    if (addr > baseOffset + bytes[1]) {
+                        instructionPages.Add(memoryPage);
+                    }
+                }
+
+                _memory[page].WriteAddress(offset, bytes[(int)i]);
+                if (page > maxLoadedPage) {
+                    maxLoadedPage = page;
+                }
+            }
+
+            return codeEndAddress ?? addr;
+        }
+
+        private void RegisterExports(List<uint> bytes, uint baseOffset) {
+            if (bytes.Count < 5) return;
+            uint exportTableOffset = bytes[3];
+            if (exportTableOffset >= bytes.Count) return;
+
+            int i = (int)exportTableOffset;
+            uint count = bytes[i++];
+            for (uint e = 0; e < count; e++) {
+                uint symbolHash = bytes[i++];
+                uint address = bytes[i++];
+                GlobalSymbolRegistry.Register(symbolHash, address + baseOffset);
+            }
+        }
+
+        private void ResolveBaseRelocations(List<uint> bytes, uint baseOffset) {
+            if (baseOffset == 0) return;
+            if (bytes.Count < 5) return;
+            uint baseRelocationOffset = bytes[4];
+            if (baseRelocationOffset >= bytes.Count) return;
+
+            int i = (int)baseRelocationOffset;
+            uint count = bytes[i++];
+            for (uint r = 0; r < count; r++) {
+                uint addressToPatch = bytes[i++] + baseOffset;
+                uint current = ReadMemory(addressToPatch);
+                WriteMemory(addressToPatch, current + baseOffset);
+            }
+        }
+
+        private void ResolveRelocations(List<uint> bytes, uint baseOffset) {
+            if (bytes.Count < 3) return;
+            uint relocationTableOffset = bytes[2];
+            if (relocationTableOffset >= bytes.Count) return;
+
+            int i = (int)relocationTableOffset;
+            uint count = bytes[i++];
+            for (uint r = 0; r < count; r++) {
+                uint addressToPatch = bytes[i++] + baseOffset;
+                uint symbolHash = bytes[i++];
+
+                if (GlobalSymbolRegistry.TryGet(symbolHash, out uint resolvedAddress)) {
+                    WriteMemory(addressToPatch, resolvedAddress);
+                } else {
+                    PrintMethod($"Warning: Could not resolve symbol {symbolHash}");
+                }
+            }
+        }
+
+        private void LockInstructionPagesIfReady(params List<uint>[] modules) {
+            foreach (var module in modules) {
+                if (HasRelocations(module)) {
+                    return;
+                }
+            }
+
+            LockInstructionPages();
+        }
+
+        private void LockInstructionPages() {
+            if (_instructionPagesLocked) return;
+            _instructionPages.ForEach(x => x.Lock());
+            _instructionPagesLocked = true;
+        }
+
+        private static bool HasRelocations(List<uint> bytes) {
+            if (bytes.Count < 3) return false;
+            uint relocationTableOffset = bytes[2];
+            if (relocationTableOffset >= bytes.Count) return false;
+            return bytes[(int)relocationTableOffset] > 0;
+        }
+
+        private static uint CalculateStdlibReservedPages() {
+            uint totalPages = uint.MaxValue / MemoryPage.PageSize;
+            return totalPages / 5;
         }
 
         /// <summary>
@@ -371,6 +483,10 @@ namespace ForgottenRPG.VM {
 #endif
 
             return _memory[page].ReadAddress(offset);
+        }
+
+        public uint DebugReadMemory(uint address) {
+            return ReadMemory(address);
         }
 
         private uint _maxMem = 0;

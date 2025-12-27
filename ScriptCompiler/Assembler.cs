@@ -14,9 +14,10 @@ namespace ScriptCompiler {
     }
 
     public class Assembler {
-        // Hardcoded constant strings etc begin at index 2, as index 0 contains a pointer to the start of executable code
-        // and index 1 contains the length of the space allocated to storing static variable values.
-        private const int UserDataOffset = 3;
+        // Hardcoded constant strings etc begin at index 5, as index 0 contains a pointer to the start of executable code,
+        // index 1 contains the length of the space allocated to storing static variable values, index 2 is relocation
+        // table offset, index 3 is export table offset, and index 4 is base relocation table offset.
+        private const int UserDataOffset = 5;
 
         private int _instructionId;
         private readonly List<string> _lines;
@@ -32,7 +33,9 @@ namespace ScriptCompiler {
         // Technically static variables are a subset of user data for the purposes of assembling so we use the same map
         private readonly Dictionary<string, int> _userDataIndexes;
         private readonly Dictionary<string, string> _labels;
-        private readonly List<(int position, string symbol)> _relocations = new();
+        private readonly List<(int position, uint symbolHash)> _relocations = new();
+        private readonly List<(string label, uint symbolHash)> _exports = new();
+        private readonly List<int> _baseRelocations = new();
 
         public Assembler(List<string> lines) {
             _lines           = lines;
@@ -138,7 +141,7 @@ namespace ScriptCompiler {
                     // A jmp_extern is basically PUSH 0 (placeholder), JMP
                     // We need to record a relocation for the 0
                     AddInstruction(ScriptVm.Instruction.Literal);
-                    _relocations.Add((_instructionId, components[1]));
+                    _relocations.Add((_instructionId, uint.Parse(components[1])));
                     AddInstruction("0");
                     AddInstruction(ScriptVm.Instruction.Jmp);
                     break;
@@ -254,8 +257,11 @@ namespace ScriptCompiler {
                     break;
                 case "call_native_extern":
                     AddInstruction(ScriptVm.Instruction.CallNative);
-                    _relocations.Add((_instructionId, components[1]));
+                    _relocations.Add((_instructionId, uint.Parse(components[1])));
                     AddInstruction("0");
+                    break;
+                case "export":
+                    _exports.Add((components[1], uint.Parse(components[2])));
                     break;
                 case "memread_stack":
                     // Expects address on stack. Pushes value to stack.
@@ -307,10 +313,15 @@ namespace ScriptCompiler {
             newInstructions.Insert(0, codeOffset.ToString());
             // This points to the end of the static section, at which point a "page break" needs inserting by the VM
             newInstructions.Insert(1, (_staticLength + UserDataOffset).ToString());
-            
-            // Relocation table will start after the code
-            int relocationTableOffset = codeOffset + _instructions.Count;
+
+            int relocationTableOffset = UserDataOffset + _userData.Count + _instructions.Count;
+            int relocationTableLength = 1 + _relocations.Count * 2;
+            int exportTableOffset = relocationTableOffset + relocationTableLength;
+            int exportTableLength = 1 + _exports.Count * 2;
+            int baseRelocationTableOffset = exportTableOffset + exportTableLength;
             newInstructions.Insert(2, relocationTableOffset.ToString());
+            newInstructions.Insert(3, exportTableOffset.ToString());
+            newInstructions.Insert(4, baseRelocationTableOffset.ToString());
 
             newInstructions.AddRange(_instructions);
 
@@ -318,10 +329,20 @@ namespace ScriptCompiler {
             newInstructions.Add(_relocations.Count.ToString());
             foreach (var (pos, symbol) in _relocations) {
                 newInstructions.Add((pos + codeOffset).ToString());
-                newInstructions.Add(symbol.Length.ToString());
-                foreach (char c in symbol) {
-                    newInstructions.Add(((uint) c).ToString());
-                }
+                newInstructions.Add(symbol.ToString());
+            }
+
+            // Append export table
+            newInstructions.Add(_exports.Count.ToString());
+            foreach (var (label, symbolHash) in _exports) {
+                newInstructions.Add(symbolHash.ToString());
+                newInstructions.Add((int.Parse(_labels[label]) + codeOffset).ToString());
+            }
+
+            // Append base relocation table
+            newInstructions.Add(_baseRelocations.Count.ToString());
+            foreach (var pos in _baseRelocations) {
+                newInstructions.Add((pos + codeOffset).ToString());
             }
 
             _instructions = newInstructions
@@ -354,9 +375,11 @@ namespace ScriptCompiler {
                 AddInstruction(GetRegister(source));
             } else if (source.StartsWith("$")) {
                 AddInstruction(ScriptVm.Instruction.Literal);
+                _baseRelocations.Add(_instructionId);
                 AddInstruction("RESOLVELABEL" + source.Substring(1));
             } else if (source.StartsWith("!")) {
                 AddInstruction(ScriptVm.Instruction.Literal);
+                _baseRelocations.Add(_instructionId);
                 AddInstruction(_userDataIndexes[source.Substring(1)].ToString());
             } else {
                 AddInstruction(ScriptVm.Instruction.Literal);

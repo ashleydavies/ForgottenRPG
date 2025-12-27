@@ -1,6 +1,8 @@
 ﻿using System;
+using ForgottenRPG.NativeFunctions;
 
 namespace ForgottenRPG.Util {
+    [ScriptValueType("Vector2")]
     public class Vector2F {
         public float X;
         public float Y;

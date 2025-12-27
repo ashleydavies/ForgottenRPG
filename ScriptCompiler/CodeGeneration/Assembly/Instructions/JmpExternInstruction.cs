@@ -1,13 +1,13 @@
 namespace ScriptCompiler.CodeGeneration.Assembly.Instructions {
     public class JmpExternInstruction : Instruction {
-        private readonly string _functionName;
+        private readonly uint _symbolHash;
 
-        public JmpExternInstruction(string functionName) {
-            _functionName = functionName;
+        public JmpExternInstruction(uint symbolHash) {
+            _symbolHash = symbolHash;
         }
 
         protected override string AsString() {
-            return $"JMP_EXTERN {_functionName}";
+            return $"JMP_EXTERN {_symbolHash}";
         }
     }
 }

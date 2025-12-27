@@ -1,5 +1,5 @@
-import "ScriptCompiler/mem";
-import "ScriptCompiler/oo_wrappers";
+import "ForgottenRPG/Resources/Data/Scripts/stdlib/mem.extern";
+import "ForgottenRPG/Resources/Data/Scripts/stdlib/oo_wrappers.extern";
 
 EntityWrap @player = entity_from_player();
 

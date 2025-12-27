@@ -1,0 +1,2 @@
+import "ForgottenRPG/Resources/Data/Scripts/stdlib/mem";
+import "ForgottenRPG/Resources/Data/Scripts/stdlib/oo_wrappers";

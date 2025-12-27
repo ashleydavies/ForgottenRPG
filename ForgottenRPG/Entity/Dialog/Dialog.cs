@@ -71,6 +71,13 @@ namespace ForgottenRPG.Entity.Dialog {
                     case "code":
                         replyActions.Add(new DialogActionCode(replyAction.Value.Split(',').Select(uint.Parse).ToList()));
                         break;
+                    case "script":
+                        var scriptId = replyAction.Attribute("src")?.Value;
+                        if (string.IsNullOrWhiteSpace(scriptId)) {
+                            throw new DialogException("Missing src attribute for script action");
+                        }
+                        replyActions.Add(new DialogActionScript(scriptId.Trim()));
+                        break;
                 }
             }
 

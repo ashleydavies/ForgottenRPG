@@ -3,7 +3,7 @@
 using ForgottenRPG.NativeFunctions;
 
 namespace ForgottenRPG.Items {
-    [ScriptReference("Item")]
+    [ScriptReference("ItemHandle")]
     public interface IItem {
         int Id { get; }
         string Name { get; }

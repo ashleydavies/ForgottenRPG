@@ -1,7 +1,9 @@
 ﻿using System;
+using ForgottenRPG.NativeFunctions;
 using SFML.System;
 
 namespace ForgottenRPG.Util {
+    [ScriptValueType("Vector2I")]
     public class Vector2I {
         public int X;
         public int Y;

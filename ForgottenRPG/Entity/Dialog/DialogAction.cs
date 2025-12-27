@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ForgottenRPG.VM;
+using ForgottenRPG.Service;
 
 namespace ForgottenRPG.Entity.Dialog {
     public abstract class DialogAction {
@@ -32,7 +34,17 @@ namespace ForgottenRPG.Entity.Dialog {
         }
 
         public override void Execute(Dialog dialog) {
-            var vm = new ScriptVm(new List<uint>(_code));
+            var stdlibBytes = ServiceLocator.StdlibBytes;
+            if (stdlibBytes == null) {
+                throw new InvalidOperationException("Stdlib bytecode is not loaded.");
+            }
+            ServiceLocator.LogService.Log(LogType.Info, $"DialogActionCode stdlib words: {stdlibBytes.Count}");
+            if (stdlibBytes.Count >= 5) {
+                ServiceLocator.LogService.Log(LogType.Info,
+                    $"DialogActionCode stdlib exportOff: {stdlibBytes[3]} relocOff: {stdlibBytes[2]}");
+            }
+            ServiceLocator.LogService.Log(LogType.Info, $"DialogActionCode script words: {_code.Count}");
+            var vm = new ScriptVm(stdlibBytes, new List<uint>(_code));
             
             // Register native functions
             var registry = new ForgottenRPG.NativeFunctions.NativeFunctionRegistry();
@@ -40,6 +52,18 @@ namespace ForgottenRPG.Entity.Dialog {
             vm.RegisterNativeFunctions(registry);
             
             vm.Execute();
+        }
+    }
+
+    public class DialogActionScript : DialogAction {
+        private readonly string _scriptId;
+
+        public DialogActionScript(string scriptId) {
+            _scriptId = scriptId;
+        }
+
+        public override void Execute(Dialog dialog) {
+            Scripting.ScriptRuntime.Default.ExecuteScriptId(_scriptId);
         }
     }
 }
