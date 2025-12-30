@@ -27,6 +27,10 @@ namespace ScriptCompiler {
 
             if (args[0] == "compile") {
                 Console.WriteLine(Parser.FromFile(fileName).Compile());
+            } else if (args[0] == "compile-stack") {
+                var program = Parser.FromFile(fileName).Parse();
+                var compiled = new ScriptCompiler.CodeGeneration.StackCodeGenerator().Generate(program);
+                Console.WriteLine(string.Join(Environment.NewLine, compiled));
             } else if (args[0] == "assemble") {
                 List<string> compiled = new Assembler(File.ReadLines(fileName + AssemblyExtension).ToList()).Compile();
 

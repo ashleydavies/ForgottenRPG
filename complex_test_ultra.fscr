@@ -1,0 +1,344 @@
+struct Vec2 {
+    int x;
+    int y;
+}
+
+struct Rect {
+    Vec2 min;
+    Vec2 max;
+}
+
+struct Stats {
+    int hp;
+    int mp;
+    int atk;
+}
+
+struct Actor {
+    string name;
+    Vec2 pos;
+    Stats stats;
+    int alive;
+}
+
+struct Item {
+    int id;
+    string name;
+    int price;
+}
+
+struct Bag {
+    Item a;
+    Item b;
+    int count;
+}
+
+struct Node {
+    int id;
+    Vec2 pos;
+    Stats stats;
+}
+
+struct Pair {
+    Node left;
+    Node right;
+}
+
+struct Holder {
+    Node @ptr;
+}
+
+struct Bundle {
+    Holder h1;
+    Holder h2;
+}
+
+func Vec2 make_vec(int x, int y) {
+    Vec2 v;
+    v.x = x;
+    v.y = y;
+    return v;
+}
+
+func Vec2 add_vec(Vec2 a, Vec2 b) {
+    Vec2 r;
+    r.x = a.x + b.x;
+    r.y = a.y + b.y;
+    return r;
+}
+
+func Vec2 scale_vec(Vec2 a, int s) {
+    Vec2 r;
+    r.x = a.x * s;
+    r.y = a.y * s;
+    return r;
+}
+
+func Rect make_rect(Vec2 min, Vec2 max) {
+    Rect r;
+    r.min = min;
+    r.max = max;
+    return r;
+}
+
+func int rect_area(Rect r) {
+    int w = r.max.x - r.min.x;
+    int h = r.max.y - r.min.y;
+    return w * h;
+}
+
+func bool is_inside(Rect r, Vec2 p) {
+    if p.x < r.min.x {
+        return 0;
+    }
+    if p.y < r.min.y {
+        return 0;
+    }
+    if p.x > r.max.x {
+        return 0;
+    }
+    if p.y > r.max.y {
+        return 0;
+    }
+    return 1;
+}
+
+func Stats make_stats(int hp, int mp, int atk) {
+    Stats s;
+    s.hp = hp;
+    s.mp = mp;
+    s.atk = atk;
+    return s;
+}
+
+func int stats_total(Stats s) {
+    return s.hp + s.mp + s.atk;
+}
+
+func Actor make_actor(string name, Vec2 pos, Stats stats) {
+    Actor a;
+    a.name = name;
+    a.pos = pos;
+    a.stats = stats;
+    a.alive = 1;
+    return a;
+}
+
+func void Actor::move(Vec2 delta) {
+    Vec2 next = add_vec(this->pos, delta);
+    this->pos = next;
+}
+
+func void Actor::damage(int amount) {
+    this->stats.hp = this->stats.hp - amount;
+    if this->stats.hp <= 0 {
+        this->alive = 0;
+    }
+}
+
+func int Actor::power() {
+    return stats_total(this->stats);
+}
+
+func int actor_score(Actor a) {
+    return a.stats.hp + a.stats.mp + a.stats.atk + a.pos.x + a.pos.y;
+}
+
+func void swap(int @a, int @b) {
+    int t = !a;
+    !a = !b;
+    !b = t;
+}
+
+func int next_id() {
+    static int id = 100;
+    id = id + 1;
+    return id;
+}
+
+func Item make_item(string name, int price) {
+    Item it;
+    it.id = next_id();
+    it.name = name;
+    it.price = price;
+    return it;
+}
+
+func void Bag::add(Item it) {
+    if this->count == 0 {
+        this->a = it;
+    } else {
+        this->b = it;
+    }
+    this->count = this->count + 1;
+}
+
+func int Bag::total_value() {
+    int total = 0;
+    if this->count > 0 {
+        total = total + this->a.price;
+    }
+    if this->count > 1 {
+        total = total + this->b.price;
+    }
+    return total;
+}
+
+func void move_node(Node @n, Vec2 delta) {
+    n->pos = add_vec(n->pos, delta);
+}
+
+func void hurt_node(Node @n, int dmg) {
+    n->stats.hp = n->stats.hp - dmg;
+}
+
+func int node_power(Node n) {
+    return stats_total(n.stats) + n.id;
+}
+
+func void swap_nodes(Node @a, Node @b) {
+    Node temp = !a;
+    !a = !b;
+    !b = temp;
+}
+
+Vec2 v = make_vec(3, 4);
+Vec2 w = scale_vec(v, 2);
+print 'vec.w.x=6';
+print w.x;
+print 'vec.w.y=8';
+print w.y;
+
+Rect r = make_rect(make_vec(0, 0), make_vec(5, 5));
+print 'rect.area=25';
+print rect_area(r);
+print 'inside(3,4)=1';
+print is_inside(r, make_vec(3, 4));
+print 'inside(6,1)=0';
+print is_inside(r, make_vec(6, 1));
+
+Stats s = make_stats(10, 5, 7);
+print 'stats.total=22';
+print stats_total(s);
+
+Actor hero = make_actor('Rex', make_vec(1, 1), s);
+print 'hero.power=22';
+print hero.power();
+hero.move(make_vec(2, 3));
+print 'hero.pos.x=3';
+print hero.pos.x;
+print 'hero.pos.y=4';
+print hero.pos.y;
+hero.damage(4);
+print 'hero.hp=6';
+print hero.stats.hp;
+print 'hero.alive=1';
+print hero.alive;
+hero.damage(10);
+print 'hero.hp=-4';
+print hero.stats.hp;
+print 'hero.alive=0';
+print hero.alive;
+print 'hero.score=15';
+print actor_score(hero);
+
+Actor copy = hero;
+print 'copy.name=Rex';
+print copy.name;
+print 'copy.pos.x=3';
+print copy.pos.x;
+print 'copy.pos.y=4';
+print copy.pos.y;
+print 'copy.hp=-4';
+print copy.stats.hp;
+
+Item item1 = make_item('Gem', 50);
+Item item2 = make_item('Key', 30);
+print 'item1.id=101';
+print item1.id;
+print 'item2.id=102';
+print item2.id;
+
+Bag bag;
+bag.add(item1);
+bag.add(item2);
+print 'bag.count=2';
+print bag.count;
+print 'bag.total=80';
+print bag.total_value();
+
+int x = 7;
+int y = 9;
+swap(@x, @y);
+print 'swap.x=9';
+print x;
+print 'swap.y=7';
+print y;
+
+int sum = 0;
+for int i = 0; i < 5; i = i + 1 {
+    sum = sum + i * 2;
+}
+print 'sum.loop=20';
+print sum;
+
+int z = 5;
+int @pz = @z;
+!pz = !pz + 10;
+print 'ptr.z=15';
+print z;
+
+Node n1;
+n1.id = 1;
+n1.pos = make_vec(1, 2);
+n1.stats = make_stats(5, 6, 7);
+Node n2;
+n2.id = 2;
+n2.pos = make_vec(3, 4);
+n2.stats = make_stats(8, 9, 10);
+
+Pair pair;
+pair.left = n1;
+pair.right = n2;
+print 'pair.left.pos.x=1';
+print pair.left.pos.x;
+print 'pair.right.pos.y=4';
+print pair.right.pos.y;
+
+Node @pLeft = @pair.left;
+move_node(pLeft, make_vec(5, 0));
+print 'pair.left.pos.x=6';
+print pair.left.pos.x;
+
+hurt_node(@pair.right, 3);
+print 'pair.right.hp=5';
+print pair.right.stats.hp;
+
+print 'node_power(left)=19';
+print node_power(pair.left);
+
+swap_nodes(@pair.left, @pair.right);
+print 'pair.left.id=2';
+print pair.left.id;
+print 'pair.right.id=1';
+print pair.right.id;
+
+Holder h;
+h.ptr = @pair.left;
+print 'holder.ptr.id=2';
+print h.ptr->id;
+h.ptr->stats.hp = 42;
+print 'pair.left.hp=42';
+print pair.left.stats.hp;
+
+Bundle bundle;
+bundle.h1.ptr = @pair.left;
+bundle.h2.ptr = @pair.right;
+bundle.h1.ptr->pos = add_vec(bundle.h1.ptr->pos, make_vec(1, 1));
+bundle.h2.ptr->stats.mp = 99;
+print 'bundle.left.pos.x=4';
+print pair.left.pos.x;
+print 'bundle.left.pos.y=5';
+print pair.left.pos.y;
+print 'bundle.right.mp=99';
+print pair.right.stats.mp;

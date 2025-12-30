@@ -1,0 +1,238 @@
+struct Vec2 {
+    int x;
+    int y;
+}
+
+struct Rect {
+    Vec2 min;
+    Vec2 max;
+}
+
+struct Item {
+    int id;
+    string name;
+    int value;
+}
+
+struct Actor {
+    string name;
+    Vec2 pos;
+    int hp;
+    int mana;
+}
+
+struct Counter {
+    int value;
+}
+
+func Vec2 make_vec(int x, int y) {
+    Vec2 v;
+    v.x = x;
+    v.y = y;
+    return v;
+}
+
+func Vec2 add_vec(Vec2 a, Vec2 b) {
+    Vec2 r;
+    r.x = a.x + b.x;
+    r.y = a.y + b.y;
+    return r;
+}
+
+func Vec2 sub_vec(Vec2 a, Vec2 b) {
+    Vec2 r;
+    r.x = a.x - b.x;
+    r.y = a.y - b.y;
+    return r;
+}
+
+func Vec2 scale_vec(Vec2 a, int s) {
+    Vec2 r;
+    r.x = a.x * s;
+    r.y = a.y * s;
+    return r;
+}
+
+func int dot(Vec2 a, Vec2 b) {
+    return a.x * b.x + a.y * b.y;
+}
+
+func Rect make_rect(Vec2 min, Vec2 max) {
+    Rect r;
+    r.min = min;
+    r.max = max;
+    return r;
+}
+
+func int rect_area(Rect r) {
+    int w = r.max.x - r.min.x;
+    int h = r.max.y - r.min.y;
+    return w * h;
+}
+
+func bool is_inside(Rect r, Vec2 p) {
+    if p.x < r.min.x {
+        return 0;
+    }
+    if p.y < r.min.y {
+        return 0;
+    }
+    if p.x > r.max.x {
+        return 0;
+    }
+    if p.y > r.max.y {
+        return 0;
+    }
+    return 1;
+}
+
+func int clamp(int v, int lo, int hi) {
+    if v < lo {
+        return lo;
+    }
+    if v > hi {
+        return hi;
+    }
+    return v;
+}
+
+func int sum_to(int n) {
+    int s = 0;
+    for int i = 1; i <= n; i = i + 1 {
+        s = s + i;
+    }
+    return s;
+}
+
+func int fib(int n) {
+    int a = 0;
+    int b = 1;
+    for int i = 0; i < n; i = i + 1 {
+        int t = a + b;
+        a = b;
+        b = t;
+    }
+    return a;
+}
+
+func void swap(int @a, int @b) {
+    int t = !a;
+    !a = !b;
+    !b = t;
+}
+
+func int next_id() {
+    static int id = 100;
+    id = id + 1;
+    return id;
+}
+
+func Item make_item(string name, int value) {
+    Item it;
+    it.id = next_id();
+    it.name = name;
+    it.value = value;
+    return it;
+}
+
+func void Counter::inc(int n) {
+    this->value = this->value + n;
+}
+
+func void Actor::move(Vec2 delta) {
+    this->pos = add_vec(this->pos, delta);
+}
+
+func bool Actor::is_alive() {
+    return this->hp > 0;
+}
+
+Vec2 a = make_vec(2, 3);
+Vec2 b = make_vec(4, 5);
+print 'dot(a,b)=23';
+print dot(a, b);
+
+Rect r = make_rect(make_vec(1, 2), make_vec(6, 8));
+print 'rect_area=30';
+print rect_area(r);
+
+Vec2 c = add_vec(a, b);
+print 'c.x=6';
+print c.x;
+print 'c.y=8';
+print c.y;
+
+Vec2 d = scale_vec(c, 2);
+print 'd.x=12';
+print d.x;
+print 'd.y=16';
+print d.y;
+
+print 'inside(3,4)=1';
+print is_inside(r, make_vec(3, 4));
+print 'inside(0,0)=0';
+print is_inside(r, make_vec(0, 0));
+
+Actor hero;
+print 'hero.name=Ari';
+hero.name = 'Ari';
+print hero.name;
+hero.pos = make_vec(10, 10);
+hero.hp = 25;
+hero.mana = 3;
+hero.move(make_vec(0 - 3, 5));
+print 'hero.pos.x=7';
+print hero.pos.x;
+print 'hero.pos.y=15';
+print hero.pos.y;
+print 'hero.alive(25)=1';
+print hero.is_alive();
+hero.hp = 0;
+print 'hero.alive(0)=0';
+print hero.is_alive();
+
+Counter ctr;
+for int i = 0; i < 5; i = i + 1 {
+    ctr.inc(i);
+}
+print 'ctr.value=10';
+print ctr.value;
+
+print 'sum_to(6)=21';
+print sum_to(6);
+print 'fib(6)=8';
+print fib(6);
+
+int x = 9;
+int y = 4;
+swap(@x, @y);
+print 'swap.x=4';
+print x;
+print 'swap.y=9';
+print y;
+
+print 'clamp(5,1,4)=4';
+print clamp(5, 1, 4);
+print 'clamp(-2,0,10)=0';
+print clamp(0 - 2, 0, 10);
+print 'clamp(7,0,10)=7';
+print clamp(7, 0, 10);
+
+Item item;
+item.id = next_id();
+item.name = 'Ring';
+item.value = 250;
+print 'item.id=101';
+print item.id;
+print 'item.value=250';
+print item.value;
+
+Item item2 = make_item('Sword', 500);
+print 'item2.id=102';
+print item2.id;
+print 'item2.value=500';
+print item2.value;
+
+float f = (1f / 4f) + (1f / 8f);
+print 'f=0.375';
+print f;

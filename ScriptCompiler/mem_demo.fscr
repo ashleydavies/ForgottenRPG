@@ -1,4 +1,4 @@
-import "mem.extern";
+import "ForgottenRPG/Resources/Data/Scripts/stdlib/mem.extern";
 
 struct Player {
     int health;

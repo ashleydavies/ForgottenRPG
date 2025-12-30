@@ -271,6 +271,141 @@ print d;");
             CollectionAssert.AreEqual(new List<string>{(3f/32f).ToString(CultureInfo.InvariantCulture)}, _output);
         }
 
+        [Fact]
+        public void HandlesStructsMethodsAndReturnsRegression() {
+            ExecuteCode(@"
+struct Vec2 {
+    int x;
+    int y;
+}
+
+func Vec2 make_vec(int x, int y) {
+    Vec2 v;
+    v.x = x;
+    v.y = y;
+    return v;
+}
+
+func int dot(Vec2 a, Vec2 b) {
+    return a.x * b.x + a.y * b.y;
+}
+
+struct Person {
+    string name;
+    int age;
+}
+
+func void Person::init(string name, int age) {
+    this->name = name;
+    this->age = age;
+}
+
+func bool Person::is_adult() {
+    return this->age >= 18;
+}
+
+func string greet(Person p) {
+    if p.is_adult() {
+        return 'Greetings';
+    }
+    return 'Yo';
+}
+
+Vec2 a = make_vec(2, 3);
+Vec2 b = make_vec(4, 5);
+print dot(a, b);
+
+Person joe;
+joe.init('Joe', 20);
+print joe.is_adult();
+print greet(joe);
+
+int count = 0;
+for int i = 0; i < 3; i = i + 1 {
+    count = count + i;
+}
+print count;
+
+int x = 7;
+int @px = @x;
+print !px;");
+            CollectionAssert.AreEqual(new List<string> {"23", "1", "Greetings", "3", "7"}, _output);
+        }
+
+        [Fact]
+        public void HandlesComplexStructAndControlFlow() {
+            ExecuteCode(@"
+struct Vec2 {
+    int x;
+    int y;
+}
+
+struct Rect {
+    Vec2 min;
+    Vec2 max;
+}
+
+func Vec2 add_vec(Vec2 a, Vec2 b) {
+    Vec2 r;
+    r.x = a.x + b.x;
+    r.y = a.y + b.y;
+    return r;
+}
+
+func int area(Rect r) {
+    int w = r.max.x - r.min.x;
+    int h = r.max.y - r.min.y;
+    return w * h;
+}
+
+struct Counter {
+    int value;
+}
+
+func void Counter::inc(int n) {
+    this->value = this->value + n;
+}
+
+func int sum_to(int n) {
+    int s = 0;
+    for int i = 1; i <= n; i = i + 1 {
+        s = s + i;
+    }
+    return s;
+}
+
+Rect r;
+r.min.x = 1;
+r.min.y = 2;
+r.max.x = 6;
+r.max.y = 8;
+print area(r);
+
+Vec2 v = add_vec(r.min, r.max);
+print v.x;
+print v.y;
+
+Counter c;
+for int i = 0; i < 3; i = i + 1 {
+    c.inc(i + 1);
+}
+print c.value;
+
+int total = sum_to(5);
+print total;
+
+int x = 10;
+int @px = @x;
+print !px;
+
+if total >= 15 {
+    print 'ok';
+} else {
+    print 'bad';
+}");
+            CollectionAssert.AreEqual(new List<string> {"30", "7", "10", "6", "15", "10", "ok"}, _output);
+        }
+
         private void ExecuteCode(string code) {
             var compiled = new Parser(code).Compile();
             var assembled =

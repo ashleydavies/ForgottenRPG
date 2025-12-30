@@ -271,7 +271,6 @@ namespace ForgottenRPG.VM {
                     break;
                 case Instruction.Addf:
                     PushStackf(PopStackf() + PopStackf());
-                    Console.WriteLine($"Added to {PeekStackf()}");
                     SetFlags((int) PeekStackf());
                     break;
                 case Instruction.Sub:
@@ -304,7 +303,6 @@ namespace ForgottenRPG.VM {
                     f1 = PopStackf();
                     f2 = PopStackf();
                     PushStackf(f2 / f1);
-                    Console.WriteLine($"Dividing {f2} / {f1} to {PeekStackf()}; {f2 / f1}");
                     SetFlags(PeekStackf());
                     break;
                 case Instruction.Inc:

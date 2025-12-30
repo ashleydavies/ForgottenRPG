@@ -126,6 +126,10 @@ namespace ScriptCompiler {
         }
 
         private void ProcessCodeLine(string line, string[] components) {
+            if (TryProcessDirectInstruction(components)) {
+                return;
+            }
+
             switch (components[0]) {
                 case "label":
                     ServiceLocator.LogService.Log(LogType.Info,
@@ -271,6 +275,93 @@ namespace ScriptCompiler {
                     // Expects [pos, val] on stack.
                     AddInstruction(ScriptVm.Instruction.MemWrite);
                     break;
+            }
+        }
+
+        private bool TryProcessDirectInstruction(string[] components) {
+            string op = components[0];
+            if (components.Length == 1) {
+                if (TryGetDirectInstruction(op, out var instruction)) {
+                    AddInstruction(instruction);
+                    return true;
+                }
+                return false;
+            }
+
+            if (components.Length == 2 && op == "literal") {
+                AddInstruction(ScriptVm.Instruction.Literal);
+                AddInstruction(components[1]);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool TryGetDirectInstruction(string op, out ScriptVm.Instruction instruction) {
+            switch (op) {
+                case "null":
+                    instruction = ScriptVm.Instruction.Null;
+                    return true;
+                case "add":
+                    instruction = ScriptVm.Instruction.Add;
+                    return true;
+                case "addf":
+                    instruction = ScriptVm.Instruction.Addf;
+                    return true;
+                case "sub":
+                    instruction = ScriptVm.Instruction.Sub;
+                    return true;
+                case "subf":
+                    instruction = ScriptVm.Instruction.Subf;
+                    return true;
+                case "mul":
+                    instruction = ScriptVm.Instruction.Mul;
+                    return true;
+                case "mulf":
+                    instruction = ScriptVm.Instruction.Mulf;
+                    return true;
+                case "div":
+                    instruction = ScriptVm.Instruction.Div;
+                    return true;
+                case "divf":
+                    instruction = ScriptVm.Instruction.Divf;
+                    return true;
+                case "inc":
+                    instruction = ScriptVm.Instruction.Inc;
+                    return true;
+                case "dec":
+                    instruction = ScriptVm.Instruction.Dec;
+                    return true;
+                case "cmp":
+                    instruction = ScriptVm.Instruction.Cmp;
+                    return true;
+                case "jmp":
+                    instruction = ScriptVm.Instruction.Jmp;
+                    return true;
+                case "print":
+                    instruction = ScriptVm.Instruction.Print;
+                    return true;
+                case "printint":
+                    instruction = ScriptVm.Instruction.PrintInt;
+                    return true;
+                case "printuint":
+                    instruction = ScriptVm.Instruction.PrintUInt;
+                    return true;
+                case "printfloat":
+                    instruction = ScriptVm.Instruction.PrintFloat;
+                    return true;
+                case "memwrite_stack":
+                    instruction = ScriptVm.Instruction.MemWrite;
+                    return true;
+                case "memread_stack":
+                    instruction = ScriptVm.Instruction.MemRead;
+                    return true;
+                case "callnative":
+                    instruction = ScriptVm.Instruction.CallNative;
+                    return true;
+                default:
+                    instruction = ScriptVm.Instruction.Null;
+                    return false;
             }
         }
 

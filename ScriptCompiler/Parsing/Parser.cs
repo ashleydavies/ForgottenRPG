@@ -121,9 +121,7 @@ namespace ScriptCompiler.Parsing {
         }
 
         public string Compile(ForgottenRPG.NativeFunctions.NativeFunctionRegistry nativeRegistry = null) {
-            return string.Join('\n', Optimiser.Optimise(
-                                   new CodeGenerator(nativeRegistry).Generate(Parse())
-                               ).Select(p => p.ToString()));
+            return string.Join('\n', new StackCodeGenerator(nativeRegistry).Generate(Parse()));
         }
 
         public ProgramNode Parse() {
@@ -416,7 +414,10 @@ namespace ScriptCompiler.Parsing {
         }
 
         private T Expecting<T>(Func<T, bool>? predicate = null) where T : class {
-            LexToken token = NextToken()!;
+            LexToken token = NextToken();
+            if (token == null) {
+                throw new CompileException("Unexpected end of file", 0, 0);
+            }
 
             if (!(token is T tToken))
                 throw token.CreateException($"Unexpected token '{token}' (expecting {typeof(T)})");

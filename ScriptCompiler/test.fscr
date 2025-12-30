@@ -1,4 +1,4 @@
-import "mem";
+import "ForgottenRPG/Resources/Data/Scripts/stdlib/mem";
 string word = "Hello World";
 
 struct Float {
